@@ -1,4 +1,4 @@
-# Android-Codelab
+# Developers
 
 App that retrieves a listing of Java Developers in Nairobi using the [Github API](https://developer.github.com/v3/search/#search-users).
 
@@ -6,9 +6,9 @@ App that retrieves a listing of Java Developers in Nairobi using the [Github API
 
 The design mockup is for the following pages:
 
-1. [Developers list](./wireframes/Developers.png).
-2. [Developer profile](./wireframes/Profile.png).
-3. [Share profile](./wireframes/Share.png).
+1. [Developers list](./art/wireframes/Developers.png).
+2. [Developer profile](./art/wireframes/Profile.png).
+3. [Share profile](./art/wireframes/Share.png).
 
 Try out the [interactive design](https://xd.adobe.com/view/29abd095-a127-41b9-49bf-aaecbbc9f0ad-5f9a/).
 
