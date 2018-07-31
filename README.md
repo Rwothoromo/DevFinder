@@ -1,5 +1,9 @@
 # Developers
 
+[![CircleCI](https://circleci.com/gh/Rwothoromo/Android-Codelab.svg?style=svg)](https://circleci.com/gh/Rwothoromo/Android-Codelab)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/78f03b429b83c9459a23/test_coverage)](https://codeclimate.com/github/Rwothoromo/Android-Codelab/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/78f03b429b83c9459a23/maintainability)](https://codeclimate.com/github/Rwothoromo/Android-Codelab/maintainability)
+
 App that retrieves a listing of Java Developers in Nairobi using the [Github API](https://developer.github.com/v3/search/#search-users).
 
 ## Design
