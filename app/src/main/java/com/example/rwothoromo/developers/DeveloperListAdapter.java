@@ -16,7 +16,7 @@ public class DeveloperListAdapter extends RecyclerView.Adapter<DeveloperListAdap
 	private List<DeveloperListItem> developerList;
 	private Context context;
 
-	public DeveloperListAdapter(List<DeveloperListItem> developerList, Context context) {
+	DeveloperListAdapter(List<DeveloperListItem> developerList, Context context) {
 		this.developerList = developerList;
 		this.context = context;
 	}
@@ -35,6 +35,8 @@ public class DeveloperListAdapter extends RecyclerView.Adapter<DeveloperListAdap
 	public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
 		DeveloperListItem developer = developerList.get(position);
 
+		// Set image
+		// viewHolder.photoImageView
 		viewHolder.usernameTextView.setText(developer.getUsername());
 	}
 
@@ -49,7 +51,7 @@ public class DeveloperListAdapter extends RecyclerView.Adapter<DeveloperListAdap
 		public ImageView photoImageView;
 		public TextView usernameTextView;
 
-		public ViewHolder(@NonNull View itemView) {
+		ViewHolder(@NonNull View itemView) {
 			super(itemView);
 
 			photoImageView = itemView.findViewById(R.id.photoImageView);
