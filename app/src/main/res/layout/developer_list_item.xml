@@ -1,42 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/developerListItem"
+android:id="@+id/developerListItem"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="vertical">
+
+<android.support.v7.widget.CardView
+    android:padding="8dp"
+    android:layout_marginBottom="@dimen/text_margin"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <android.support.v7.widget.CardView
-        android:padding="8dp"
-        android:layout_marginBottom="@dimen/text_margin"
-        android:onClick="viewProfile"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="395dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <RelativeLayout
-            android:layout_width="395dp"
+        <ImageView
+            android:id="@+id/userProfileImageView"
+            android:layout_width="120dp"
+            android:layout_height="90dp"
+            android:contentDescription="@string/photo"
+            android:padding="@dimen/image_margin" />
+
+        <TextView
+            android:id="@+id/usernameTextView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/userProfileImageView"
+            android:layout_toEndOf="@id/userProfileImageView"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
 
-            <ImageView
-                android:id="@+id/photoImageView"
-                android:layout_width="120dp"
-                android:layout_height="90dp"
-                android:contentDescription="@string/photo"
-                android:padding="@dimen/image_margin"
-                android:src="@mipmap/ic_launcher" />
+    </RelativeLayout>
 
-            <TextView
-                android:id="@+id/usernameTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/photoImageView"
-                android:layout_toEndOf="@id/photoImageView"
-                android:text="@string/username"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
-
-        </RelativeLayout>
-
-    </android.support.v7.widget.CardView>
+</android.support.v7.widget.CardView>
 
 </LinearLayout>

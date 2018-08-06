@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.Objects;
 
@@ -17,8 +19,19 @@ public class DeveloperProfile extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Objects.requireNonNull(getSupportActionBar()).setTitle("Developer Profile");
 		setContentView(R.layout.activity_developer_profile);
+		Objects.requireNonNull(getSupportActionBar()).setTitle("Developer Profile");
+
+		Intent intent = getIntent();
+
+		ImageView profileImageView = findViewById(R.id.userProfileImageView);
+		profileImageView.setImageResource((intent.getIntExtra(DeveloperListAdapter.DEVELOPER_PHOTO,0)));
+
+		TextView usernameTextView = findViewById(R.id.usernameTextView);
+		usernameTextView.setText(intent.getStringExtra(DeveloperListAdapter.DEVELOPER_USERNAME));
+
+		TextView profileUrlTextView = findViewById(R.id.profileUrlTextView);
+		profileUrlTextView.setText(intent.getStringExtra(DeveloperListAdapter.DEVELOPER_URL));
 	}
 
 	@Override

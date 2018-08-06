@@ -1,6 +1,5 @@
 package com.example.rwothoromo.developers;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,7 +8,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +18,8 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		Toolbar myToolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(myToolbar);
+		Toolbar toolbar = findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
 
 		RecyclerView recyclerView = findViewById(R.id.recyclerView);
 		recyclerView.setHasFixedSize(true);
@@ -31,8 +29,9 @@ public class MainActivity extends AppCompatActivity {
 
 		for (int i = 0; i <= 10; i++) {
 			DeveloperListItem developer = new DeveloperListItem(
-					"@mipmap/ic_launcher",
-					"Username " + (i+1)
+					R.mipmap.ic_launcher,
+					"Username" + (i+1),
+					"https://github.com/Username" + (i+1)
 			);
 
 			developers.add(developer);
@@ -67,11 +66,6 @@ public class MainActivity extends AppCompatActivity {
 				return super.onOptionsItemSelected(item);
 
 		}
-	}
-
-	public void viewProfile(View view) {
-		Intent intent = new Intent(this, DeveloperProfile.class);
-		startActivity(intent);
 	}
 
 }
