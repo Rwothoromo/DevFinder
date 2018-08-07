@@ -25,13 +25,13 @@ public class DeveloperProfile extends AppCompatActivity {
 		Intent intent = getIntent();
 
 		ImageView profileImageView = findViewById(R.id.userProfileImageView);
-		profileImageView.setImageResource((intent.getIntExtra(DeveloperListAdapter.DEVELOPER_PHOTO,0)));
+		profileImageView.setImageResource((intent.getIntExtra(DeveloperListAdapter.EXTRA_DEVELOPER_PHOTO,0)));
 
 		TextView usernameTextView = findViewById(R.id.usernameTextView);
-		usernameTextView.setText(intent.getStringExtra(DeveloperListAdapter.DEVELOPER_USERNAME));
+		usernameTextView.setText(intent.getStringExtra(DeveloperListAdapter.EXTRA_DEVELOPER_USERNAME));
 
 		TextView profileUrlTextView = findViewById(R.id.profileUrlTextView);
-		profileUrlTextView.setText(intent.getStringExtra(DeveloperListAdapter.DEVELOPER_URL));
+		profileUrlTextView.setText(intent.getStringExtra(DeveloperListAdapter.EXTRA_DEVELOPER_URL));
 	}
 
 	@Override
