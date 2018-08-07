@@ -14,9 +14,9 @@ import java.util.List;
 
 public class DeveloperListAdapter extends RecyclerView.Adapter<DeveloperListAdapter.ViewHolder> {
 
-	public static final String DEVELOPER_USERNAME = "com.example.rwothoromo.developers.DEVELOPER_USERNAME";
-	public static final String DEVELOPER_PHOTO = "com.example.rwothoromo.developers.DEVELOPER_PHOTO";
-	public static final String DEVELOPER_URL = "com.example.rwothoromo.developers.DEVELOPER_URL";
+	public static final String EXTRA_DEVELOPER_USERNAME = "com.example.rwothoromo.developers.EXTRA_DEVELOPER_USERNAME";
+	public static final String EXTRA_DEVELOPER_PHOTO = "com.example.rwothoromo.developers.EXTRA_DEVELOPER_PHOTO";
+	public static final String EXTRA_DEVELOPER_URL = "com.example.rwothoromo.developers.EXTRA_DEVELOPER_URL";
 
 	private List<DeveloperListItem> developerList;
 	private Context context;
@@ -44,16 +44,15 @@ public class DeveloperListAdapter extends RecyclerView.Adapter<DeveloperListAdap
 			@Override
 			public void onClick(View view) {
 				Intent intent = new Intent(view.getContext(), DeveloperProfile.class);
-				intent.putExtra(DEVELOPER_USERNAME, developer.getUsername());
-				intent.putExtra(DEVELOPER_PHOTO, developer.getPhoto());
-				intent.putExtra(DEVELOPER_URL, developer.getProfileUrl());
+				intent.putExtra(EXTRA_DEVELOPER_USERNAME, developer.getUsername());
+				intent.putExtra(EXTRA_DEVELOPER_PHOTO, developer.getPhoto());
+				intent.putExtra(EXTRA_DEVELOPER_URL, developer.getProfileUrl());
 				context.startActivity(intent);
 			}
 		});
 
 		viewHolder.usernameTextView.setText(developer.getUsername());
 		viewHolder.userProfileImageView.setImageResource(developer.getPhoto());
-
 	}
 
 	// Return the size/length of the Developer list
