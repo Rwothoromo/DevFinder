@@ -2,12 +2,14 @@ package com.example.rwothoromo.developers;
 
 public class DeveloperListItem {
 
-	private String photo;
+	private int photo;
 	private String username;
+	private String profileUrl;
 
-	public DeveloperListItem(String photo, String username) {
+	DeveloperListItem(int photo, String username, String profileUrl) {
 		this.photo = photo;
 		this.username = username;
+		this.profileUrl = profileUrl;
 	}
 
 	/**
@@ -15,7 +17,7 @@ public class DeveloperListItem {
 	 *
 	 * @return photo
 	 */
-	public String getPhoto() {
+	public int getPhoto() {
 		return photo;
 	}
 
@@ -26,5 +28,14 @@ public class DeveloperListItem {
 	 */
 	public String getUsername() {
 		return username;
+	}
+
+	/**
+	 * Returns the Profile URL of the Developer
+	 *
+	 * @return profileUrl
+	 */
+	public String getProfileUrl() {
+		return profileUrl;
 	}
 }
