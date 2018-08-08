@@ -6,14 +6,21 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+/**
+ * This class gets the GitHub API text response and parses it to JSON
+ */
 public class GithubUsersResponse {
 
 	@SerializedName("items")
 	private List<GithubUser> githubUsers;
 
+	/**
+	 * Returns GithubUsersResponse in JSON format
+	 *
+	 * @return GithubUsersResponse
+	 */
 	public static GithubUsersResponse parseJSON(String response) {
 		Gson gson = new GsonBuilder().create();
-		GithubUsersResponse githubUsersResponse = gson.fromJson(response, GithubUsersResponse.class);
-		return githubUsersResponse;
+		return gson.fromJson(response, GithubUsersResponse.class);
 	}
 }
