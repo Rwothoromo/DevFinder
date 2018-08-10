@@ -3,6 +3,8 @@ package com.example.rwothoromo.developers.service;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.example.rwothoromo.developers.constants.Constants.BASE_URL;
+
 /**
  * This class is for the GitHub service
  * It helps in sending out network requests to the GitHub API
@@ -17,7 +19,6 @@ public class GithubService {
 	 * @return GithubAPI interface
 	 */
 	public GithubAPI getAPI() {
-		String BASE_URL = "https://api.github.com";
 
 		if (retrofit == null) {
 			retrofit = new Retrofit.Builder()

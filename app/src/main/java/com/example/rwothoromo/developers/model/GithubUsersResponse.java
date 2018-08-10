@@ -23,4 +23,13 @@ public class GithubUsersResponse {
 		Gson gson = new GsonBuilder().create();
 		return gson.fromJson(response, GithubUsersResponse.class);
 	}
+
+	/**
+	 * Returns the GitHub user list
+	 *
+	 * @return List
+	 */
+	public List<GithubUser> getResult() {
+		return githubUsers;
+	}
 }

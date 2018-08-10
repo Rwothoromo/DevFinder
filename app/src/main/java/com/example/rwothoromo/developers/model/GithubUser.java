@@ -2,6 +2,9 @@ package com.example.rwothoromo.developers.model;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * This class represents the GitHub User model
+ */
 public class GithubUser {
 	private int id;
 
