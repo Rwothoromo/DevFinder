@@ -1,7 +1,7 @@
 package com.example.rwothoromo.developers.presenter;
 
-import com.example.rwothoromo.developers.model.Data;
 import com.example.rwothoromo.developers.model.GithubUser;
+import com.example.rwothoromo.developers.model.GithubUsersResponse;
 import com.example.rwothoromo.developers.service.GithubService;
 import com.example.rwothoromo.developers.view.GithubUserView;
 
@@ -17,12 +17,11 @@ import retrofit2.Response;
  */
 public class GithubPresenter {
 
-
 	private GithubUserView githubUserView;
 	private GithubService githubService;
 
-	public GithubPresenter(GithubUserView view) {
-		this.githubUserView = view;
+	public GithubPresenter(GithubUserView githubUserView) {
+		this.githubUserView = githubUserView;
 
 		if (this.githubService == null) {
 			this.githubService = new GithubService();
@@ -31,22 +30,21 @@ public class GithubPresenter {
 
 	public void getGithubUsers() {
 		githubService.getAPI().getResults()
-				.enqueue(new Callback<Data>() {
+				.enqueue(new Callback<GithubUsersResponse>() {
 					@Override
-					public void onResponse(Call<Data> call, Response<Data> response) {
-						Data data = response.body();
+					public void onResponse(Call<GithubUsersResponse> call, Response<GithubUsersResponse> response) {
 
-						if (data != null && data.getGithubUsersResponse() != null) {
-							List<GithubUser> result = data.getGithubUsersResponse().getResult();
-							githubUserView.githubUsersReady(result);
+						GithubUsersResponse githubUsersResponse = response.body();
+
+						if (githubUsersResponse != null && githubUsersResponse.getResult() != null) {
+							List<GithubUser> githubUsers = githubUsersResponse.getResult();
+							githubUserView.githubUsersReady(githubUsers);
 						}
 					}
 
 					@Override
-					public void onFailure(Call<Data> call, Throwable t) {
-
+					public void onFailure(Call<GithubUsersResponse> call, Throwable t) {
 						githubUserView.failedDataRetrieval();
-
 					}
 				});
 	}

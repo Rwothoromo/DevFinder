@@ -9,19 +9,32 @@ import com.google.gson.annotations.SerializedName;
  * This class represents the GitHub User model
  */
 public class GithubUser implements Parcelable {
-	private int id;
+	public static final Creator<GithubUser> CREATOR
+			= new Creator<GithubUser>() {
+		public GithubUser createFromParcel(Parcel in) {
+			return new GithubUser(in);
+		}
 
+		public GithubUser[] newArray(int size) {
+			return new GithubUser[size];
+		}
+	};
+	private int id;
 	@SerializedName("login")
 	private String username;
-
 	@SerializedName("avatar_url")
 	private String avatarUrl;
-
 	@SerializedName("html_url")
 	private String htmlUrl;
-
 	@SerializedName("organizations_url")
 	private String organizationsUrl;
+
+	private GithubUser(Parcel in) {
+		id = in.readInt();
+		username = in.readString();
+		avatarUrl = in.readString();
+		htmlUrl = in.readString();
+	}
 
 	/**
 	 * Returns the GitHub user id
@@ -77,23 +90,5 @@ public class GithubUser implements Parcelable {
 		out.writeString(username);
 		out.writeString(avatarUrl);
 		out.writeString(htmlUrl);
-	}
-
-	public static final Creator<GithubUser> CREATOR
-			= new Creator<GithubUser>() {
-		public GithubUser createFromParcel(Parcel in) {
-			return new GithubUser(in);
-		}
-
-		public GithubUser[] newArray(int size) {
-			return new GithubUser[size];
-		}
-	};
-
-	private GithubUser(Parcel in) {
-		id = in.readInt();
-		username = in.readString();
-		avatarUrl = in.readString();
-		htmlUrl = in.readString();
 	}
 }
