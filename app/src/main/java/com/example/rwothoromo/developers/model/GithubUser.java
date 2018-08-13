@@ -1,11 +1,14 @@
 package com.example.rwothoromo.developers.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents the GitHub User model
  */
-public class GithubUser {
+public class GithubUser implements Parcelable {
 	private int id;
 
 	@SerializedName("login")
@@ -63,5 +66,34 @@ public class GithubUser {
 	 */
 	public String getOrganizationsUrl() {
 		return organizationsUrl;
+	}
+
+	public int describeContents() {
+		return 0;
+	}
+
+	public void writeToParcel(Parcel out, int flags) {
+		out.writeInt(id);
+		out.writeString(username);
+		out.writeString(avatarUrl);
+		out.writeString(htmlUrl);
+	}
+
+	public static final Creator<GithubUser> CREATOR
+			= new Creator<GithubUser>() {
+		public GithubUser createFromParcel(Parcel in) {
+			return new GithubUser(in);
+		}
+
+		public GithubUser[] newArray(int size) {
+			return new GithubUser[size];
+		}
+	};
+
+	private GithubUser(Parcel in) {
+		id = in.readInt();
+		username = in.readString();
+		avatarUrl = in.readString();
+		htmlUrl = in.readString();
 	}
 }
