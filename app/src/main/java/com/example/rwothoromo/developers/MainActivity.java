@@ -1,6 +1,7 @@
 package com.example.rwothoromo.developers;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +15,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+	public static final String EXTRA_DEVELOPER_LIST_STATE = "com.example.rwothoromo.developers.EXTRA_DEVELOPER_LIST_STATE";
+	Parcelable developerListState = null;
+	private RecyclerView.LayoutManager layoutManager;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -23,15 +28,16 @@ public class MainActivity extends AppCompatActivity {
 
 		RecyclerView recyclerView = findViewById(R.id.recyclerView);
 		recyclerView.setHasFixedSize(true);
-		recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+		layoutManager = new LinearLayoutManager(this);
 
 		List<DeveloperListItem> developers = new ArrayList<>();
 
 		for (int i = 0; i <= 10; i++) {
 			DeveloperListItem developer = new DeveloperListItem(
 					R.mipmap.ic_launcher,
-					"Username" + (i+1),
-					"https://github.com/Username" + (i+1)
+					"Username" + (i + 1),
+					"https://github.com/Username" + (i + 1)
 			);
 
 			developers.add(developer);
@@ -39,6 +45,33 @@ public class MainActivity extends AppCompatActivity {
 
 		RecyclerView.Adapter adapter = new DeveloperListAdapter(developers, this);
 		recyclerView.setAdapter(adapter);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle savedInstanceState) {
+		// Always call the superclass so it can save the view hierarchy state
+		super.onSaveInstanceState(savedInstanceState);
+
+		// Save the list state to the bundle
+		developerListState = layoutManager.onSaveInstanceState();
+		savedInstanceState.putParcelable(EXTRA_DEVELOPER_LIST_STATE, developerListState);
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+
+		// Restore the list state and list-item positions from the bundle
+		if (savedInstanceState != null)
+			developerListState = savedInstanceState.getParcelable(EXTRA_DEVELOPER_LIST_STATE);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		if (developerListState != null)
+			layoutManager.onRestoreInstanceState(developerListState);
 	}
 
 	@Override
