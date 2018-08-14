@@ -32,7 +32,8 @@ public class GithubUserProfile extends AppCompatActivity {
 		Intent intent = getIntent();
 
 		ImageView profileImageView = findViewById(R.id.userProfileImageView);
-		Glide.with(getApplicationContext()).load(intent.getStringExtra(EXTRA_GITHUB_USER_AVATAR)).into(profileImageView);
+		Glide.with(getApplicationContext()).load(intent.getStringExtra(EXTRA_GITHUB_USER_AVATAR))
+				.into(profileImageView);
 
 		TextView usernameTextView = findViewById(R.id.usernameTextView);
 		usernameTextView.setText(intent.getStringExtra(EXTRA_GITHUB_USER_USERNAME));
@@ -54,6 +55,12 @@ public class GithubUserProfile extends AppCompatActivity {
 
 			case R.id.action_share:
 				// User chose the "Share" action, launch the share intent
+				Intent shareIntent = new Intent(Intent.ACTION_SEND);
+				shareIntent.setType("text/plain");
+				shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this awesome developer @"
+						+ getIntent().getStringExtra(EXTRA_GITHUB_USER_USERNAME) + ", "
+						+ getIntent().getStringExtra(EXTRA_GITHUB_USER_URL));
+				startActivity(Intent.createChooser(shareIntent, "Share this developer"));
 				return true;
 
 			default:
