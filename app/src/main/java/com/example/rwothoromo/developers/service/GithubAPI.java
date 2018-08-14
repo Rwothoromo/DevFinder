@@ -1,6 +1,6 @@
 package com.example.rwothoromo.developers.service;
 
-import com.example.rwothoromo.developers.model.Data;
+import com.example.rwothoromo.developers.model.GithubUsersResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -11,6 +11,6 @@ import retrofit2.http.GET;
 public interface GithubAPI {
 
 	@GET("/search/users?q=type:user+language:java+location:nairobi")
-	Call<Data> getResults();
+	Call<GithubUsersResponse> getResults();
 
 }

@@ -10,5 +10,6 @@ import java.util.List;
 public interface GithubUserView {
 
 	void githubUsersReady(List<GithubUser> githubUsers);
+
 	void failedDataRetrieval();
 }

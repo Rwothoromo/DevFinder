@@ -1,4 +1,4 @@
-package com.example.rwothoromo.developers;
+package com.example.rwothoromo.developers.view;
 
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -10,13 +10,19 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import java.util.ArrayList;
+import com.example.rwothoromo.developers.R;
+import com.example.rwothoromo.developers.adapter.GithubAdapter;
+import com.example.rwothoromo.developers.model.GithubUser;
+import com.example.rwothoromo.developers.presenter.GithubPresenter;
+
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+import static com.example.rwothoromo.developers.constants.Constants.EXTRA_DEVELOPER_LIST_STATE;
 
-	public static final String EXTRA_DEVELOPER_LIST_STATE = "com.example.rwothoromo.developers.EXTRA_DEVELOPER_LIST_STATE";
-	Parcelable developerListState = null;
+public class MainActivity extends AppCompatActivity implements GithubUserView {
+
+	Parcelable githubUserListState = null;
+	private RecyclerView recyclerView;
 	private RecyclerView.LayoutManager layoutManager;
 
 	@Override
@@ -26,25 +32,14 @@ public class MainActivity extends AppCompatActivity {
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		RecyclerView recyclerView = findViewById(R.id.recyclerView);
+		recyclerView = findViewById(R.id.recyclerView);
 		recyclerView.setHasFixedSize(true);
 
 		layoutManager = new LinearLayoutManager(this);
 
-		List<DeveloperListItem> developers = new ArrayList<>();
+		GithubPresenter githubPresenter = new GithubPresenter(this);
+		githubPresenter.getGithubUsers();
 
-		for (int i = 0; i <= 10; i++) {
-			DeveloperListItem developer = new DeveloperListItem(
-					R.mipmap.ic_launcher,
-					"Username" + (i + 1),
-					"https://github.com/Username" + (i + 1)
-			);
-
-			developers.add(developer);
-		}
-
-		RecyclerView.Adapter adapter = new DeveloperListAdapter(developers, this);
-		recyclerView.setAdapter(adapter);
 	}
 
 	@Override
@@ -53,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
 		super.onSaveInstanceState(savedInstanceState);
 
 		// Save the list state to the bundle
-		developerListState = layoutManager.onSaveInstanceState();
-		savedInstanceState.putParcelable(EXTRA_DEVELOPER_LIST_STATE, developerListState);
+		githubUserListState = layoutManager.onSaveInstanceState();
+		savedInstanceState.putParcelable(EXTRA_DEVELOPER_LIST_STATE, githubUserListState);
 	}
 
 	@Override
@@ -63,15 +58,15 @@ public class MainActivity extends AppCompatActivity {
 
 		// Restore the list state and list-item positions from the bundle
 		if (savedInstanceState != null)
-			developerListState = savedInstanceState.getParcelable(EXTRA_DEVELOPER_LIST_STATE);
+			githubUserListState = savedInstanceState.getParcelable(EXTRA_DEVELOPER_LIST_STATE);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 
-		if (developerListState != null)
-			layoutManager.onRestoreInstanceState(developerListState);
+		if (githubUserListState != null)
+			layoutManager.onRestoreInstanceState(githubUserListState);
 	}
 
 	@Override
@@ -101,4 +96,24 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	@Override
+	public void githubUsersReady(List<GithubUser> githubUsers) {
+		this.showGithubUsers(githubUsers);
+	}
+
+	@Override
+	public void failedDataRetrieval() {
+
+	}
+
+	/**
+	 * Add GitHub user details to the user list
+	 *
+	 * @param githubUsers, List
+	 */
+	public void showGithubUsers(List<GithubUser> githubUsers) {
+		recyclerView.setLayoutManager(layoutManager);
+		RecyclerView.Adapter adapter = new GithubAdapter(githubUsers, this);
+		recyclerView.setAdapter(adapter);
+	}
 }
