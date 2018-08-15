@@ -57,8 +57,3 @@ fastlane/Preview.html
 fastlane/screenshots
 fastlane/test_output
 fastlane/readme.md
-
-.idea/instapk.xml
-instapk.log*
-instapk.properties
-.hgignore

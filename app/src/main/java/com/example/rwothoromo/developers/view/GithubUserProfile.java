@@ -27,7 +27,7 @@ public class GithubUserProfile extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_github_user_profile);
-		Objects.requireNonNull(getSupportActionBar()).setTitle("Developer Profile");
+		Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
 		Intent intent = getIntent();
 
@@ -52,6 +52,11 @@ public class GithubUserProfile extends AppCompatActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+
+			case android.R.id.home:
+				// User chose the "Back" action, send them back to the Developer list
+				finish();
+				return true;
 
 			case R.id.action_share:
 				// User chose the "Share" action, launch the share intent
