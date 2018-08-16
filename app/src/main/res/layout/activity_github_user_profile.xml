@@ -22,6 +22,7 @@
 
             <ImageView
                 android:id="@+id/userProfileImageView"
+                android:src="@mipmap/ic_launcher"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:layout_centerHorizontal="true"
@@ -31,6 +32,7 @@
 
             <TextView
                 android:id="@+id/usernameTextView"
+                android:text="@string/username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/text_margin"
@@ -40,6 +42,7 @@
 
             <TextView
                 android:id="@+id/profileUrlTextView"
+                android:text="@string/url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
