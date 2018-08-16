@@ -17,35 +17,45 @@ import retrofit2.Response;
  */
 public class GithubPresenter {
 
-	private GithubUserView githubUserView;
-	private GithubService githubService;
+    private GithubUserView githubUserView;
+    private GithubService githubService;
 
-	public GithubPresenter(GithubUserView githubUserView) {
-		this.githubUserView = githubUserView;
+    /**
+     * Constructor for GithubPresenter class.
+     *
+     * @param githubUserView the GithubUserView
+     */
+    public GithubPresenter(GithubUserView githubUserView) {
+        this.githubUserView = githubUserView;
 
-		if (this.githubService == null) {
-			this.githubService = new GithubService();
-		}
-	}
+        if (this.githubService == null) {
+            this.githubService = new GithubService();
+        }
+    }
 
-	public void getGithubUsers() {
-		githubService.getAPI().getResults()
-				.enqueue(new Callback<GithubUsersResponse>() {
-					@Override
-					public void onResponse(Call<GithubUsersResponse> call, Response<GithubUsersResponse> response) {
+    /**
+     * Get GitHub users from the GitHub API.
+     */
+    public void getGithubUsers() {
+        githubService.getAPI().getResults()
+                .enqueue(new Callback<GithubUsersResponse>() {
+                    @Override
+                    public void onResponse(Call<GithubUsersResponse> call,
+                                           Response<GithubUsersResponse> response) {
 
-						GithubUsersResponse githubUsersResponse = response.body();
+                        GithubUsersResponse githubUsersResponse = response.body();
 
-						if (githubUsersResponse != null && githubUsersResponse.getResult() != null) {
-							List<GithubUser> githubUsers = githubUsersResponse.getResult();
-							githubUserView.githubUsersReady(githubUsers);
-						}
-					}
+                        if (githubUsersResponse != null
+                                && githubUsersResponse.getResult() != null) {
+                            List<GithubUser> githubUsers = githubUsersResponse.getResult();
+                            githubUserView.githubUsersReady(githubUsers);
+                        }
+                    }
 
-					@Override
-					public void onFailure(Call<GithubUsersResponse> call, Throwable t) {
-						githubUserView.failedDataRetrieval();
-					}
-				});
-	}
+                    @Override
+                    public void onFailure(Call<GithubUsersResponse> call, Throwable t) {
+                        githubUserView.failedDataRetrieval();
+                    }
+                });
+    }
 }
