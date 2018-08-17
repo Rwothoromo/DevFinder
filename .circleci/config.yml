@@ -1,31 +1,326 @@
+default: &defaults
+  docker:
+  - image: circleci/android:api-26-alpha
+  working_directory: ~/repo
+  environment:
+  TERM: dumb
+  # Customize the JVM maximum heap limit
+  _JAVA_OPTIONS: "-Xmx2048m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+  GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m"'
+
 version: 2
 jobs:
-  build:
-    working_directory: ~/code
-    docker:
-      - image: circleci/android:api-25-alpha
-    environment:
-      JVM_OPTS: -Xmx3200m
+  android_lint:
+    <<: *defaults
     steps:
       - checkout
+      # Download and cache dependencies
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-#      - run:
-#         name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
-#         command: sudo chmod +x ./gradlew
-      - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+      - run: ./gradlew androidDependencies
       - save_cache:
           paths:
             - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+
+      # Running static analysis tools
       - run:
-          name: Run Tests
-          command: ./gradlew lint test
+          name: Running quality checks
+          command: |
+            echo "Run android lint"
+            cd ~/repo
+            ./gradlew lint
+
+      # Storing reports
       - store_artifacts:
-          path: app/build/reports
+          path: ~/repo/app/build/reports
+
+  findbugs_lint:
+    <<: *defaults
+    steps:
+      - checkout
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+      - run: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+      # Running static analysis tools
+      - run:
+          name: Running quality checks
+          command: |
+            echo "Run findbugs"
+            cd ~/repo
+            ./gradlew assemble
+            ./gradlew findbugs
+
+      # Storing reports
+      - store_artifacts:
+          path: ~/repo/app/build/outputs
+
+  pmd_lint:
+    <<: *defaults
+    steps:
+      - checkout
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+      - run: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+
+      # Running static analysis tools
+      - run:
+          name: Running quality checks
+          command: |
+            echo "Run PMD"
+            cd ~/repo
+            ./gradlew pmd
+
+      # Storing reports
+      - store_artifacts:
+          path: ~/repo/app/build
+
+  checkstyle_lint:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          # fallback to usiing the latest cache if no exact match is found
+          - v1-dependencies-
+      - run: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+              - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+
+        # Running static analysis tools
+      - run:
+          name: Running quality checks
+          command: |
+            echo "Run checkstyle"
+            cd ~/repo
+            ./gradlew checkstyle
+
+        # Storing reports
+      - store_artifacts:
+          path: ~/repo/app/build/reports
+
+  test_unit:
+    <<: *defaults
+    steps:
+      - checkout
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+
+      # Running unit tests
+      - run:
+          name: Running unit tests on source code
+          command: |
+            cd ~/repo
+            ./gradlew test
+            ls -a app/build/outputs/logs
+
+      #Storing unit test reports
+      - store_artifacts:
+          path: ~/repo/app/build/reports
           destination: reports
-      - store_test_results:
-          path: app/build/test-results
-      # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
+      - store_artifacts:
+          path: ~/repo/app/build/outputs/androidTest-results
+          destination: reports
+
+
+  ## Build debug APK and instrumented test APK
+  deploy_test_build:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+      - run: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+              - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+      - run:
+          name: Gradle build (debug)
+          command: ./gradlew -PciBuild=true :app:assembleDebug :app:assembleAndroidTest
+      - store_artifacts:
+          path: app/build/outputs/apk/
+          destination: /apk/
+      - store_artifacts:
+          path: ~/repo/app/build/reports
+          destination: reports
+
+  deploy_staging_build:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+      - run: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+              - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+      - run:
+          name: Gradle build (debug)
+          command: ./gradlew -PciBuild=true :app:assembleDebug :app:assembleAndroidTest
+      - store_artifacts:
+          path: app/build/outputs/apk/
+          destination: /apk/
+      - store_artifacts:
+          path: ~/repo/app/build/reports
+          destination: reports
+
+  deploy_debug_build:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+      - run: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+              - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+      - run:
+          name: Gradle build (debug)
+          command: ./gradlew -PciBuild=true :app:assembleDebug :app:assembleAndroidTest
+      - store_artifacts:
+          path: app/build/outputs/apk/
+          destination: /apk/
+      - store_artifacts:
+          path: ~/repo/app/build/reports
+          destination: reports
+
+  deploy_production_build:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+      - run: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+              - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+      - run:
+          name: Gradle build (Release)
+          command: ./gradlew -PciBuild=true :app:assembleProdRelease :app:assembleAndroidTest
+      - store_artifacts:
+          path: app/build/outputs/apk/
+          destination: /apk/
+      - store_artifacts:
+          path: ~/repo/app/build/reports
+          destination: reports
+
+  report_coverage:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          - v1-dependencies-
+      - run:
+          name: Download dependencies
+          command: ./gradlew androidDependencies
+      - run:
+          name: Code Climate Test Setup
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          name: Code Climate Pretest
+          command: ./cc-test-reporter before-build
+      - run:
+          name: Generate JaCoCo report
+          command: ./gradlew jacocoTestReport
+      - run:
+          name: Upload coverage to code climate
+          command: |
+            export JACOCO_SOURCE_PATH=app/src/main/java
+            ./cc-test-reporter format-coverage app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml -t jacoco
+            ./cc-test-reporter upload-coverage
+      - store_artifacts:
+          path: app/build/reports/
+          destination: /reports/
+
+## Workflows
+workflows:
+  version: 2
+  lint_test_and_deployment:
+    jobs:
+      - android_lint
+      - findbugs_lint
+      - pmd_lint
+      - checkstyle_lint
+      - test_unit:
+          requires:
+            - android_lint
+            - findbugs_lint
+            - pmd_lint
+            - checkstyle_lint
+      - deploy_test_build:
+          requires:
+            - test_unit
+      - deploy_staging_build:
+          requires:
+            - test_unit
+          filters:
+            branches:
+              only: staging
+      - deploy_debug_build:
+          requires:
+            - test_unit
+          filters:
+            branches:
+              only: develop
+      - deploy_production_build:
+          requires:
+            - test_unit
+            - deploy_test_build
+          filters:
+            branches:
+              only: master
+      - report_coverage:
+          requires:
+            - deploy_production_build

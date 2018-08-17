@@ -1,0 +1,48 @@
+def coverageSourceDirs = [
+        'src/main/java',
+        'src/debug/java',
+        'src/mock/java',
+        'src/prod/java'
+]
+
+task jacocoTestReport(type: JacocoReport, dependsOn: 'test') {
+    description = 'Generate JaCoCo coverage reports'
+    group = 'Reporting'
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    classDirectories = fileTree(
+            dir      : 'build/intermediates/classes/mock/debug',
+            excludes : [
+                    '**/R.class',
+                    '**/R$*.class',
+                    '**/*$ViewInjector*.*',
+                    '**/*$ViewBinder*.*',
+                    '**/BuildConfig.*',
+                    '**/Manifest*.*'
+            ]
+    )
+
+    sourceDirectories = files(coverageSourceDirs)
+    executionData     = fileTree(
+            dir     : "$buildDir",
+            include : ['**/*.exec', '**/*.ec']
+    )
+
+    doFirst {
+        files('build/intermediates/classes/mock/debug').getFiles().each { file ->
+            if (file.name.contains('$$')) {
+                file.renameTo(file.path.replace('$$', '$'))
+            }
+        }
+    }
+}
+
+task unifiedCoverageReport(dependsOn: ['clean', 'jacocoTestReport']) {
+    description = 'Generates coverage report which includes both local unit tests and instrumentation tests'
+    group = 'Reporting'
+}
+

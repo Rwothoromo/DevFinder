@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.rwothoromo.developers.R;
 import com.example.rwothoromo.developers.model.GithubUser;
 import com.example.rwothoromo.developers.view.GithubUserProfile;
@@ -47,7 +48,7 @@ public class GithubAdapter extends RecyclerView.Adapter<GithubAdapter.ViewHolder
     public GithubAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup,
                                                        int viewType) {
         View view = LayoutInflater.from(context)
-                .inflate(R.layout.github_user_list_item, null);
+                .inflate(R.layout.github_user_list_item, viewGroup, false);
         return new GithubAdapter.ViewHolder(view);
     }
 
@@ -68,7 +69,9 @@ public class GithubAdapter extends RecyclerView.Adapter<GithubAdapter.ViewHolder
         });
 
         viewHolder.usernameTextView.setText(githubUser.getUsername());
-        Glide.with(context).load(githubUser.getAvatarUrl()).into(viewHolder.userProfileImageView);
+        Glide.with(context).load(githubUser.getAvatarUrl())
+                .apply(new RequestOptions().placeholder(R.mipmap.ic_launcher))
+                .into(viewHolder.userProfileImageView);
     }
 
     // Return the size/length of the Developer list

@@ -1,0 +1,48 @@
+{
+  "total_count": 2,
+  "incomplete_results": false,
+  "items": [
+    {
+      "login": "TheDancerCodes",
+      "id": 6739804,
+      "node_id": "MDQ6VXNlcjY3Mzk4MDQ=",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/6739804?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/TheDancerCodes",
+      "html_url": "https://github.com/TheDancerCodes",
+      "followers_url": "https://api.github.com/users/TheDancerCodes/followers",
+      "following_url": "https://api.github.com/users/TheDancerCodes/following{/other_user}",
+      "gists_url": "https://api.github.com/users/TheDancerCodes/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/TheDancerCodes/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/TheDancerCodes/subscriptions",
+      "organizations_url": "https://api.github.com/users/TheDancerCodes/orgs",
+      "repos_url": "https://api.github.com/users/TheDancerCodes/repos",
+      "events_url": "https://api.github.com/users/TheDancerCodes/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/TheDancerCodes/received_events",
+      "type": "User",
+      "site_admin": false,
+      "score": 1.0
+    },
+    {
+      "login": "Onikah",
+      "id": 15029700,
+      "node_id": "MDQ6VXNlcjE1MDI5NzAw",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/15029700?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Onikah",
+      "html_url": "https://github.com/Onikah",
+      "followers_url": "https://api.github.com/users/Onikah/followers",
+      "following_url": "https://api.github.com/users/Onikah/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Onikah/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Onikah/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Onikah/subscriptions",
+      "organizations_url": "https://api.github.com/users/Onikah/orgs",
+      "repos_url": "https://api.github.com/users/Onikah/repos",
+      "events_url": "https://api.github.com/users/Onikah/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Onikah/received_events",
+      "type": "User",
+      "site_admin": false,
+      "score": 1.0
+    }
+  ]
+}
