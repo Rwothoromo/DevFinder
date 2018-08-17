@@ -9,7 +9,15 @@ import java.util.List;
  */
 public interface GithubUserView {
 
-	void githubUsersReady(List<GithubUser> githubUsers);
+    /**
+     * Method to act on available GitHub user list.
+     *
+     * @param githubUsers the GitHub user list
+     */
+    void githubUsersReady(List<GithubUser> githubUsers);
 
-	void failedDataRetrieval();
+    /**
+     * Method to act on failed GitHub API call.
+     */
+    void failedDataRetrieval();
 }

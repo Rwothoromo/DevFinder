@@ -25,192 +25,192 @@ import java.util.Objects;
 
 import static com.example.rwothoromo.developers.constants.Constants.EXTRA_DEVELOPER_LIST_STATE;
 
+/**
+ * MainActivity class with the Developer list.
+ */
 public class MainActivity extends AppCompatActivity implements GithubUserView {
 
-	Parcelable githubUserListState = null;
-	private RecyclerView recyclerView;
-	private RecyclerView.LayoutManager layoutManager;
-	private SwipeRefreshLayout swipeRefreshLayout;
-	private GithubPresenter githubPresenter = new GithubPresenter(this);
+    Parcelable githubUserListState = null;
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private GithubPresenter githubPresenter = new GithubPresenter(this);
 
-	@RequiresApi(api = Build.VERSION_CODES.KITKAT)
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		Toolbar toolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
-		Objects.requireNonNull(getSupportActionBar()).setSubtitle("Location: Nairobi, Stack: Java");
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setSubtitle("Location: Nairobi, Stack: Java");
 
-		recyclerView = findViewById(R.id.recyclerView);
-		recyclerView.setHasFixedSize(true);
-		swipeRefreshLayout = findViewById(R.id.swiperefresh);
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        swipeRefreshLayout = findViewById(R.id.swiperefresh);
 
-		layoutManager = new GridLayoutManager(this, 2);
+        layoutManager = new GridLayoutManager(this, 2);
 
-		githubPresenter.getGithubUsers();
+        githubPresenter.getGithubUsers();
 
-	}
+    }
 
-	/**
-	 * Add refresh listener on starting the activity
-	 */
-	@Override
-	protected void onStart() {
-		super.onStart();
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-		// Listen for a User's swipe-to-refresh action on the Developer list
-		swipeRefreshLayout.setOnRefreshListener(
-				new SwipeRefreshLayout.OnRefreshListener() {
-					@Override
-					public void onRefresh() {
-						reloadGithubUsers();
-					}
-				}
-		);
-	}
+        // Listen for a User's swipe-to-refresh action on the Developer list
+        swipeRefreshLayout.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        reloadGithubUsers();
+                    }
+                }
+        );
+    }
 
-	/**
-	 * Save state of the Developer list
-	 *
-	 * @param savedInstanceState, Bundle
-	 */
-	@Override
-	protected void onSaveInstanceState(Bundle savedInstanceState) {
-		// Always call the superclass so it can save the view hierarchy state
-		super.onSaveInstanceState(savedInstanceState);
+    /**
+     * Save state of the Developer list.
+     *
+     * @param savedInstanceState a Bundle
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
 
-		// Save the list state to the bundle
-		githubUserListState = layoutManager.onSaveInstanceState();
-		savedInstanceState.putParcelable(EXTRA_DEVELOPER_LIST_STATE, githubUserListState);
-	}
+        // Save the list state to the bundle
+        githubUserListState = layoutManager.onSaveInstanceState();
+        savedInstanceState.putParcelable(EXTRA_DEVELOPER_LIST_STATE, githubUserListState);
+    }
 
-	/**
-	 * Restore state of the Developer list
-	 *
-	 * @param savedInstanceState, Bundle
-	 */
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
+    /**
+     * Restore state of the Developer list.
+     *
+     * @param savedInstanceState a Bundle
+     */
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
 
-		// Restore the list state and list-item positions from the bundle
-		if (savedInstanceState != null) {
-			githubUserListState = savedInstanceState.getParcelable(EXTRA_DEVELOPER_LIST_STATE);
-		}
-	}
+        // Restore the list state and list-item positions from the bundle
+        if (savedInstanceState != null) {
+            githubUserListState = savedInstanceState.getParcelable(EXTRA_DEVELOPER_LIST_STATE);
+        }
+    }
 
-	/**
-	 * Resume the activity with the saved Developer list state if any
-	 */
-	@Override
-	protected void onResume() {
-		super.onResume();
+    /**
+     * Resume the activity with the saved Developer list state if any.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-		if (githubUserListState != null) {
-			layoutManager.onRestoreInstanceState(githubUserListState);
-		}
-	}
+        if (githubUserListState != null) {
+            layoutManager.onRestoreInstanceState(githubUserListState);
+        }
+    }
 
-	/**
-	 * Inflate the Developer list options menu
-	 *
-	 * @param menu, Menu
-	 * @return Boolean
-	 */
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.options_menu, menu);
+    /**
+     * Inflate the Developer list options menu.
+     *
+     * @param menu a Menu
+     * @return Boolean
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Switch between different user-selected actions
-	 *
-	 * @param item, MenuItem
-	 * @return Boolean
-	 */
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.action_settings:
-				// User chose the "Settings" item, show the app settings UI...
-				return true;
+    /**
+     * Switch between different user-selected actions.
+     *
+     * @param item a MenuItem
+     * @return Boolean
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                // User chose the "Settings" item, show the app settings UI...
+                return true;
 
-			case R.id.action_search:
-				// User chose the "Search" action, set the toolbar to a search field
-				return true;
+            case R.id.action_search:
+                // User chose the "Search" action, set the toolbar to a search field
+                return true;
 
-			case R.id.action_refresh:
-				// User chose the "Refresh" action, refresh the Developer list
-				swipeRefreshLayout.setRefreshing(true); // Enable the refresh icon
-				reloadGithubUsers();
-				return true;
+            case R.id.action_refresh:
+                // User chose the "Refresh" action, refresh the Developer list
+                swipeRefreshLayout.setRefreshing(true); // Enable the refresh icon
+                reloadGithubUsers();
+                return true;
 
-			default:
-				// If we got here, the user's action was not recognized.
-				// Invoke the superclass to handle it.
-				return super.onOptionsItemSelected(item);
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
 
-		}
-	}
+        }
+    }
 
-	/**
-	 * Show the Developer list once the data is ready
-	 *
-	 * @param githubUsers
-	 */
-	@Override
-	public void githubUsersReady(List<GithubUser> githubUsers) {
-		this.showGithubUsers(githubUsers);
-	}
+    /**
+     * Show the Developer list once the data is ready.
+     *
+     * @param githubUsers a GitHub users list
+     */
+    @Override
+    public void githubUsersReady(List<GithubUser> githubUsers) {
+        this.showGithubUsers(githubUsers);
+    }
 
-	/**
-	 * Show the status for when GitHub API data can't be accessed
-	 */
-	@Override
-	public void failedDataRetrieval() {
-		customProgressDialog(MainActivity.this,
-				"Failed to get data from GitHub! Check Internet Connectivity!");
-	}
+    /**
+     * Show the status for when GitHub API data can't be accessed.
+     */
+    @Override
+    public void failedDataRetrieval() {
+        customProgressDialog(MainActivity.this,
+                "Failed to get data from GitHub! Check Internet Connectivity!");
+    }
 
-	/**
-	 * Add GitHub user details to the user list
-	 *
-	 * @param githubUsers, List
-	 */
-	public void showGithubUsers(List<GithubUser> githubUsers) {
-		recyclerView.setLayoutManager(layoutManager);
-		RecyclerView.Adapter adapter = new GithubAdapter(githubUsers, this);
-		recyclerView.setAdapter(adapter);
-	}
+    /**
+     * Add GitHub user details to the user list.
+     *
+     * @param githubUsers a GitHub user list
+     */
+    public void showGithubUsers(List<GithubUser> githubUsers) {
+        recyclerView.setLayoutManager(layoutManager);
+        RecyclerView.Adapter adapter = new GithubAdapter(githubUsers, this);
+        recyclerView.setAdapter(adapter);
+    }
 
-	/**
-	 * Update Developer list with GitHub API data
-	 */
-	public void reloadGithubUsers() {
+    /**
+     * Update Developer list with GitHub API data.
+     */
+    public void reloadGithubUsers() {
 
-		customProgressDialog(MainActivity.this,
-				"Fetching data from the GitHub API...");
+        customProgressDialog(MainActivity.this,
+                "Fetching data from the GitHub API...");
 
-		githubPresenter.getGithubUsers();
+        githubPresenter.getGithubUsers();
 
-		swipeRefreshLayout.setRefreshing(false); // Disable the refresh icon
-	}
+        swipeRefreshLayout.setRefreshing(false); // Disable the refresh icon
+    }
 
-	/**
-	 * ProgressDialog with customizable message
-	 *
-	 * @param context, Context
-	 * @param message, String
-	 */
-	public void customProgressDialog(Context context, String message) {
-		// Add a progress dialogue
-		ProgressDialog progressDialog = new ProgressDialog(context);
-		progressDialog.setTitle("Status");
-		progressDialog.setMessage(message);
-		progressDialog.show();
-	}
+    /**
+     * ProgressDialog with customizable message.
+     *
+     * @param context a Context
+     * @param message a message
+     */
+    public void customProgressDialog(Context context, String message) {
+        // Add a progress dialogue
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle("Status");
+        progressDialog.setMessage(message);
+        progressDialog.show();
+    }
 }

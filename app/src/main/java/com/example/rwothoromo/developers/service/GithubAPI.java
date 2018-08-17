@@ -6,11 +6,16 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 
 /**
- * This interface holds the GitHub API endpoints
+ * This interface holds the GitHub API endpoints.
  */
 public interface GithubAPI {
 
-	@GET("/search/users?q=type:user+language:java+location:nairobi")
-	Call<GithubUsersResponse> getResults();
+    /**
+     * Endpoint to get all Java developer on GitHub, located in Nairobi.
+     *
+     * @return API response
+     */
+    @GET("/search/users?q=type:user+language:java+location:nairobi")
+    Call<GithubUsersResponse> getResults();
 
 }
