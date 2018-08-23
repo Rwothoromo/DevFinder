@@ -34,6 +34,7 @@ ext {
     jacocoVersion = "0.8.1"
     jUnit = "4.12"
     mockWebServer = "3.11.0"
+    mockitoVersion = "2.+"
     retrofitVersion = "2.4.0"
     testRunner = "1.0.2"
 }
