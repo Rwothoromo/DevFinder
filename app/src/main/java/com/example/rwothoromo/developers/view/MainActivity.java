@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -19,6 +20,7 @@ import com.example.rwothoromo.developers.R;
 import com.example.rwothoromo.developers.adapter.GithubAdapter;
 import com.example.rwothoromo.developers.model.GithubUser;
 import com.example.rwothoromo.developers.presenter.GithubPresenter;
+import com.example.rwothoromo.developers.util.NetworkConnectivity;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements GithubUserView {
     private RecyclerView.LayoutManager layoutManager;
     private SwipeRefreshLayout swipeRefreshLayout;
     private GithubPresenter githubPresenter = new GithubPresenter(this);
+    private NetworkConnectivity networkConnectivity;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -51,7 +54,14 @@ public class MainActivity extends AppCompatActivity implements GithubUserView {
 
         layoutManager = new GridLayoutManager(this, 2);
 
-        githubPresenter.getGithubUsers();
+        networkConnectivity = new NetworkConnectivity();
+
+        if (!networkConnectivity.isConnected(this)) {
+            Snackbar.make(recyclerView, getString(R.string.failed_data_retrieval),
+                    Snackbar.LENGTH_LONG).show();
+        } else {
+            githubPresenter.getGithubUsers();
+        }
 
     }
 
@@ -172,8 +182,8 @@ public class MainActivity extends AppCompatActivity implements GithubUserView {
      */
     @Override
     public void failedDataRetrieval() {
-        customProgressDialog(MainActivity.this,
-                getString(R.string.failed_data_retrieval));
+        Snackbar.make(recyclerView, getString(R.string.failed_data_retrieval),
+                Snackbar.LENGTH_LONG).show();
     }
 
     /**

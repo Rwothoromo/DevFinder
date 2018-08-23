@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.rwothoromo.developers">
 
-    <!-- Allow Glide to load images from urls or over a network connection -->
+    <!-- Allow access over a network connection -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Allow Glide to monitor connectivity status and restart failed requests the network goes off and on -->
+    <!-- Allow checking for network connection states -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- Allow Glide to load images from local folders like DCIM or Pictures -->
