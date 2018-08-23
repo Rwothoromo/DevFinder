@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
  * This class represents the GitHub User model.
  */
 public class GithubUser implements Parcelable {
+
     public static final Creator<GithubUser> CREATOR
             = new Creator<GithubUser>() {
         public GithubUser createFromParcel(Parcel in) {
@@ -19,6 +20,7 @@ public class GithubUser implements Parcelable {
             return new GithubUser[size];
         }
     };
+
     private int id;
     @SerializedName("login")
     private String username;
@@ -26,15 +28,13 @@ public class GithubUser implements Parcelable {
     private String avatarUrl;
     @SerializedName("html_url")
     private String htmlUrl;
-    @SerializedName("organizations_url")
-    private String organizationsUrl;
 
     /**
      * Constructor for the GithubUser class.
      *
      * @param in a Parcelable GitHub user object
      */
-    private GithubUser(Parcel in) {
+    public GithubUser(Parcel in) {
         id = in.readInt();
         username = in.readString();
         avatarUrl = in.readString();
@@ -75,15 +75,6 @@ public class GithubUser implements Parcelable {
      */
     public String getHtmlUrl() {
         return htmlUrl;
-    }
-
-    /**
-     * Returns the GitHub user organizations URL.
-     *
-     * @return organizationsUrl
-     */
-    public String getOrganizationsUrl() {
-        return organizationsUrl;
     }
 
     /**

@@ -3,6 +3,7 @@ package com.example.rwothoromo.developers.presenter;
 import com.example.rwothoromo.developers.model.GithubUser;
 import com.example.rwothoromo.developers.model.GithubUsersResponse;
 import com.example.rwothoromo.developers.service.GithubService;
+import com.example.rwothoromo.developers.util.EspressoIdlingResource;
 import com.example.rwothoromo.developers.view.GithubUserView;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class GithubPresenter {
      * Get GitHub users from the GitHub API.
      */
     public void getGithubUsers() {
+        EspressoIdlingResource.increment();
         githubService.getAPI().getResults()
                 .enqueue(new Callback<GithubUsersResponse>() {
                     @Override
@@ -50,11 +52,13 @@ public class GithubPresenter {
                             List<GithubUser> githubUsers = githubUsersResponse.getResult();
                             githubUserView.githubUsersReady(githubUsers);
                         }
+                        EspressoIdlingResource.decrement();
                     }
 
                     @Override
                     public void onFailure(Call<GithubUsersResponse> call, Throwable t) {
                         githubUserView.failedDataRetrieval();
+                        EspressoIdlingResource.decrement();
                     }
                 });
     }

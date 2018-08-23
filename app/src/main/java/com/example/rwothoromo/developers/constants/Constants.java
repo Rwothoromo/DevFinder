@@ -5,7 +5,6 @@ package com.example.rwothoromo.developers.constants;
  */
 public class Constants {
 
-    public static final String BASE_URL = "https://api.github.com";
     public static final String EXTRA_GITHUB_USER_USERNAME
             = "com.example.rwothoromo.developers.EXTRA_GITHUB_USER_USERNAME";
     public static final String EXTRA_GITHUB_USER_AVATAR
@@ -14,5 +13,9 @@ public class Constants {
             = "com.example.rwothoromo.developers.EXTRA_GITHUB_USER_URL";
     public static final String EXTRA_DEVELOPER_LIST_STATE
             = "com.example.rwothoromo.githubUsers.EXTRA_DEVELOPER_LIST_STATE";
+    public static final String EXTRA_SHARE_INTENT_TEXT
+            = "Check out this awesome developer @null, null";
+    public static final String RESOURCE = "GLOBAL";
+    public static final String BASE_URL = "https://api.github.com";
 
 }

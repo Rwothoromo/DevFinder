@@ -1,8 +1,20 @@
 apply plugin: 'com.android.application'
+apply plugin: 'jacoco'
 apply from: rootProject.file('quality/quality.gradle')
+apply from: rootProject.file('app/jacoco.gradle')
+
+jacoco {
+    toolVersion = "${rootProject.jacocoVersion}"
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
+}
 
 android {
     compileSdkVersion 28
+    flavorDimensions "default"
     defaultConfig {
         applicationId "com.example.rwothoromo.developers"
         minSdkVersion 15
@@ -11,12 +23,40 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    lintOptions {
+        abortOnError false
+    }
+
     buildTypes {
+        debug {
+            testCoverageEnabled = true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    productFlavors {
+        mock {
+            applicationIdSuffix = ".mock"
+            dimension "default"
+        }
+        prod {
+
+        }
+    }
+
+    sourceSets {
+        mock {
+            java.srcDirs('src/mock/java')
+        }
+        prod {
+            java.srcDirs('src/prod/java')
+        }
+    }
+
 }
 
 dependencies {
@@ -28,9 +68,15 @@ dependencies {
     implementation "com.android.support:recyclerview-v7:${rootProject.supportVersion}"
     testImplementation "junit:junit:${rootProject.jUnit}"
     androidTestImplementation "com.android.support.test:runner:${rootProject.testRunner}"
+    androidTestImplementation "com.android.support.test:rules:${rootProject.testRunner}"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:${rootProject.espressoVersion}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-contrib:${rootProject.espressoVersion}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-intents:${rootProject.espressoVersion}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-idling-resource:${rootProject.espressoVersion}"
     implementation "com.squareup.retrofit2:retrofit:${rootProject.retrofitVersion}"
     implementation "com.google.code.gson:gson:${rootProject.gsonVersion}"
     implementation "com.squareup.retrofit2:converter-gson:${rootProject.retrofitVersion}"
     implementation "com.github.bumptech.glide:glide:${rootProject.glideVersion}"
+    implementation "com.android.support.test.espresso.idling:idling-concurrent:${rootProject.espressoVersion}"
+    implementation "com.squareup.okhttp3:mockwebserver:${rootProject.mockWebServer}"
 }

@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements GithubUserView {
     @Override
     public void failedDataRetrieval() {
         customProgressDialog(MainActivity.this,
-                "Failed to get data from GitHub! Check Internet Connectivity!");
+                getString(R.string.failed_data_retrieval));
     }
 
     /**
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements GithubUserView {
     public void reloadGithubUsers() {
 
         customProgressDialog(MainActivity.this,
-                "Fetching data from the GitHub API...");
+                getString(R.string.refreshing));
 
         githubPresenter.getGithubUsers();
 
