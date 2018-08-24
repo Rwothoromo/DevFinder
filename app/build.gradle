@@ -1,4 +1,19 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 apply plugin: 'jacoco'
 apply from: rootProject.file('quality/quality.gradle')
 apply from: rootProject.file('app/jacoco.gradle')
@@ -94,4 +109,5 @@ dependencies {
     implementation "com.android.support.test.espresso.idling:idling-concurrent:${rootProject.espressoVersion}"
     implementation "com.squareup.okhttp3:mockwebserver:${rootProject.mockWebServer}"
     implementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
+    implementation "com.crashlytics.sdk.android:crashlytics:${rootProject.crashlyticsVersion}"
 }

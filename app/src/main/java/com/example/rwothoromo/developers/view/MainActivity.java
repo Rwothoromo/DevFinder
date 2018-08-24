@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.crashlytics.android.Crashlytics;
 import com.example.rwothoromo.developers.R;
 import com.example.rwothoromo.developers.adapter.GithubAdapter;
 import com.example.rwothoromo.developers.model.GithubUser;
@@ -24,6 +25,8 @@ import com.example.rwothoromo.developers.util.NetworkConnectivity;
 
 import java.util.List;
 import java.util.Objects;
+
+import io.fabric.sdk.android.Fabric;
 
 import static com.example.rwothoromo.developers.constants.Constants.EXTRA_DEVELOPER_LIST_STATE;
 
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements GithubUserView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
