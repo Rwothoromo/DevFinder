@@ -32,6 +32,21 @@ public class GithubUser implements Parcelable {
     /**
      * Constructor for the GithubUser class.
      *
+     * @param id user ID
+     * @param username username
+     * @param avatarUrl profile image URL
+     * @param htmlUrl profile URL
+     */
+    public GithubUser(int id, String username, String avatarUrl, String htmlUrl) {
+        this.id = id;
+        this.username = username;
+        this.avatarUrl = avatarUrl;
+        this.htmlUrl = htmlUrl;
+    }
+
+    /**
+     * Parcel in the Github User.
+     *
      * @param in a Parcelable GitHub user object
      */
     public GithubUser(Parcel in) {

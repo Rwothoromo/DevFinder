@@ -32,5 +32,4 @@ public class NetworkConnectivity {
         return info != null && info.isConnectedOrConnecting();
     }
 
-
 }

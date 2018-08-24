@@ -3,6 +3,7 @@ default: &defaults
   - image: circleci/android:api-26-alpha
   working_directory: ~/repo
   environment:
+    CC_TEST_REPORTER_ID: fd6dadac22f4dba6709e86ce1074b6b2ca7cf3a97f786aa3a3120335d1fe8979
   TERM: dumb
   # Customize the JVM maximum heap limit
   _JAVA_OPTIONS: "-Xmx2048m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
