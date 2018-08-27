@@ -10,17 +10,9 @@ This Android application retrieves a listing of Java Developers in Nairobi using
 
 The design mockup is for the following pages:
 
-1. Developers list.
-
-![Developers list image](art/wireframes/Developers.png)
-
-2. Developer profile.
-
-![Developer profile image](art/wireframes/Profile.png)
-
-3. Share profile.
-
-![Share profile image](art/wireframes/Share.png)
+| 1. Developers list.                                             | 2. Developer profile.                                    | 3. Share profile.                                   |
+| ---------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------ |
+| ![Developers list image](art/wireframes/Developers.png) | ![Developer profile image](art/wireframes/Profile.png) | ![Share profile image](art/wireframes/Share.png) |
 
 Try out the [interactive design](https://xd.adobe.com/view/29abd095-a127-41b9-49bf-aaecbbc9f0ad-5f9a/).
 
