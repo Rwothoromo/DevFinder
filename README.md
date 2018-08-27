@@ -4,15 +4,23 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/78f03b429b83c9459a23/test_coverage)](https://codeclimate.com/github/Rwothoromo/Android-Codelab/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/78f03b429b83c9459a23/maintainability)](https://codeclimate.com/github/Rwothoromo/Android-Codelab/maintainability)
 
-App that retrieves a listing of Java Developers in Nairobi using the [Github API](https://developer.github.com/v3/search/#search-users).
+This Android application retrieves a listing of Java Developers in Nairobi using the [Github API](https://developer.github.com/v3/search/#search-users) and allows you to share their profiles.
 
 ## Design
 
 The design mockup is for the following pages:
 
-1. [Developers list](./art/wireframes/Developers.png).
-2. [Developer profile](./art/wireframes/Profile.png).
-3. [Share profile](./art/wireframes/Share.png).
+1. Developers list.
+
+![Developers list image](art/wireframes/Developers.png)
+
+2. Developer profile.
+
+![Developer profile image](art/wireframes/Profile.png)
+
+3. Share profile.
+
+![Share profile image](art/wireframes/Share.png)
 
 Try out the [interactive design](https://xd.adobe.com/view/29abd095-a127-41b9-49bf-aaecbbc9f0ad-5f9a/).
 
