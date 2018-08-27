@@ -110,4 +110,5 @@ dependencies {
     implementation "com.squareup.okhttp3:mockwebserver:${rootProject.mockWebServer}"
     implementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
     implementation "com.crashlytics.sdk.android:crashlytics:${rootProject.crashlyticsVersion}"
+    implementation "com.crashlytics.sdk.android:answers:${rootProject.crashlyticsAnswersVersion}"
 }
