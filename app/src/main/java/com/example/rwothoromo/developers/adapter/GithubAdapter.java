@@ -18,10 +18,6 @@ import com.example.rwothoromo.developers.view.GithubUserProfile;
 
 import java.util.List;
 
-import static com.example.rwothoromo.developers.constants.Constants.EXTRA_GITHUB_USER_AVATAR;
-import static com.example.rwothoromo.developers.constants.Constants.EXTRA_GITHUB_USER_URL;
-import static com.example.rwothoromo.developers.constants.Constants.EXTRA_GITHUB_USER_USERNAME;
-
 /**
  * GitHub Adapter class.
  */
@@ -61,9 +57,7 @@ public class GithubAdapter extends RecyclerView.Adapter<GithubAdapter.ViewHolder
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), GithubUserProfile.class);
-                intent.putExtra(EXTRA_GITHUB_USER_USERNAME, githubUser.getUsername());
-                intent.putExtra(EXTRA_GITHUB_USER_AVATAR, githubUser.getAvatarUrl());
-                intent.putExtra(EXTRA_GITHUB_USER_URL, githubUser.getHtmlUrl());
+                intent.putExtra("githubUser", githubUser);
                 context.startActivity(intent);
             }
         });

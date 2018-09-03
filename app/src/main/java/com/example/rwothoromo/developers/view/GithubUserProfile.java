@@ -13,17 +13,17 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.rwothoromo.developers.R;
+import com.example.rwothoromo.developers.model.GithubUser;
 
 import java.util.Objects;
-
-import static com.example.rwothoromo.developers.constants.Constants.EXTRA_GITHUB_USER_AVATAR;
-import static com.example.rwothoromo.developers.constants.Constants.EXTRA_GITHUB_USER_URL;
-import static com.example.rwothoromo.developers.constants.Constants.EXTRA_GITHUB_USER_USERNAME;
 
 /**
  * GitHub user profile class.
  */
 public class GithubUserProfile extends AppCompatActivity {
+
+    private String githubUsername;
+    private String githubUserURL;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -33,16 +33,18 @@ public class GithubUserProfile extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
+        GithubUser githubUser = intent.getParcelableExtra("githubUser");
+        githubUsername = githubUser.getUsername();
+        githubUserURL = githubUser.getHtmlUrl();
 
         ImageView profileImageView = findViewById(R.id.userProfileImageView);
-        Glide.with(getApplicationContext()).load(intent.getStringExtra(EXTRA_GITHUB_USER_AVATAR))
-                .into(profileImageView);
+        Glide.with(getApplicationContext()).load(githubUser.getAvatarUrl()).into(profileImageView);
 
         TextView usernameTextView = findViewById(R.id.usernameTextView);
-        usernameTextView.setText(intent.getStringExtra(EXTRA_GITHUB_USER_USERNAME));
+        usernameTextView.setText(githubUsername);
 
         TextView profileUrlTextView = findViewById(R.id.profileUrlTextView);
-        profileUrlTextView.setText(intent.getStringExtra(EXTRA_GITHUB_USER_URL));
+        profileUrlTextView.setText(githubUserURL);
     }
 
     @Override
@@ -66,8 +68,7 @@ public class GithubUserProfile extends AppCompatActivity {
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setType("text/plain");
                 shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this awesome developer @"
-                        + getIntent().getStringExtra(EXTRA_GITHUB_USER_USERNAME) + ", "
-                        + getIntent().getStringExtra(EXTRA_GITHUB_USER_URL));
+                        + githubUsername + ", " + githubUserURL);
                 startActivity(Intent.createChooser(shareIntent, "Share this developer"));
                 return true;
 
