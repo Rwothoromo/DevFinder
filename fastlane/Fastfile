@@ -1,0 +1,41 @@
+default_platform(:android)
+
+platform :android do
+  desc "Deploy a new Mock APK to #converge-codelab-qa Slack channel"
+  lane :mock do |options|
+    build(
+      flavor: "Mock"
+    )
+    upload_to_slack()
+  end
+
+  desc "Build a new APK"
+    private_lane :build do |options|
+      gradle(
+        task: "clean assemble",
+        flavor: options[:flavor],
+        build_type: "Release"
+      )
+  end
+
+  desc "Upload the latest output APK to #converge-codelab-qa Slack channel"
+  private_lane :upload_to_slack do |options|
+    file_path = lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+    file_name = file_path.gsub(/\/.*\//,"")
+    slack_api_token = ENV["SLACK_API_TOKEN"]
+    sh "echo Uploading " + file_name + " to #converge-codelab-qa Slack"
+    sh "curl https://slack.com/api/files.upload -F token=\"" + slack_api_token + "\" -F channels=\"converge-codelab-qa\" -F title=\"" + file_name + "\" -F filename=\"" + file_name + "\" -F file=@" + file_path
+  end
+
+  after_all do |lane|
+    file_name = lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH].gsub(/\/.*\//,"")
+    slack(
+      message: "'Nairobi Java Developers' App successfully released!",
+      payload: {
+        # Optional, lets you specify any number of your own Slack attachments.
+        "Build Date" => Time.new.to_s,
+        "APK" => file_name
+      }
+    )
+  end
+end
