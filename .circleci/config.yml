@@ -181,30 +181,6 @@ jobs:
           path: ~/repo/app/build/reports
           destination: reports
 
-  deploy_staging_build:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-      - run: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-              - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
-      - run:
-          name: Gradle build (debug)
-          command: ./gradlew -PciBuild=true :app:assembleDebug :app:assembleAndroidTest
-      - store_artifacts:
-          path: app/build/outputs/apk/
-          destination: /apk/
-      - store_artifacts:
-          path: ~/repo/app/build/reports
-          destination: reports
-
   deploy_debug_build:
     <<: *defaults
     steps:
@@ -303,12 +279,6 @@ workflows:
       - deploy_test_build:
           requires:
             - test_unit
-      - deploy_staging_build:
-          requires:
-            - test_unit
-          filters:
-            branches:
-              only: staging
       - deploy_debug_build:
           requires:
             - test_unit
@@ -318,7 +288,6 @@ workflows:
       - deploy_production_build:
           requires:
             - test_unit
-            - deploy_test_build
           filters:
             branches:
               only: master
