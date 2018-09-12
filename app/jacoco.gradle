@@ -6,7 +6,7 @@ def coverageSourceDirs = [
 ]
 
 task jacocoTestReport(type: JacocoReport, dependsOn: ['clean', 'test']) {
-    description = 'Generate JaCoCo coverage report, which includes both local unit tests and instrumentation tests'
+    description = 'Generate JaCoCo coverage report'
     group = 'Reporting'
 
     reports {
@@ -39,4 +39,9 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['clean', 'test']) {
             }
         }
     }
+}
+
+task unifiedCoverageReport(dependsOn: ['clean', 'jacocoTestReport']) {
+    description = 'Generates coverage report which includes both local unit tests and instrumentation tests'
+    group = 'Reporting'
 }
