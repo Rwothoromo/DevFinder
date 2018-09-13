@@ -5,7 +5,7 @@ def coverageSourceDirs = [
         'src/prod/java'
 ]
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['clean', 'test', 'createMockDebugCoverageReport']) {
+task jacocoTestReport(type: JacocoReport, dependsOn: ['clean', 'test']) {
     description = 'Generate JaCoCo coverage report, which includes both local unit tests and instrumentation tests'
     group = 'Reporting'
 
