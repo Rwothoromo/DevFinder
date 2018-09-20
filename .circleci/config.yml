@@ -1,25 +1,84 @@
 default: &defaults
   docker:
-  - image: circleci/android:api-26-alpha
+  - image: circleci/android:api-28-alpha
   working_directory: ~/repo
   environment:
-    CC_TEST_REPORTER_ID: fd6dadac22f4dba6709e86ce1074b6b2ca7cf3a97f786aa3a3120335d1fe8979
   TERM: dumb
   # Customize the JVM maximum heap limit
   _JAVA_OPTIONS: "-Xmx2048m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
   GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m"'
 
+
+# Google Services From Firebase (JSON)
+export_gservices_key: &export_gservices_key
+  run:
+    name: Export Google Services key environment variable
+    command: echo 'export GOOGLE_SERVICES_JSON="$GOOGLE_SERVICES_JSON"' >> $BASH_ENV
+
+decode_gservices_key: &decode_gservices_key
+  run:
+    name: Decode Google Services JSON key
+    command: |
+      mkdir app/src/mock/
+      mkdir app/src/prod/
+      touch app/google-services.json
+      touch app/src/mock/google-services.json
+      touch app/src/prod/google-services.json
+      echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/google-services.json
+      echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/mock/google-services.json
+      echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/prod/google-services.json
+
+
+# Google Cloud Service Account Key
+export_gcloud_key: &export_gcloud_key
+  run:
+    name: Export Google Cloud Service Account Key Environment Variable
+    command: echo 'export GCLOUD_SERVICE_KEY="$GCLOUD_SERVICE_KEY"' >> $BASH_ENV
+
+decode_gcloud_key: &decode_gcloud_key
+  run:
+    name: Decode Google Cloud Credentials
+    command: |
+      touch gcloud-service-key.json
+      echo $GCLOUD_SERVICE_KEY | base64 --decode >> gcloud-service-key.json
+
+
+## Workspace
+workspace: &workspace
+  ~/repo
+attach_debug_workspace: &attach_debug_workspace
+  attach_workspace:
+    at: *workspace
+persist_debug_workspace: &persist_debug_workspace
+  persist_to_workspace:
+    root: *workspace
+    paths:
+      - app/build/intermediates
+      - app/build/outputs/androidTest-results
+      - app/build/outputs/apk
+      - app/build/outputs/code-coverage
+      - app/build/test-results
+attach_firebase_workspace: &attach_firebase_workspace
+  attach_workspace:
+    at: *workspace
+persist_firebase_workspace: &persist_firebase_workspace
+  persist_to_workspace:
+    root: *workspace
+    paths:
+      - firebase
+
+
 version: 2
 jobs:
-  android_lint:
+
+  # Build debug APK for unit tests and an instrumented test APK
+  build_debug:
     <<: *defaults
     steps:
       - checkout
-      # Download and cache dependencies
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
       - run: ./gradlew androidDependencies
       - save_cache:
@@ -27,101 +86,23 @@ jobs:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
-      # Running static analysis tools
+      - *export_gservices_key
+      - *decode_gservices_key
+
+      # Running build
       - run:
-          name: Running quality checks
+          name: Gradle build
           command: |
-            echo "Run android lint"
-            cd ~/repo
-            ./gradlew lint
+            ./gradlew -PciBuild=true :app:assemble :app:assembleAndroidTest
+            ls -a app/build/outputs/apk/
 
-      # Storing reports
+      - *persist_debug_workspace
+
       - store_artifacts:
-          path: ~/repo/app/build/reports
+          path: app/build/outputs/apk/
+          destination: /apk/
 
-  findbugs_lint:
-    <<: *defaults
-    steps:
-      - checkout
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-      - run: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
-      # Running static analysis tools
-      - run:
-          name: Running quality checks
-          command: |
-            echo "Run findbugs"
-            cd ~/repo
-            ./gradlew assemble
-            ./gradlew findbugs
-
-      # Storing reports
-      - store_artifacts:
-          path: ~/repo/app/build/outputs
-
-  pmd_lint:
-    <<: *defaults
-    steps:
-      - checkout
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-      - run: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
-
-      # Running static analysis tools
-      - run:
-          name: Running quality checks
-          command: |
-            echo "Run PMD"
-            cd ~/repo
-            ./gradlew pmd
-
-      # Storing reports
-      - store_artifacts:
-          path: ~/repo/app/build
-
-  checkstyle_lint:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-          # fallback to usiing the latest cache if no exact match is found
-          - v1-dependencies-
-      - run: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-              - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
-
-        # Running static analysis tools
-      - run:
-          name: Running quality checks
-          command: |
-            echo "Run checkstyle"
-            cd ~/repo
-            ./gradlew checkstyle
-
-        # Storing reports
-      - store_artifacts:
-          path: ~/repo/app/build/reports
-
+  # Run unit tests
   test_unit:
     <<: *defaults
     steps:
@@ -132,103 +113,60 @@ jobs:
           - v1-dependencies-{{ checksum "build.gradle" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
-
       - run: ./gradlew androidDependencies
       - save_cache:
           paths:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
+      - *export_gservices_key
+      - *decode_gservices_key
+
       # Running unit tests
       - run:
           name: Running unit tests on source code
           command: |
-            cd ~/repo
             ./gradlew test
             ls -a app/build/outputs/logs
 
+      - *persist_debug_workspace
+
       #Storing unit test reports
       - store_artifacts:
-          path: ~/repo/app/build/reports
-          destination: reports
+          path: app/build/reports/
+          destination: /reports/
       - store_artifacts:
-          path: ~/repo/app/build/outputs/androidTest-results
-          destination: reports
+          path: app/build/outputs/androidTest-results/
+          destination: /androidTest-results/
 
-
-  ## Build debug APK and instrumented test APK
-  deploy_test_build:
+  # Run instrumented tests
+  test_instrumentation:
     <<: *defaults
     steps:
       - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-      - run: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-              - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
-      - run:
-          name: Gradle build (debug)
-          command: ./gradlew -PciBuild=true :app:assembleDebug :app:assembleAndroidTest
-      - store_artifacts:
-          path: app/build/outputs/apk/
-          destination: /apk/
-      - store_artifacts:
-          path: ~/repo/app/build/reports
-          destination: reports
+      - *attach_debug_workspace
+      - *export_gcloud_key
+      - *decode_gcloud_key
 
-  deploy_debug_build:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-      - run: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-              - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
       - run:
-          name: Gradle build (debug)
-          command: ./gradlew -PciBuild=true :app:assembleDebug :app:assembleAndroidTest
-      - store_artifacts:
-          path: app/build/outputs/apk/
-          destination: /apk/
-      - store_artifacts:
-          path: ~/repo/app/build/reports
-          destination: reports
-
-  deploy_production_build:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-      - run: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-              - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
+          name: Authorize gcloud and set config defaults
+          command: |
+            ls -a
+            gcloud auth activate-service-account narobi-java-developers@developers-216907.iam.gserviceaccount.com --key-file=gcloud-service-key.json
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
       - run:
-          name: Gradle build (Release)
-          command: ./gradlew -PciBuild=true :app:assembleProdRelease :app:assembleAndroidTest
+          name: Test with Firebase Test Lab
+          command: gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/prod/debug/app-prod-debug.apk --test app/build/outputs/apk/androidTest/prod/debug/app-prod-debug-androidTest.apk --results-bucket cloud-test-${GOOGLE_PROJECT_ID}
+      - run:
+          name: Create directory to store test results
+          command: mkdir firebase
       - store_artifacts:
-          path: app/build/outputs/apk/
-          destination: /apk/
-      - store_artifacts:
-          path: ~/repo/app/build/reports
-          destination: reports
+          path: firebase/
+          destination: /firebase/
+      - *persist_firebase_workspace
 
+  # Generate and upload JaCoCo coverage report
   report_coverage:
     <<: *defaults
     steps:
@@ -237,9 +175,10 @@ jobs:
           keys:
           - v1-dependencies-{{ checksum "build.gradle" }}
           - v1-dependencies-
-      - run:
-          name: Download dependencies
-          command: ./gradlew androidDependencies
+      - run: ./gradlew androidDependencies
+
+      - *export_gservices_key
+      - *decode_gservices_key
       - run:
           name: Code Climate Test Setup
           command: |
@@ -264,33 +203,14 @@ jobs:
 ## Workflows
 workflows:
   version: 2
-  lint_test_and_deployment:
+  linting_tests_and_deployment:
     jobs:
-      - android_lint
-      - findbugs_lint
-      - pmd_lint
-      - checkstyle_lint
-      - test_unit:
+      - build_debug
+      - test_unit
+      - test_instrumentation:
           requires:
-            - android_lint
-            - findbugs_lint
-            - pmd_lint
-            - checkstyle_lint
-      - deploy_test_build:
-          requires:
-            - test_unit
-      - deploy_debug_build:
-          requires:
-            - test_unit
-          filters:
-            branches:
-              only: develop
-      - deploy_production_build:
-          requires:
-            - test_unit
-          filters:
-            branches:
-              only: master
+            - build_debug
       - report_coverage:
           requires:
-            - deploy_production_build
+            - test_unit
+            - test_instrumentation

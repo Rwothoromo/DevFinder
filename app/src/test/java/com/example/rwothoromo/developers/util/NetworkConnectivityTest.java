@@ -1,10 +1,8 @@
-package com.example.rwothoromo.developers;
+package com.example.rwothoromo.developers.util;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-
-import com.example.rwothoromo.developers.util.NetworkConnectivity;
 
 import org.junit.Assert;
 import org.junit.Before;

@@ -1,4 +1,4 @@
-package com.example.rwothoromo.developers;
+package com.example.rwothoromo.developers.github_user_list;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,7 @@ import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.example.rwothoromo.developers.R;
 import com.example.rwothoromo.developers.util.EspressoIdlingResource;
 import com.example.rwothoromo.developers.view.GithubUserProfile;
 import com.example.rwothoromo.developers.view.MainActivity;
@@ -38,7 +39,7 @@ import static org.hamcrest.CoreMatchers.allOf;
  * MainActivity test.
  */
 @RunWith(AndroidJUnit4.class)
-public class MainActivityTest {
+public class GithubUserListInstrumentationTest {
 
     /**
      * MainActivity test rule.
@@ -61,11 +62,9 @@ public class MainActivityTest {
 
     /**
      * Register any resource that needs to be synchronized with Espresso before the test is run.
-     *
-     * @throws Exception when method fails
      */
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         IdlingRegistry.getInstance().register(EspressoIdlingResource.getIdlingResource());
     }
 
@@ -159,11 +158,9 @@ public class MainActivityTest {
 
     /**
      * Unregister the resource.
-     *
-     * @throws Exception when method fails
      */
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.getIdlingResource());
     }
 }

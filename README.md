@@ -66,7 +66,7 @@ $ ./gradlew test
 
 Before running any of these commands, run `./gradlew clean` to clear any previous reports.
  
-To Generate a JaCoCo coverage report, which includes both local unit tests and instrumentation tests:
+To Generate a JaCoCo coverage report:
 ```
 $ ./gradlew jacocoTestReport
 ```

@@ -111,4 +111,7 @@ dependencies {
     implementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
     implementation "com.crashlytics.sdk.android:crashlytics:${rootProject.crashlyticsVersion}"
     implementation "com.crashlytics.sdk.android:answers:${rootProject.crashlyticsAnswersVersion}"
+    implementation "com.google.firebase:firebase-core:${rootProject.firebaseVersion}"
 }
+
+apply plugin: 'com.google.gms.google-services'
