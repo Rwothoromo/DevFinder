@@ -49,6 +49,7 @@ workspace: &workspace
 attach_debug_workspace: &attach_debug_workspace
   attach_workspace:
     at: *workspace
+
 persist_debug_workspace: &persist_debug_workspace
   persist_to_workspace:
     root: *workspace
@@ -58,9 +59,11 @@ persist_debug_workspace: &persist_debug_workspace
       - app/build/outputs/apk
       - app/build/outputs/code-coverage
       - app/build/test-results
+
 attach_firebase_workspace: &attach_firebase_workspace
   attach_workspace:
     at: *workspace
+
 persist_firebase_workspace: &persist_firebase_workspace
   persist_to_workspace:
     root: *workspace
@@ -92,9 +95,7 @@ jobs:
       # Running build
       - run:
           name: Gradle build
-          command: |
-            ./gradlew -PciBuild=true :app:assemble :app:assembleAndroidTest
-            ls -a app/build/outputs/apk/
+          command: ./gradlew -PciBuild=true :app:assemble :app:assembleAndroidTest
 
       - *persist_debug_workspace
 
@@ -125,9 +126,7 @@ jobs:
       # Running unit tests
       - run:
           name: Running unit tests on source code
-          command: |
-            ./gradlew test
-            ls -a app/build/outputs/logs
+          command: ./gradlew test
 
       - *persist_debug_workspace
 
@@ -139,32 +138,42 @@ jobs:
           path: app/build/outputs/androidTest-results/
           destination: /androidTest-results/
 
-  # Run instrumented tests
-  test_instrumentation:
-    <<: *defaults
-    steps:
-      - checkout
-      - *attach_debug_workspace
-      - *export_gcloud_key
-      - *decode_gcloud_key
-
-      - run:
-          name: Authorize gcloud and set config defaults
-          command: |
-            ls -a
-            gcloud auth activate-service-account narobi-java-developers@developers-216907.iam.gserviceaccount.com --key-file=gcloud-service-key.json
-            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
-            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
-      - run:
-          name: Test with Firebase Test Lab
-          command: gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/prod/debug/app-prod-debug.apk --test app/build/outputs/apk/androidTest/prod/debug/app-prod-debug-androidTest.apk --results-bucket cloud-test-${GOOGLE_PROJECT_ID}
-      - run:
-          name: Create directory to store test results
-          command: mkdir firebase
-      - store_artifacts:
-          path: firebase/
-          destination: /firebase/
-      - *persist_firebase_workspace
+#  # Run instrumented tests
+#  test_instrumentation:
+#    <<: *defaults
+#    steps:
+#      - checkout
+#      - *attach_debug_workspace
+#      - *export_gcloud_key
+#      - *decode_gcloud_key
+#
+#      - run:
+#          name: Authorize gcloud and set config defaults
+#          command: |
+#            gcloud auth activate-service-account narobi-java-developers@developers-216907.iam.gserviceaccount.com --key-file=gcloud-service-key.json
+#            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+#            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+#      - run:
+#          name: Test with Firebase Test Lab
+#          command: |
+#            gcloud firebase test android run \
+#              --type instrumentation \
+#              --app app/build/outputs/apk/prod/debug/app-prod-debug.apk \
+#              --test app/build/outputs/apk/androidTest/prod/debug/app-prod-debug-androidTest.apk \
+#              --device model=sailfish,version=26,locale=en_US,orientation=portrait \
+#              --directories-to-pull=/sdcard/tmp \
+#              --timeout 20m
+#      #--environment-variables=coverage=true,coverageFile=/sdcard/tmp/code-coverage/connected/coverage.ec \
+#      - run:
+#          name: Create directory to store test results
+#          command: mkdir firebase
+#      - run:
+#          name: Download instrumented test results from Firebase Test Lab
+#          command: gsutil -m cp -r -U "`gsutil ls gs://test-lab-inwsbb9xsp5f6-my4ixr2678xc0 | tail -1`*" ${HOME}/repo/firebase/ || true
+#      - *persist_firebase_workspace
+#      - store_artifacts:
+#          path: firebase/
+#          destination: /firebase/
 
   # Generate and upload JaCoCo coverage report
   report_coverage:
@@ -177,6 +186,13 @@ jobs:
           - v1-dependencies-
       - run: ./gradlew androidDependencies
 
+      - *attach_debug_workspace
+      - *attach_firebase_workspace
+      - run:
+          name: Move Firebase coverage report
+          command: |
+            ls -a ${HOME}/repo/firebase
+            mkdir -p app/build/outputs/code-coverage/connected && cp ${HOME}/repo/firebase/sailfish-26-en_US-portrait/artifacts/coverage.ec app/build/outputs/code-coverage/connected/coverage.ec
       - *export_gservices_key
       - *decode_gservices_key
       - run:
@@ -210,7 +226,7 @@ workflows:
       - test_instrumentation:
           requires:
             - build_debug
-      - report_coverage:
-          requires:
-            - test_unit
-            - test_instrumentation
+#      - report_coverage:
+#          requires:
+#            - test_unit
+#            - test_instrumentation
