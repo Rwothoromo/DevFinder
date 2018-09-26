@@ -2,9 +2,11 @@ package com.example.rwothoromo.developers.view;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -15,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
 import com.example.rwothoromo.developers.R;
@@ -186,8 +189,10 @@ public class MainActivity extends AppCompatActivity implements GithubUserView {
      */
     @Override
     public void failedDataRetrieval() {
-        Snackbar.make(recyclerView, getString(R.string.failed_data_retrieval),
-                Snackbar.LENGTH_LONG).show();
+        Snackbar snackbar = Snackbar.make(recyclerView, getString(R.string.failed_data_retrieval),
+                Snackbar.LENGTH_LONG);
+        snackbar.setAction(R.string.settings, new SettingsListener()).setDuration(15000);
+        snackbar.show();
     }
 
     /**
@@ -226,5 +231,13 @@ public class MainActivity extends AppCompatActivity implements GithubUserView {
         progressDialog.setTitle("Status");
         progressDialog.setMessage(message);
         progressDialog.show();
+    }
+
+    private class SettingsListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            startActivity(new Intent(Settings.ACTION_SETTINGS));
+        }
     }
 }
