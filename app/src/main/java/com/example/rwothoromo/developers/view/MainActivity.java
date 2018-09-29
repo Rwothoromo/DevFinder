@@ -233,6 +233,9 @@ public class MainActivity extends AppCompatActivity implements GithubUserView {
         progressDialog.show();
     }
 
+    /**
+     * SettingsListener class to send the user to the Android device settings.
+     */
     private class SettingsListener implements View.OnClickListener {
 
         @Override

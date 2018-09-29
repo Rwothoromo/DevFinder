@@ -175,17 +175,17 @@ jobs:
           path: firebase/
           destination: /firebase/
 
-#  # Generate and upload JaCoCo coverage report
-#  report_coverage:
-#    <<: *defaults
-#    steps:
-#      - checkout
-#      - restore_cache:
-#          keys:
-#          - v1-dependencies-{{ checksum "build.gradle" }}
-#          - v1-dependencies-
-#      - run: ./gradlew androidDependencies
-#
+  # Generate and upload JaCoCo coverage report
+  report_coverage:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          - v1-dependencies-
+      - run: ./gradlew androidDependencies
+
 #      - *attach_debug_workspace
 #      - *attach_firebase_workspace
 #      - run:
@@ -193,28 +193,28 @@ jobs:
 #          command: |
 #            ls -a ${HOME}/repo/firebase
 #            mkdir -p app/build/outputs/code-coverage/connected && cp ${HOME}/repo/firebase/sailfish-26-en_US-portrait/artifacts/coverage.ec app/build/outputs/code-coverage/connected/coverage.ec
-#      - *export_gservices_key
-#      - *decode_gservices_key
-#      - run:
-#          name: Code Climate Test Setup
-#          command: |
-#            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-#            chmod +x ./cc-test-reporter
-#      - run:
-#          name: Code Climate Pretest
-#          command: ./cc-test-reporter before-build
-#      - run:
-#          name: Generate JaCoCo report
-#          command: ./gradlew jacocoTestReport
-#      - run:
-#          name: Upload coverage to code climate
-#          command: |
-#            export JACOCO_SOURCE_PATH=app/src/main/java
-#            ./cc-test-reporter format-coverage app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml -t jacoco
-#            ./cc-test-reporter upload-coverage
-#      - store_artifacts:
-#          path: app/build/reports/
-#          destination: /reports/
+      - *export_gservices_key
+      - *decode_gservices_key
+      - run:
+          name: Code Climate Test Setup
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          name: Code Climate Pretest
+          command: ./cc-test-reporter before-build
+      - run:
+          name: Generate JaCoCo report
+          command: ./gradlew jacocoTestReport
+      - run:
+          name: Upload coverage to code climate
+          command: |
+            export JACOCO_SOURCE_PATH=app/src/main/java
+            ./cc-test-reporter format-coverage app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml -t jacoco
+            ./cc-test-reporter upload-coverage
+      - store_artifacts:
+          path: app/build/reports/
+          destination: /reports/
 
 ## Workflows
 workflows:
@@ -226,7 +226,7 @@ workflows:
       - test_instrumentation:
           requires:
             - build_debug
-#      - report_coverage:
-#          requires:
-#            - test_unit
-#            - test_instrumentation
+      - report_coverage:
+          requires:
+            - test_unit
+            - test_instrumentation
