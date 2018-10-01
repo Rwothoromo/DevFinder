@@ -202,13 +202,13 @@ jobs:
           - v1-dependencies-
       - run: ./gradlew androidDependencies
 
-#      - *attach_debug_workspace
-#      - *attach_firebase_workspace
-#      - run:
-#          name: Move Firebase coverage report
-#          command: |
-#            mkdir -p app/build/outputs/code-coverage/connected/flavors/MOCK
-#            cp firebase/sailfish-26-en_US-portrait/artifacts/coverage.ec app/build/outputs/code-coverage/connected/flavors/MOCK/coverage.ec
+      - *attach_debug_workspace
+      - *attach_firebase_workspace
+      - run:
+          name: Move Firebase coverage report
+          command: |
+            mkdir -p app/build/outputs/code-coverage/connected/flavors/MOCK
+            cp firebase/sailfish-26-en_US-portrait/artifacts/coverage.ec app/build/outputs/code-coverage/connected/flavors/MOCK/coverage.ec
       - *export_gservices_key
       - *decode_gservices_key
       - run:
@@ -237,8 +237,10 @@ workflows:
   version: 2
   linting_tests_and_deployment:
     jobs:
-      - build_debug
       - test_unit
+      - build_debug:
+          requires:
+            - test_unit
       - test_instrumentation:
           requires:
             - build_debug
