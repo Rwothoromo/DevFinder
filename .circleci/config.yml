@@ -247,5 +247,4 @@ workflows:
             - build_debug
       - report_coverage:
           requires:
-            - test_unit
             - test_instrumentation
