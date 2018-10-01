@@ -102,7 +102,12 @@ jobs:
       # Running build
       - run:
           name: Gradle build
-          command: ./gradlew -PciBuild=true :app:assemble :app:assembleAndroidTest
+          command: |
+            if [ "$CIRCLE_BRANCH" == 'master' ]; then
+              ./gradlew -PciBuild=true :app:assembleProdRelease :app:assembleAndroidTest
+            else
+              ./gradlew -PciBuild=true :app:assembleDebug :app:assembleAndroidTest
+            fi
 
       - *persist_debug_workspace
 
