@@ -168,12 +168,13 @@ jobs:
           command: |
             gcloud firebase test android run \
               --type instrumentation \
-              --app app/build/outputs/apk/prod/debug/app-prod-debug.apk \
-              --test app/build/outputs/apk/androidTest/prod/debug/app-prod-debug-androidTest.apk \
+              --app app/build/outputs/apk/mock/debug/app-mock-debug.apk \
+              --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk \
               --device model=sailfish,version=26,locale=en_US,orientation=portrait \
               --environment-variables=coverage=true,coverageFile=/sdcard/coverage.ec \
               --directories-to-pull=/sdcard \
               --timeout 20m
+      #app-prod-release-unsigned.apk
       - run:
           name: Create directory to store test results
           command: mkdir firebase
@@ -241,5 +242,4 @@ workflows:
             - build_debug
       - report_coverage:
           requires:
-            - test_unit
             - test_instrumentation
