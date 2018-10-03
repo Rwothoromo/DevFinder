@@ -102,12 +102,12 @@ jobs:
       # Running build
       - run:
           name: Gradle build
-          command: |
-            if [ "$CIRCLE_BRANCH" == 'master' ]; then
-              ./gradlew -PciBuild=true :app:assembleProdRelease :app:assembleAndroidTest
-            else
-              ./gradlew -PciBuild=true :app:assembleDebug :app:assembleAndroidTest
-            fi
+          command: ./gradlew -PciBuild=true :app:assemble :app:assembleAndroidTest
+#            if [ "$CIRCLE_BRANCH" == 'master' ]; then
+#              ./gradlew -PciBuild=true :app:assembleProdRelease :app:assembleAndroidTest
+#            else
+#              ./gradlew -PciBuild=true :app:assembleDebug :app:assembleAndroidTest
+#            fi
 
       - *persist_debug_workspace
 
@@ -170,12 +170,12 @@ jobs:
             gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
       - run:
           name: Test with Firebase Test Lab
-          command: |
-            if [ "$CIRCLE_BRANCH" == 'master' ]; then
-              gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/prod/release/app-prod-release-unsigned.apk  --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk --device model=sailfish,version=26,locale=en_US,orientation=portrait --environment-variables=coverage=true,coverageFile=/sdcard/coverage.ec --directories-to-pull=/sdcard --timeout 20m
-            else
-              gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/mock/debug/app-mock-debug.apk --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk --device model=sailfish,version=26,locale=en_US,orientation=portrait --environment-variables=coverage=true,coverageFile=/sdcard/coverage.ec --directories-to-pull=/sdcard --timeout 20m
-            fi
+          command: gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/mock/debug/app-mock-debug.apk --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk --device model=sailfish,version=26,locale=en_US,orientation=portrait --environment-variables=coverage=true,coverageFile=/sdcard/coverage.ec --directories-to-pull=/sdcard --timeout 20m
+#            if [ "$CIRCLE_BRANCH" == 'master' ]; then
+#              gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/prod/release/app-prod-release-unsigned.apk  --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk --device model=sailfish,version=26,locale=en_US,orientation=portrait --environment-variables=coverage=true,coverageFile=/sdcard/coverage.ec --directories-to-pull=/sdcard --timeout 20m
+#            else
+#              gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/mock/debug/app-mock-debug.apk --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk --device model=sailfish,version=26,locale=en_US,orientation=portrait --environment-variables=coverage=true,coverageFile=/sdcard/coverage.ec --directories-to-pull=/sdcard --timeout 20m
+#            fi
 
       #app-prod-release-unsigned.apk
       - run:
