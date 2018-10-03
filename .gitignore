@@ -60,3 +60,8 @@ fastlane/readme.md
 
 # fabric
 fabric.properties
+
+# other
+.project
+.settings/
+.classpath
