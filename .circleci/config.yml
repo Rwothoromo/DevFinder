@@ -171,14 +171,12 @@ jobs:
       - run:
           name: Test with Firebase Test Lab
           command: |
-            gcloud firebase test android run \
-              --type instrumentation \
-              --app app/build/outputs/apk/mock/debug/app-mock-debug.apk \
-              --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk \
-              --device model=sailfish,version=26,locale=en_US,orientation=portrait \
-              --environment-variables=coverage=true,coverageFile=/sdcard/coverage.ec \
-              --directories-to-pull=/sdcard \
-              --timeout 20m
+            if [ "$CIRCLE_BRANCH" == 'master' ]; then
+              gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/prod/release/app-prod-release-unsigned.apk  --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk --device model=sailfish,version=26,locale=en_US,orientation=portrait --environment-variables=coverage=true,coverageFile=/sdcard/coverage.ec --directories-to-pull=/sdcard --timeout 20m
+            else
+              gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/mock/debug/app-mock-debug.apk --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk --device model=sailfish,version=26,locale=en_US,orientation=portrait --environment-variables=coverage=true,coverageFile=/sdcard/coverage.ec --directories-to-pull=/sdcard --timeout 20m
+            fi
+
       #app-prod-release-unsigned.apk
       - run:
           name: Create directory to store test results
