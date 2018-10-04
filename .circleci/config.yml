@@ -81,48 +81,19 @@ persist_firebase_workspace: &persist_firebase_workspace
 version: 2
 jobs:
 
-  # Build debug APK for unit tests and an instrumented test APK
-  build_debug:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
-          - v1-dependencies-
-      - run: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: v1-dependencies-{{ checksum "build.gradle" }}
-
-      - *export_gservices_key
-      - *decode_gservices_key
-
-      # Running build
-      - run:
-          name: Gradle build
-          command: |
-            if [ "$CIRCLE_BRANCH" == 'master' ]; then
-              ./gradlew -PciBuild=true :app:assembleProdRelease :app:assembleAndroidTest
-            else
-              ./gradlew -PciBuild=true :app:assembleDebug :app:assembleAndroidTest
-            fi
-
-      - *persist_debug_workspace
-
-      - store_artifacts:
-          path: app/build/outputs/apk/
-          destination: /apk/
-      - store_artifacts:
-          path: app/build/reports
-          destination: reports
-
   # Run unit tests
   test_unit:
     <<: *defaults
     steps:
       - checkout
+      - run:
+          name: Decode the base64 encoded text back into the keystore.jks file
+          command: |
+            mkdir -p ${HOME}/repo/keystores
+            echo $ENCODED_KEYSTORE | base64 --decode >> ${HOME}/repo/keystores/keystore.jks
+      - run:
+          name: Set the KEYSTORE environment variable to it’s location.
+          command: echo 'export KEYSTORE=${HOME}/repo/keystores/keystore.jks' >> $BASH_ENV
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -153,6 +124,46 @@ jobs:
           path: app/build/outputs/androidTest-results
           destination: reports
 
+  # Build debug APK for unit tests and an instrumented test APK
+  build_debug:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: Decode the base64 encoded text back into the keystore.jks file
+          command: |
+            mkdir -p ${HOME}/repo/keystores
+            echo $ENCODED_KEYSTORE | base64 --decode >> ${HOME}/repo/keystores/keystore.jks
+      - run:
+          name: Set the KEYSTORE environment variable to it’s location.
+          command: echo 'export KEYSTORE=${HOME}/repo/keystores/keystore.jks' >> $BASH_ENV
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.gradle" }}
+          - v1-dependencies-
+      - run: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
+
+      - *export_gservices_key
+      - *decode_gservices_key
+
+      # Running build
+      - run:
+          name: Gradle build
+          command: ./gradlew -PciBuild=true :app:assemble :app:assembleAndroidTest
+
+      - *persist_debug_workspace
+
+      - store_artifacts:
+          path: app/build/outputs/apk/
+          destination: /apk/
+      - store_artifacts:
+          path: app/build/reports
+          destination: reports
+
   # Run instrumented tests
   test_instrumentation:
     <<: *gcloud_config
@@ -170,14 +181,7 @@ jobs:
             gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
       - run:
           name: Test with Firebase Test Lab
-          command: |
-            if [ "$CIRCLE_BRANCH" == 'master' ]; then
-              gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/prod/release/app-prod-release-unsigned.apk  --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk --device model=sailfish,version=26,locale=en_US,orientation=portrait --environment-variables=coverage=true,coverageFile=/sdcard/coverage.ec --directories-to-pull=/sdcard --timeout 20m
-            else
-              gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/mock/debug/app-mock-debug.apk --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk --device model=sailfish,version=26,locale=en_US,orientation=portrait --environment-variables=coverage=true,coverageFile=/sdcard/coverage.ec --directories-to-pull=/sdcard --timeout 20m
-            fi
-
-      #app-prod-release-unsigned.apk
+          command: gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/mock/debug/app-mock-debug.apk --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk --device model=sailfish,version=26,locale=en_US,orientation=portrait --environment-variables=coverage=true,coverageFile=/sdcard/coverage.ec --directories-to-pull=/sdcard --timeout 20m
       - run:
           name: Create directory to store test results
           command: mkdir firebase
@@ -195,6 +199,14 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - run:
+          name: Decode the base64 encoded text back into the keystore.jks file
+          command: |
+            mkdir -p ${HOME}/repo/keystores
+            echo $ENCODED_KEYSTORE | base64 --decode >> ${HOME}/repo/keystores/keystore.jks
+      - run:
+          name: Set the KEYSTORE environment variable to it’s location.
+          command: echo 'export KEYSTORE=${HOME}/repo/keystores/keystore.jks' >> $BASH_ENV
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "build.gradle" }}
