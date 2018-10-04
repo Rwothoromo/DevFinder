@@ -37,7 +37,9 @@ $ git clone https://github.com/Rwothoromo/Android-Codelab.git
 ### Open and run the project in Android Studio
 
 - Start Android Studio and select `Open project` then browse this project at `path-to-project/Android-Codelab`.
-- Wait for the project to complete building.
+- Send in a request for `google-services.json` and add the file received to `app/google-services.json`, `app/src/mock/google-services.json` and `app/src/prod/google-services.json`.
+- Send in a request for `keystore.jks`, alias and passwords, and add the file received to `keystores/keystore.jks`.
+- Wait for the project to complete building and indexing.
 - Go to `Run` in the menu and select `Run` to run the project on an emulator or your connected Android device.
 
 ### Run tests

@@ -30,6 +30,7 @@ tasks.withType(Test) {
 android {
     compileSdkVersion 28
     flavorDimensions "default"
+
     defaultConfig {
         applicationId "com.example.rwothoromo.developers"
         minSdkVersion 15
@@ -37,6 +38,15 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(System.getenv("KEYSTORE") ?: "keystores/keystore.jks")
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+            keyAlias System.getenv("KEY_ALIAS")
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
     }
 
     lintOptions {
@@ -49,6 +59,8 @@ android {
         }
         release {
             minifyEnabled false
+            zipAlignEnabled true
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
