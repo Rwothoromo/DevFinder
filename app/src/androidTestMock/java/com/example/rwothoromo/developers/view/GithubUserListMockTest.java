@@ -1,4 +1,4 @@
-package com.example.rwothoromo.developers;
+package com.example.rwothoromo.developers.view;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +8,8 @@ import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.example.rwothoromo.developers.R;
+import com.example.rwothoromo.developers.RestServiceTestHelper;
 import com.example.rwothoromo.developers.util.EspressoIdlingResource;
 import com.example.rwothoromo.developers.view.GithubUserProfile;
 import com.example.rwothoromo.developers.view.MainActivity;
@@ -31,13 +33,12 @@ import static android.support.test.espresso.intent.matcher.IntentMatchers.hasCom
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.CoreMatchers.allOf;
-import static com.example.rwothoromo.developers.constants.Constants.BASE_URL;
 
 /**
  * Mock MainActivity test.
  */
 @RunWith(AndroidJUnit4.class)
-public class MainActivityMockTest {
+public class GithubUserListMockTest {
 
     /**
      * Mock MainActivity test rule.

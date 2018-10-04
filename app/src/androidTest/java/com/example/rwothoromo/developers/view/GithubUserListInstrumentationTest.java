@@ -1,4 +1,4 @@
-package com.example.rwothoromo.developers.github_user_list;
+package com.example.rwothoromo.developers.view;
 
 import android.content.Context;
 import android.content.Intent;
