@@ -65,3 +65,7 @@ fabric.properties
 .project
 .settings/
 .classpath
+
+# apk dir's
+app/mock
+app/prod

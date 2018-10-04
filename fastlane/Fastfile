@@ -1,10 +1,10 @@
 default_platform(:android)
 
 platform :android do
-  desc "Deploy a new Mock APK to #converge-codelab-qa Slack channel"
-  lane :mock do |options|
+  desc "Deploy a new Prod APK to #converge-codelab-qa Slack channel"
+  lane :prod do |options|
     build(
-      flavor: "Mock"
+      flavor: "Prod"
     )
     upload_to_slack()
   end
