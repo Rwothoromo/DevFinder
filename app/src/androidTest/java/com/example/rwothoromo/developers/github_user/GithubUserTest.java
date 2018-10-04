@@ -5,12 +5,8 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.example.rwothoromo.developers.model.GithubUser;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
