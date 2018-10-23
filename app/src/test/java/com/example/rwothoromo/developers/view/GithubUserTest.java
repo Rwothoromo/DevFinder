@@ -2,7 +2,6 @@ package com.example.rwothoromo.developers.view;
 
 import com.example.rwothoromo.developers.model.GithubUser;
 import com.example.rwothoromo.developers.presenter.GithubPresenter;
-import com.example.rwothoromo.developers.view.GithubUserView;
 
 import org.junit.Assert;
 import org.junit.Rule;
