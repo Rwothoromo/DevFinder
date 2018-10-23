@@ -1,16 +1,12 @@
-package com.example.rwothoromo.developers.github_user;
+package com.example.rwothoromo.developers.view;
 
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.example.rwothoromo.developers.model.GithubUser;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -19,7 +15,7 @@ import static org.junit.Assert.assertThat;
  * Tests that the GithubUser parcelable interface is implemented correctly.
  */
 @RunWith(AndroidJUnit4.class)
-public class GithubUserTest {
+public class GithubUserInstrumentationTest {
 
     /**
      * Test GitHub user parcel read and write.
