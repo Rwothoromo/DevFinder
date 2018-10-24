@@ -56,6 +56,6 @@ ext {
     mockWebServer = "3.11.0"
     mockitoVersion = "2.19.0"
     retrofitVersion = "2.4.0"
-    supportVersion = "28.0.0"
+    supportVersion = "27.1.1"
     testRunner = "1.0.2"
 }

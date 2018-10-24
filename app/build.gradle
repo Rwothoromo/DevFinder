@@ -29,16 +29,17 @@ tasks.withType(Test) {
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 27
     flavorDimensions "default"
 
     defaultConfig {
         applicationId "com.example.rwothoromo.developers"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: 'true'
         multiDexEnabled true
     }
 
@@ -60,6 +61,7 @@ android {
             testCoverageEnabled = true
         }
         release {
+            testCoverageEnabled true
             minifyEnabled false
             zipAlignEnabled true
             signingConfig signingConfigs.release
@@ -109,6 +111,7 @@ dependencies {
     implementation "com.android.support:design:${rootProject.supportVersion}"
     implementation "com.android.support:support-v4:${rootProject.supportVersion}"
     implementation "com.android.support:recyclerview-v7:${rootProject.supportVersion}"
+    implementation "com.android.support:cardview-v7:${rootProject.supportVersion}"
     testImplementation "junit:junit:${rootProject.jUnit}"
     androidTestImplementation "com.android.support.test:runner:${rootProject.testRunner}"
     androidTestImplementation "com.android.support.test:rules:${rootProject.testRunner}"
