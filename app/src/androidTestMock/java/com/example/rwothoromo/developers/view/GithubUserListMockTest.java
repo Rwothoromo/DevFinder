@@ -11,8 +11,6 @@ import android.support.test.runner.AndroidJUnit4;
 import com.example.rwothoromo.developers.R;
 import com.example.rwothoromo.developers.RestServiceTestHelper;
 import com.example.rwothoromo.developers.util.EspressoIdlingResource;
-import com.example.rwothoromo.developers.view.GithubUserProfile;
-import com.example.rwothoromo.developers.view.MainActivity;
 
 import org.junit.After;
 import org.junit.Before;

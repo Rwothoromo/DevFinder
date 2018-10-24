@@ -8,6 +8,7 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'io.fabric'
 
 repositories {
@@ -33,16 +34,17 @@ android {
 
     defaultConfig {
         applicationId "com.example.rwothoromo.developers"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     signingConfigs {
         release {
-            storeFile file(System.getenv("KEYSTORE") ?: "keystores/keystore.jks")
+            storeFile file(System.getenv("KEYSTORE") ?: "../keystores/keystore.jks")
             storePassword System.getenv("KEYSTORE_PASSWORD")
             keyAlias System.getenv("KEY_ALIAS")
             keyPassword System.getenv("KEY_PASSWORD")
@@ -98,9 +100,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-
-    buildToolsVersion '28.0.3'
-
 }
 
 dependencies {
@@ -126,7 +125,8 @@ dependencies {
     implementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
     implementation "com.crashlytics.sdk.android:crashlytics:${rootProject.crashlyticsVersion}"
     implementation "com.crashlytics.sdk.android:answers:${rootProject.crashlyticsAnswersVersion}"
-    implementation "com.google.firebase:firebase-core:${rootProject.firebaseVersion}"
+    implementation "com.google.firebase:firebase-core:${rootProject.firebaseCore}"
+    implementation "com.google.firebase:firebase-perf:${rootProject.firebasePerf}"
 }
 
 apply plugin: 'com.google.gms.google-services'
