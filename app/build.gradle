@@ -130,6 +130,7 @@ dependencies {
     implementation "com.crashlytics.sdk.android:answers:${rootProject.crashlyticsAnswersVersion}"
     implementation "com.google.firebase:firebase-core:${rootProject.firebaseCore}"
     implementation "com.google.firebase:firebase-perf:${rootProject.firebasePerf}"
+    compileOnly "com.google.code.findbugs:annotations:${rootProject.findbugsAnnotations}"
 }
 
 apply plugin: 'com.google.gms.google-services'

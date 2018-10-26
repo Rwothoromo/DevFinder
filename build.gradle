@@ -47,6 +47,7 @@ ext {
     crashlyticsAnswersVersion = "1.4.3"
     crashlyticsVersion = "2.9.5"
     espressoVersion = "3.0.2"
+    findbugsAnnotations = "3.0.1"
     firebaseCore = "16.0.4"
     firebasePerf = "16.1.2"
     glideVersion = "4.7.1"
