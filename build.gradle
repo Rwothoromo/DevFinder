@@ -49,7 +49,7 @@ ext {
     espressoVersion = "3.0.2"
     findbugsAnnotations = "3.0.1"
     firebaseCore = "16.0.4"
-    firebasePerf = "16.1.2"
+    firebasePerf = "16.2.0"
     glideVersion = "4.7.1"
     gsonVersion = "2.8.5"
     jacocoVersion = "0.8.1"
