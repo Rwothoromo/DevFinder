@@ -14,31 +14,28 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['clean', 'test']) {
         html.enabled = true
     }
 
-    classDirectories = fileTree(
-            dir      : 'build/intermediates/classes/mock/debug',
-            excludes : [
-                    '**/R.class',
-                    '**/R$*.class',
-                    '**/*$ViewInjector*.*',
-                    '**/*$ViewBinder*.*',
-                    '**/BuildConfig.*',
-                    '**/Manifest*.*'
-            ]
-    )
+    def fileFilter = [
+            '**/R.class',
+            '**/R$*.class',
+            '**/*$ViewInjector*.*',
+            '**/*$ViewBinder*.*',
+            '**/BuildConfig.*',
+            '**/Manifest*.*',
+            '**/*Test*.*',
+            'android/**/*.*',
+            '**/*Fragment.*',
+            '**/*Activity.*'
+    ]
 
-    sourceDirectories = files(coverageSourceDirs)
+    def debugTree = fileTree(dir: "$buildDir/intermediates/classes/debug", excludes: fileFilter)
+    def kotlinDebugTree = fileTree(dir: "$buildDir/tmp/kotlin-classes/prodDebug", excludes: fileFilter)
+
+    classDirectories = files([debugTree], [kotlinDebugTree])
+    sourceDirectories = files(coverageSourceDirs, "src/main/kotlin")
     executionData     = fileTree(
             dir     : "$buildDir",
             include : ['**/*.exec', '**/*.ec']
     )
-
-    doFirst {
-        files('build/intermediates/classes/mock/debug').getFiles().each { file ->
-            if (file.name.contains('$$')) {
-                file.renameTo(file.path.replace('$$', '$'))
-            }
-        }
-    }
 }
 
 task unifiedCoverageReport(dependsOn: ['clean', 'jacocoTestReport', 'createProdDebugCoverageReport']) {

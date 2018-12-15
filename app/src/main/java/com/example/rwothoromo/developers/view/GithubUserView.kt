@@ -1,23 +1,21 @@
-package com.example.rwothoromo.developers.view;
+package com.example.rwothoromo.developers.view
 
-import com.example.rwothoromo.developers.model.GithubUser;
-
-import java.util.List;
+import com.example.rwothoromo.developers.model.GithubUser
 
 /**
  * This class represents the GitHub User view interface.
  */
-public interface GithubUserView {
+interface GithubUserView {
 
     /**
      * Method to act on available GitHub user list.
      *
      * @param githubUsers the GitHub user list
      */
-    void githubUsersReady(List<GithubUser> githubUsers);
+    fun githubUsersReady(githubUsers: List<GithubUser>)
 
     /**
      * Method to act on failed GitHub API call.
      */
-    void failedDataRetrieval();
+    fun failedDataRetrieval()
 }
