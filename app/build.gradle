@@ -8,11 +8,13 @@ buildscript {
     }
 }
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'io.fabric'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    mavenCentral()
 }
 
 apply plugin: 'jacoco'
@@ -21,6 +23,7 @@ apply from: rootProject.file('app/jacoco.gradle')
 
 jacoco {
     toolVersion = "${rootProject.jacocoVersion}"
+    reportsDir = file("$buildDir/reports")
 }
 
 tasks.withType(Test) {
@@ -29,13 +32,13 @@ tasks.withType(Test) {
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     flavorDimensions "default"
 
     defaultConfig {
         applicationId "com.example.rwothoromo.developers"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -126,11 +129,13 @@ dependencies {
     implementation "com.android.support.test.espresso.idling:idling-concurrent:${rootProject.espressoVersion}"
     implementation "com.squareup.okhttp3:mockwebserver:${rootProject.mockWebServer}"
     implementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
+    testImplementation "org.mockito:mockito-inline:${rootProject.mockitoVersion}"
     implementation "com.crashlytics.sdk.android:crashlytics:${rootProject.crashlyticsVersion}"
     implementation "com.crashlytics.sdk.android:answers:${rootProject.crashlyticsAnswersVersion}"
     implementation "com.google.firebase:firebase-core:${rootProject.firebaseCore}"
     implementation "com.google.firebase:firebase-perf:${rootProject.firebasePerf}"
     compileOnly "com.google.code.findbugs:annotations:${rootProject.findbugsAnnotations}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 apply plugin: 'com.google.gms.google-services'
