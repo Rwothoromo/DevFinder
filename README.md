@@ -9,7 +9,7 @@ Download it on [Amazon](https://www.amazon.com/dp/B07JLLNC34/ref=cm_sw_r_tw_dp_U
 
 ## Design
 
-The design mockup is for the following pages:
+The design mock-up is for the following pages:
 
 | 1. Developers list.                                             | 2. Developer profile.                                    | 3. Share profile.                                   |
 | ---------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------ |
@@ -25,7 +25,7 @@ These instructions will guide you on how to set up this Android project on your 
 
 ### Prerequisites
 
-- [Android Studio 3.1.3](https://developer.android.com/studio/)
+- [Android Studio 3.2.1](https://developer.android.com/studio/)
 - [Java (JDK 10)](http://www.oracle.com/technetwork/java/javase/downloads/jdk10-downloads-4416644.html)
 
 ### Installation
