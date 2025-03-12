@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.rwothoromo.developers">
+    package="com.rwothoromo.devfinder">
 
     <!-- Allow access over a network connection -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -23,7 +23,8 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".view.MainActivity"
+            android:name="com.rwothoromo.developers.view.MainActivity"
+            android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -34,7 +35,8 @@
         </activity>
 
         <activity
-            android:name=".view.GithubUserProfile"
+            android:name="com.rwothoromo.developers.view.GithubUserProfile"
+            android:exported="true"
             android:label="@string/profile">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -42,10 +44,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="98118d6c6db28d71288dfa17c5796019bc8335f5" />
     </application>
 
 </manifest>

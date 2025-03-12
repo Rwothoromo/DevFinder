@@ -1,11 +1,11 @@
-# Developers
+# DevFinder
 
 [![CircleCI](https://circleci.com/gh/Rwothoromo/Android-Codelab.svg?style=svg)](https://circleci.com/gh/Rwothoromo/Android-Codelab)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/78f03b429b83c9459a23/test_coverage)](https://codeclimate.com/github/Rwothoromo/Android-Codelab/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/78f03b429b83c9459a23/maintainability)](https://codeclimate.com/github/Rwothoromo/Android-Codelab/maintainability)
 
-This Android application retrieves a listing of Java Developers in Nairobi using the [Github API](https://developer.github.com/v3/search/#search-users) and allows you to share their profiles.
-Download it on [Amazon](https://www.amazon.com/dp/B07JLLNC34/ref=cm_sw_r_tw_dp_U_x_UTb0BbR7GDDAZ).
+This Android application retrieves a listing of Developers by Location using the [Github API](https://developer.github.com/v3/search/#search-users) and allows you to share their profiles.
+Download it on [Amazon](https://www.amazon.com/dp/B07JLLNC34/ref=cm_sw_r_tw_dp_U_x_UTb0BbR7GDDAZ) or [Google Play](TBD).
 
 ## Design
 
@@ -25,8 +25,8 @@ These instructions will guide you on how to set up this Android project on your 
 
 ### Prerequisites
 
-- [Android Studio 3.1.3](https://developer.android.com/studio/)
-- [Java (JDK 10)](http://www.oracle.com/technetwork/java/javase/downloads/jdk10-downloads-4416644.html)
+- [Android Studio 2014.3.1+](https://developer.android.com/studio/)
+- [Java (JDK 17)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 
 ### Installation
 
@@ -72,4 +72,19 @@ Before running any of these commands, run `./gradlew clean` to clear any previou
 To Generate a JaCoCo coverage report:
 ```
 $ ./gradlew jacocoTestReport
+```
+
+### Checking Build
+```
+./gradlew build --warning-mode=all --stacktrace
+```
+
+### Checking Deprecations
+```
+./gradlew help --scan
+```
+
+### Get SHA-1 sample (the default password is "android")
+```
+keytool -list -v -alias androiddebugkey -keystore ~/.android/debug.keystore
 ```

@@ -10,8 +10,9 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['clean', 'test']) {
     group = 'Reporting'
 
     reports {
-        xml.enabled = true
-        html.enabled = true
+        xml.required = false
+        html.required = true
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
     }
 
     def fileFilter = [
@@ -27,15 +28,21 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['clean', 'test']) {
             '**/*Activity.*'
     ]
 
-    def debugTree = fileTree(dir: "$buildDir/intermediates/classes/debug", excludes: fileFilter)
-    def kotlinDebugTree = fileTree(dir: "$buildDir/tmp/kotlin-classes/prodDebug", excludes: fileFilter)
+    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
+    def javaMainSrc = "${project.projectDir}/src/main/java"
+    def kotlinMainSrc = "${project.projectDir}/src/main/kotlin"
+    def kotlinDebugTree = fileTree(dir: "${buildDir}/tmp/kotlin-classes/prodDebug", excludes: fileFilter)
 
-    classDirectories = files([debugTree], [kotlinDebugTree])
-    sourceDirectories = files(coverageSourceDirs, "src/main/kotlin")
-    executionData     = fileTree(
-            dir     : "$buildDir",
-            include : ['**/*.exec', '**/*.ec']
-    )
+    classDirectories.setFrom(files([debugTree], [kotlinDebugTree]))
+    sourceDirectories.setFrom(files([coverageSourceDirs], [kotlinMainSrc]))
+    // Specify execution data files that JaCoCo will use to generate coverage report
+    executionData.setFrom(
+            fileTree(
+                    dir: "$buildDir",
+                    includes: ['**/*.exec', '**/*.ec',
+            "jacoco/testDebugUnitTest.exec",
+            "outputs/code-coverage/connected/*coverage.ec"
+    ]))
 }
 
 task unifiedCoverageReport(dependsOn: ['clean', 'jacocoTestReport', 'createProdDebugCoverageReport']) {
