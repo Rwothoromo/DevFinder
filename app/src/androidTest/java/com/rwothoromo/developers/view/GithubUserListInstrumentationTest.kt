@@ -3,14 +3,23 @@ package com.rwothoromo.developers.view
 import android.content.Intent
 import android.support.test.InstrumentationRegistry
 import android.support.test.InstrumentationRegistry.getInstrumentation
-import android.support.test.runner.AndroidJUnit4
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withParent
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.rule.ActivityTestRule
 import com.rwothoromo.developers.util.EspressoIdlingResource
 import com.rwothoromo.devfinder.R
 import org.hamcrest.CoreMatchers.allOf
@@ -18,12 +27,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
 /**
  * MainActivity test.
  */
-@RunWith(AndroidJUnit4::class)
 class GithubUserListInstrumentationTest {
 
     /**
@@ -33,15 +40,16 @@ class GithubUserListInstrumentationTest {
      * annotated with @Before. It will be terminated after the test and methods annotated
      * with @After are complete. This rule allows direct access to the activity during the test.
      */
-//    @Rule
-//    @JvmField
-//    var mActivityTestRule: ActivityTestRule<MainActivity> = object : ActivityTestRule<MainActivity>(MainActivity::class.java) {
-//
-//        override fun getActivityIntent(): Intent {
-//            val targetContext = InstrumentationRegistry.getTargetContext()
-//            return Intent(targetContext, MainActivity::class.java)
-//        }
-//    }
+    @Rule
+    @JvmField
+    var mActivityTestRule: ActivityTestRule<MainActivity> =
+        object : ActivityTestRule<MainActivity>(MainActivity::class.java) {
+
+            override fun getActivityIntent(): Intent {
+                val targetContext = InstrumentationRegistry.getTargetContext()
+                return Intent(targetContext, MainActivity::class.java)
+            }
+        }
 
     /**
      * Register any resource that needs to be synchronized with Espresso before the test is run.
@@ -56,8 +64,13 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun displaysRecyclerView() {
-        onView(withId(R.id.recyclerView)).check(matches(withEffectiveVisibility(
-                ViewMatchers.Visibility.VISIBLE)))
+        onView(withId(R.id.recyclerView)).check(
+            matches(
+                withEffectiveVisibility(
+                    ViewMatchers.Visibility.VISIBLE
+                )
+            )
+        )
     }
 
     /**
@@ -73,7 +86,7 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun displaysToolbarTitle() {
-//        onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
+        onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
     }
 
     /**
@@ -81,7 +94,7 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun displaysToolbarSubtitle() {
-//        onView(withText(R.string.app_subtitle)).check(matches(withParent(withId(R.id.toolbar))))
+        onView(withText(R.string.app_subtitle)).check(matches(withParent(withId(R.id.toolbar))))
     }
 
     /**
@@ -90,7 +103,7 @@ class GithubUserListInstrumentationTest {
     @Test
     fun clickActionBarSearchItem() {
         // Click on the Search icon.
-//        onView(withId(R.id.action_search)).perform(click())
+        onView(withId(R.id.action_search)).perform(click())
     }
 
     /**
@@ -100,10 +113,10 @@ class GithubUserListInstrumentationTest {
     fun clickActionBarOverflowSettings() {
         // Open the options menu OR open the overflow menu, depending on whether
         // the device has a hardware or software overflow menu button.
-//        openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
-//
-//        // Click the item.
-//        onView(withText(R.string.action_settings)).perform(click())
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+
+        // Click the item.
+        onView(withText(R.string.action_settings)).perform(click())
     }
 
     /**
@@ -113,10 +126,10 @@ class GithubUserListInstrumentationTest {
     fun clickActionBarOverflowRefresh() {
         // Open the options menu OR open the overflow menu, depending on whether
         // the device has a hardware or software overflow menu button.
-//        openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
-//
-//        // Click the item.
-//        onView(withText(R.string.action_refresh)).perform(click())
+        openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+
+        // Click the item.
+        onView(withText(R.string.action_refresh)).perform(click())
     }
 
     /**
@@ -127,16 +140,20 @@ class GithubUserListInstrumentationTest {
 
         onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
 
-//        Intents.init()
-//
-//        // Scroll to an item at a position and click on it.
-//        val mockPosition = 0
-//        onView(withId(R.id.recyclerView)).perform(
-//                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(mockPosition, click()))
-//
-//        intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
-//
-//        Intents.release()
+        Intents.init()
+
+        // Scroll to an item at a position and click on it.
+        val mockPosition = 0
+        onView(withId(R.id.recyclerView)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                mockPosition,
+                click()
+            )
+        )
+
+        intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
+
+        Intents.release()
     }
 
     /**

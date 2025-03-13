@@ -1,24 +1,23 @@
+package com.rwothoromo.developers.view
+
 import android.content.Intent
 import android.support.test.InstrumentationRegistry
 import android.support.test.InstrumentationRegistry.getInstrumentation
-import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.IdlingRegistry
-import android.support.test.espresso.action.ViewActions.click
-import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import android.support.test.espresso.intent.Intents
-import android.support.test.espresso.intent.Intents.intended
-import android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import android.support.test.espresso.matcher.ViewMatchers.isDisplayed
-import android.support.test.espresso.matcher.ViewMatchers.withId
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
-import android.support.v7.widget.RecyclerView
-import com.example.rwothoromo.developers.R
-import com.example.rwothoromo.developers.RestServiceTestHelper
-import com.example.rwothoromo.developers.util.EspressoIdlingResource
-import com.example.rwothoromo.developers.view.GithubUserProfile
-import com.example.rwothoromo.developers.view.MainActivity
+import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.rule.ActivityTestRule
+import com.rwothoromo.developers.RestServiceTestHelper
+import com.rwothoromo.developers.util.EspressoIdlingResource
+import com.rwothoromo.devfinder.R
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.hamcrest.CoreMatchers.allOf
@@ -26,12 +25,10 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
 /**
  * Mock MainActivity test.
  */
-@RunWith(AndroidJUnit4::class)
 class GithubUserListMockTest {
 
     /**
@@ -39,13 +36,14 @@ class GithubUserListMockTest {
      */
     @Rule
     @JvmField
-    var mActivityTestRule: ActivityTestRule<MainActivity> = object : ActivityTestRule<MainActivity>(MainActivity::class.java, true, true) {
+    var mActivityTestRule: ActivityTestRule<MainActivity> =
+        object : ActivityTestRule<MainActivity>(MainActivity::class.java, true, true) {
 
-        override fun getActivityIntent(): Intent {
-            val targetContext = InstrumentationRegistry.getTargetContext()
-            return Intent(targetContext, MainActivity::class.java)
+            override fun getActivityIntent(): Intent {
+                val targetContext = InstrumentationRegistry.getTargetContext()
+                return Intent(targetContext, MainActivity::class.java)
+            }
         }
-    }
 
     private var server: MockWebServer? = null
 
@@ -64,12 +62,18 @@ class GithubUserListMockTest {
 
         // Schedule some responses.
         val fileName = "mock_api_200_response.json"
-        server!!.enqueue(MockResponse()
+        server!!.enqueue(
+            MockResponse()
                 .addHeader("Content-Type", "application/json; charset=utf-8")
                 .addHeader("Cache-Control", "no-cache")
                 .setResponseCode(200)
-                .setBody(RestServiceTestHelper.getStringFromFile(getInstrumentation().context,
-                        fileName)))
+                .setBody(
+                    RestServiceTestHelper.getStringFromFile(
+                        getInstrumentation().context,
+                        fileName
+                    )
+                )
+        )
 
         // Start the server.
         server!!.start()
@@ -93,7 +97,8 @@ class GithubUserListMockTest {
         // Scroll to an item at a position and click on it.
         val mockPosition = 0
         onView(withId(R.id.recyclerView)).perform(
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(mockPosition, click()))
+            actionOnItemAtPosition<RecyclerView.ViewHolder>(mockPosition, click())
+        )
 
         intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
 
