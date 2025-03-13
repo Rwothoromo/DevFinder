@@ -24,8 +24,8 @@ def configDir = "${project.rootDir}/quality"
 def reportsDir = "${project.buildDir}/reports"
 
 tasks.register('checkstyle', Checkstyle) {
-    configFile file("$configDir/checkstyle/checkstyle.xml")
-    source 'src'
+    configFile = file("$configDir/checkstyle/checkstyle.xml")
+    source = 'src'
     include '**/*.java'
     exclude '**/gen/**',
             '**/androidTest/**',
@@ -80,7 +80,8 @@ tasks.register('detectInfer', Exec) {
 }
 
 tasks.register('infer', Exec) {
-    dependsOn[clean, detectInfer]
+    check.dependsOn 'clean', 'detectInfer'
+//    dependsOn[clean, detectInfer]
     workingDir "${project.rootDir}"
     commandLine 'infer'
     args = ['--', './gradlew', 'build']

@@ -6,14 +6,15 @@ def coverageSourceDirs = [
 ]
 
 tasks.register('jacocoTestReport', JacocoReport) {
-    dependsOn['clean', 'test']
+    check.dependsOn 'clean', 'test'
+//    dependsOn['clean', 'test']
     description = 'Generate JaCoCo coverage report'
     group = 'Reporting'
 
     reports {
         xml.required = false
         html.required = true
-        html.outputLocation = project.buildDir.dir('jacocoHtml')
+        html.outputLocation = layout.getBuildDirectory().dir('jacocoHtml')
     }
 
     def fileFilter = [
@@ -47,7 +48,8 @@ tasks.register('jacocoTestReport', JacocoReport) {
 }
 
 tasks.register('unifiedCoverageReport') {
-    dependsOn['clean', 'jacocoTestReport', 'createProdDebugCoverageReport']
+    check.dependsOn 'clean', 'jacocoTestReport', 'createProdDebugCoverageReport'
+//    dependsOn['clean', 'jacocoTestReport', 'createProdDebugCoverageReport']
     description = 'Generates coverage report which includes both local unit tests and instrumentation tests'
     group = 'Reporting'
 }

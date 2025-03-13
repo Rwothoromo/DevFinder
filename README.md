@@ -88,3 +88,16 @@ $ ./gradlew jacocoTestReport
 ```
 keytool -list -v -alias androiddebugkey -keystore ~/.android/debug.keystore
 ```
+
+### Create Keystore
+```
+keytool -genkey -v -keystore keystores/keystore.jks -alias my-alias -keyalg RSA -keysize 2048
+```
+
+### Export Environment Variables
+```
+export KEYSTORE="../keystores/keystore.jks"
+export KEYSTORE_PASSWORD="my-pass"
+export KEY_ALIAS="my-alias"
+export KEY_PASSWORD="my-pass"
+```
