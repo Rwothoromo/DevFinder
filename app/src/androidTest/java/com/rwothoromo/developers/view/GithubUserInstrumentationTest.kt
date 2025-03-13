@@ -1,14 +1,17 @@
 package com.rwothoromo.developers.view
 
 import android.os.Parcel
+import androidx.test.runner.AndroidJUnit4
 import com.rwothoromo.developers.model.GithubUser
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Test
+import org.junit.runner.RunWith
 
 /**
  * Tests that the GithubUser parcelable interface is implemented correctly.
  */
+@RunWith(AndroidJUnit4::class)
 class GithubUserInstrumentationTest {
 
     /**

@@ -8,8 +8,8 @@ buildscript {
 
 plugins {
     id("com.android.application")
-    id 'kotlin-android'
-    id 'jacoco'
+    id("kotlin-android")
+    id("jacoco")
     id("com.google.gms.google-services")
     alias(libs.plugins.compose.compiler)
 }
@@ -34,47 +34,47 @@ tasks.withType(Test).configureEach {
 
 android {
     namespace = "com.rwothoromo.devfinder"
-    compileSdkVersion 35
+    compileSdk = 35
     flavorDimensions "default"
 
     defaultConfig {
-        applicationId "com.rwothoromo.devfinder"
-        minSdkVersion 21
-        targetSdk 35
-        versionCode 1
-        versionName "1.0"
+        applicationId = "com.rwothoromo.devfinder"
+        minSdk = 21
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
-        multiDexEnabled true
+        multiDexEnabled = true
     }
 
     signingConfigs {
         release {
-            storeFile file(System.getenv("KEYSTORE") ?: "../keystores/keystore.jks")
-            storePassword System.getenv("KEYSTORE_PASSWORD")
-            keyAlias System.getenv("KEY_ALIAS")
-            keyPassword System.getenv("KEY_PASSWORD")
+            storeFile = file(System.getenv("KEYSTORE") ?: "../keystores/keystore.jks")
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
         }
     }
 
     buildTypes {
         release {
-            minifyEnabled false
-            signingConfig signingConfigs.release
+            minifyEnabled = false
+            signingConfig = signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            enableUnitTestCoverage true
-            enableAndroidTestCoverage true
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
         }
         debug {
-            enableUnitTestCoverage true
-            enableAndroidTestCoverage true
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
         }
     }
 
     productFlavors {
         mock {
 //            applicationIdSuffix = ".mock"
-            dimension "default"
+            dimension = "default"
         }
         prod {
 
@@ -91,8 +91,8 @@ android {
     }
 
     testOptions {
-        execution 'ANDROID_TEST_ORCHESTRATOR'
-        animationsDisabled true
+        execution = 'ANDROID_TEST_ORCHESTRATOR'
+        animationsDisabled = true
 
         unitTests.all {
             jacoco {
@@ -125,7 +125,7 @@ android {
     }
 
     lint {
-        abortOnError false
+        abortOnError = false
     }
 
 }
