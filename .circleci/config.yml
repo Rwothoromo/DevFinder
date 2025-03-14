@@ -7,17 +7,29 @@ orbs:
 jobs:
   build:
     docker:
-      - image: circleci/android:api-33  # Base image with older JDK
+      - image: circleci/android:api-34 # Base image with older JDK
     steps:
+      - restore_cache:
+          keys:
+            - v3-gradle-{{ checksum "build.gradle" }}
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v3-gradle-{{ checksum "build.gradle" }}
       - run:
-          name: Install Java 17
+          name: Set Java 17 as default
           command: |
-            sudo apt update && sudo apt install -y openjdk-17-jdk
+            sudo update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
+            sudo update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
             echo 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64' >> $BASH_ENV
+            echo 'export PATH=$JAVA_HOME/bin:$PATH' >> $BASH_ENV
+      - run:
+          name: Find Java 17 installation path
+          command: ls -l /usr/lib/jvm/
       - run:
           name: Check Java version
           command: java -version
-
+  
   # Generate and upload JaCoCo coverage report
   report_coverage:
     executor:
@@ -35,8 +47,8 @@ jobs:
           command: echo 'export KEYSTORE=${HOME}/repo/keystores/keystore.jks' >> $BASH_ENV
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "build.gradle" }}
-            - v1-dependencies-
+            - v3-gradle-{{ checksum "build.gradle" }}
+            - v3-dependencies-
       - run:
           name: List Android Dependencies
           command: |
