@@ -9,15 +9,20 @@ jobs:
     executor:
       name: android/android-docker
       tag: 2022.08.1
+    docker:
+      - image: 'ubuntu:latest' # Or a base image
     steps:
       - checkout
       - run:
-          name: Install OpenJDK 17
+          name: Install Java 17
           command: |
-            sudo apt-get update && sudo apt-get install openjdk-17-jdk
-            sudo update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
-            sudo update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
-            java -version
+            sudo apt-get update -y
+            sudo apt-get install -y openjdk-17-jdk
+      - run:
+          name: Set JAVA_HOME
+          command: |
+            export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+            export PATH=$JAVA_HOME/bin:$PATH
 
   # Generate and upload JaCoCo coverage report
   report_coverage:
