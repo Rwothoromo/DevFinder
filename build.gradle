@@ -8,8 +8,10 @@ buildscript {
     ext.kotlinVersion = '2.1.10'
 
     repositories {
-        google()
         mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven {url = 'https://maven.google.com/'}
+        google()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$gradleVersion"
@@ -25,11 +27,10 @@ buildscript {
 
 allprojects {
     repositories {
-        google()
         mavenCentral()
-        maven {
-            url = 'https://maven.google.com/'
-        }
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven {url = 'https://maven.google.com/'}
+        google()
     }
 }
 
