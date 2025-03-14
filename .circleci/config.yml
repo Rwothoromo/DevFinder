@@ -5,6 +5,19 @@ orbs:
   gcp-cli: circleci/gcp-cli@2.4.1
 
 jobs:
+  build:
+    docker:
+      - image: circleci/android:api-33  # Base image with older JDK
+    steps:
+      - run:
+          name: Install Java 17
+          command: |
+            sudo apt update && sudo apt install -y openjdk-17-jdk
+            echo 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64' >> $BASH_ENV
+      - run:
+          name: Check Java version
+          command: java -version
+
   # Generate and upload JaCoCo coverage report
   report_coverage:
     executor:
