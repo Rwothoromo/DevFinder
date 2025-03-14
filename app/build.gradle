@@ -137,6 +137,13 @@ android {
 
 }
 
+// For toolchain setup (Gradle 7.6+)
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "com.android.support.constraint:constraint-layout:${rootProject.constraintLayout}"
