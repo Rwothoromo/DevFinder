@@ -5,20 +5,6 @@ orbs:
   gcp-cli: circleci/gcp-cli@2.4.1
 
 jobs:
-  set_up_java:
-    executor:
-      name: android/android-docker
-      tag: 2022.08.1
-    steps:
-      - checkout
-      - run:
-          name: Install OpenJDK 17
-          command: |
-            sudo apt-get update && sudo apt-get install openjdk-17-jdk
-            sudo update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
-            sudo update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
-            java -version
-
   # Generate and upload JaCoCo coverage report
   report_coverage:
     executor:
