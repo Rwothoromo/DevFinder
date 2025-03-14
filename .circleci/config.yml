@@ -84,7 +84,6 @@ jobs:
       - android/restore-gradle-cache
       - android/run-tests:
           test-command: ./gradlew testDebug
-          executor: java17
       - android/save-gradle-cache
       - run:
           name: Save test results
@@ -110,7 +109,6 @@ jobs:
       - checkout
       - android/start-emulator-and-run-tests:
           test-command: ./gradlew connectedDebugAndroidTest
-          executor: java17
           system-image: << parameters.system-image >>
       - run:
           name: Save test results
