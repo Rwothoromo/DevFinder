@@ -1,29 +1,15 @@
 version: 2.1
 
+executors:
+  java17:
+    docker:
+      - image: 'cimg/openjdk:17.0'
+
 orbs:
   android: circleci/android@2.1.2
   gcp-cli: circleci/gcp-cli@2.4.1
 
 jobs:
-  set_up_java:
-    executor:
-      name: android/android-docker
-      tag: 2022.08.1
-    docker:
-      - image: 'ubuntu:latest' # Or a base image
-    steps:
-      - checkout
-      - run:
-          name: Install Java 17
-          command: |
-            sudo apt-get update -y
-            sudo apt-get install -y openjdk-17-jdk
-      - run:
-          name: Set JAVA_HOME
-          command: |
-            export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-            export PATH=$JAVA_HOME/bin:$PATH
-
   # Generate and upload JaCoCo coverage report
   report_coverage:
     executor:
