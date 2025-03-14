@@ -103,19 +103,6 @@ jobs:
           path: app/build/outputs/apk/release/app-release-unsigned.apk
 
 workflows:
-  linting_tests_and_deployment:
-    jobs:
-      - unit-test
-      - build_debug:
-          requires:
-            - unit-test
-      - test_instrumentation:
-          requires:
-            - build_debug
-      - report_coverage:
-          requires:
-            - test_instrumentation
-
   test-and-build:
     jobs:
       - unit-test
