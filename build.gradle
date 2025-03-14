@@ -2,7 +2,7 @@
 
 buildscript {
     ext.googleServicesVersion = '4.4.2'
-    ext.gradleVersion = '8.9.0'
+    ext.gradleVersion = '8.2.0'
     ext.firebasePluginsVersion = '1.1.5'
     ext.jacocoVersion = '0.8.12'
     ext.kotlinVersion = '2.1.10'
