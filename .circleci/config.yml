@@ -7,8 +7,26 @@ orbs:
 jobs:
   build:
     docker:
-      - image: circleci/android:api-34 # Base image with older JDK
+      - image: cimg/openjdk:17.0.9-node  # Base with JDK 17
+    environment:
+      _JAVA_OPTIONS: "-Xmx4g"  # Explicit memory limits
     steps:
+      - checkout
+      - run:
+          name: Purge conflicting JDKs
+          command: |
+            sudo apt-get remove --purge -y openjdk-11-*  # Remove JDK 11 entirely
+      - run:
+          name: Verify system Java
+          command: |
+            java -version
+            which java
+            echo "JAVA_HOME=$JAVA_HOME"
+      - run:
+          name: Kill Gradle daemons
+          command: |
+            pkill -9 -f gradle-daemon || true
+            rm -rf ~/.gradle/daemon
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
@@ -16,13 +34,6 @@ jobs:
           paths:
             - ~/.gradle
           key: v3-gradle-{{ checksum "build.gradle" }}
-      - run:
-          name: Set Java 17 as default
-          command: |
-            sudo update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java
-            sudo update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac
-            echo 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64' >> $BASH_ENV
-            echo 'export PATH=$JAVA_HOME/bin:$PATH' >> $BASH_ENV
       - run:
           name: Find Java 17 installation path
           command: ls -l /usr/lib/jvm/
