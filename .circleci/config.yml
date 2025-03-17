@@ -34,6 +34,35 @@ jobs:
 #      - gcp-cli/setup:
 #          version: 404.0.0
 
+  export_gservices_key:
+    executor:
+      name: android/android_machine
+      resource_class: large
+      tag: default
+    steps:
+      - run:
+          name: Export Google Services key environment variable
+          command: echo 'export GOOGLE_SERVICES_JSON="$GOOGLE_SERVICES_JSON"' >> $BASH_ENV
+
+  decode_gservices_key:
+    executor:
+      name: android/android_machine
+      resource_class: large
+      tag: default
+    steps:
+      - run:
+          name: Decode Google Services JSON key
+          command: |
+            mkdir app/src/mock/
+            mkdir app/src/prod/
+            touch app/google-services.json
+            touch app/src/mock/google-services.json
+            touch app/src/prod/google-services.json
+            echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/google-services.json
+            echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/mock/google-services.json
+            echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/prod/google-services.json
+
+
   unit_test:
     executor:
       name: android/android_machine
@@ -134,7 +163,6 @@ jobs:
       - store_artifacts:
           path: app/build/outputs/apk/release/app-release-unsigned.apk
 
-
 workflows:
   test_and_build:
     jobs:
@@ -146,21 +174,3 @@ workflows:
 #    jobs:
 #      - use-gcp:
 #          context: myContext
-
-export_gservices_key: &export_gservices_key
-  run:
-    name: Export Google Services key environment variable
-    command: echo 'export GOOGLE_SERVICES_JSON="$GOOGLE_SERVICES_JSON"' >> $BASH_ENV
-
-decode_gservices_key: &decode_gservices_key
-  run:
-    name: Decode Google Services JSON key
-    command: |
-      mkdir app/src/mock/
-      mkdir app/src/prod/
-      touch app/google-services.json
-      touch app/src/mock/google-services.json
-      touch app/src/prod/google-services.json
-      echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/google-services.json
-      echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/mock/google-services.json
-      echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/prod/google-services.json
