@@ -61,8 +61,7 @@ jobs:
             echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/google-services.json
             echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/mock/google-services.json
             echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/prod/google-services.json
-
-
+      - run: ls
 
   unit_test:
     executor:
@@ -165,9 +164,18 @@ workflows:
     jobs:
       - export_gservices_key
       - decode_gservices_key
-      - unit_test
-      - jacoco_code_coverage
-      - release_build
+      - unit_test:
+          requires:
+            - export_gservices_key
+            - decode_gservices_key
+      - jacoco_code_coverage:
+          requires:
+            - export_gservices_key
+            - decode_gservices_key
+      - release_build:
+          requires:
+            - export_gservices_key
+            - decode_gservices_key
 
 #  install_and_configure_cli:
 #    jobs:
