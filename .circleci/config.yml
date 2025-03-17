@@ -63,11 +63,15 @@ jobs:
             echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/prod/google-services.json
 
 
+
   unit_test:
     executor:
       name: android/android_machine
       resource_class: large
       tag: default
+    jobs:
+      - export_gservices_key
+      - decode_gservices_key
     steps:
       - checkout
       - run: ls
@@ -75,8 +79,6 @@ jobs:
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
-      - export_gservices_key
-      - decode_gservices_key
       - run: ls -l
       - android/run_tests:
           test_command: ./gradlew testMockDebugUnitTest
@@ -123,8 +125,6 @@ jobs:
           command: |
             mkdir -p app/build/outputs/code-coverage/connected/flavors/MOCK
             cp firebase/sailfish-26-en_US-portrait/artifacts/coverage.ec app/build/outputs/code-coverage/connected/flavors/MOCK/coverage.ec
-      - export_gservices_key
-      - decode_gservices_key
       - run:
           name: Code Climate Test Setup
           command: |
