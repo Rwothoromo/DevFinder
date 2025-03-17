@@ -50,18 +50,20 @@ jobs:
       resource_class: large
       tag: default
     steps:
+      - run: ls
       - run:
           name: Decode Google Services JSON key
           command: |
-            mkdir app/src/mock/
-            mkdir app/src/prod/
+            sudo chmod 600 /root/.
+            sudo mkdir -m 0755 -p app/src/mock/
+            sudo mkdir -m 0755 -p app/src/prod/
             touch app/google-services.json
             touch app/src/mock/google-services.json
             touch app/src/prod/google-services.json
             echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/google-services.json
             echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/mock/google-services.json
             echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/prod/google-services.json
-      - run: ls
+      - run: ls -l
 
   unit_test:
     executor:
@@ -85,7 +87,7 @@ jobs:
       - run:
           name: Save test results
           command: |
-            mkdir -p ~/test-results/junit/
+            sudo mkdir -m 0755 -p ~/test-results/junit/
             find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
           when: always
       - store_test_results:
@@ -103,7 +105,7 @@ jobs:
       - run:
           name: Decode the base64 encoded text back into the keystore.jks file
           command: |
-            mkdir -p ${HOME}/repo/keystores
+            sudo mkdir -m 0755 -p ${HOME}/repo/keystores
             echo $ENCODED_KEYSTORE | base64 --decode >> ${HOME}/repo/keystores/keystore.jks
       - run:
           name: Set the KEYSTORE environment variable to it’s location.
@@ -119,7 +121,7 @@ jobs:
       - run:
           name: Move Firebase coverage report
           command: |
-            mkdir -p app/build/outputs/code-coverage/connected/flavors/MOCK
+            sudo mkdir -m 0755 -p app/build/outputs/code-coverage/connected/flavors/MOCK
             cp firebase/sailfish-26-en_US-portrait/artifacts/coverage.ec app/build/outputs/code-coverage/connected/flavors/MOCK/coverage.ec
       - run:
           name: Code Climate Test Setup
