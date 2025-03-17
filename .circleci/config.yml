@@ -46,6 +46,9 @@ jobs:
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
+      - run: export_gservices_key
+      - run: decode_gservices_key
+      - run: ls -l
       - android/run_tests:
           test_command: ./gradlew testMockDebugUnitTest
       - save_cache:
