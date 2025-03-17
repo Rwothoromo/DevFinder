@@ -47,7 +47,7 @@ jobs:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
       - android/run_tests:
-          test_command: ./gradlew testDebugUnitTest
+          test_command: ./gradlew testMockDebugUnitTest
       - save_cache:
           paths:
             - ~/.gradle
