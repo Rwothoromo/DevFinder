@@ -69,9 +69,6 @@ jobs:
       name: android/android_machine
       resource_class: large
       tag: default
-    jobs:
-      - export_gservices_key
-      - decode_gservices_key
     steps:
       - checkout
       - run: ls
@@ -166,6 +163,8 @@ jobs:
 workflows:
   test_and_build:
     jobs:
+      - export_gservices_key
+      - decode_gservices_key
       - unit_test
       - jacoco_code_coverage
       - release_build
