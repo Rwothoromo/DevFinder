@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   android: circleci/android@3.1.0
-  gcp-cli: circleci/gcp-cli@3.3.1
+#  gcp-cli: circleci/gcp-cli@3.3.1
 
 jobs:
   build:
@@ -28,11 +28,11 @@ jobs:
       resource_class: large
       tag: default
 
-  use-gcp:
-    executor: gcp-cli/default
-    steps:
-      - gcp-cli/setup:
-          version: 404.0.0
+#  use-gcp:
+#    executor: gcp-cli/default
+#    steps:
+#      - gcp-cli/setup:
+#          version: 404.0.0
 
   unit_test:
     executor:
@@ -68,10 +68,10 @@ workflows:
     jobs:
       - unit_test
 
-  install_and_configure_cli:
-    jobs:
-      - use-gcp:
-          context: myContext
+#  install_and_configure_cli:
+#    jobs:
+#      - use-gcp:
+#          context: myContext
 
 #jobs:
 #  build:
