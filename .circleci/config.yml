@@ -36,8 +36,9 @@ jobs:
 
   unit_test:
     executor:
-      name: android/android-docker
-      tag: 2022.08.1
+      name: android/android_machine
+      resource_class: large
+      tag: default
     steps:
       - checkout
       - run: ls
@@ -112,8 +113,9 @@ workflows:
 #  # Generate and upload JaCoCo coverage report
 #  report_coverage:
 #    executor:
-#      name: android/android-docker
-#      tag: 2022.08.1
+#      name: android/android_machine
+#      resource_class: large
+#      tag: default
 #    steps:
 #      - checkout
 #      - run:
@@ -199,8 +201,9 @@ workflows:
 #
 #  benchmarks-ftl:
 #    executor:
-#      name: android/android-docker
-#      tag: 2022.08.1-node
+#      name: android/android_machine
+#      resource_class: large
+#      tag: default
 #    steps:
 #      - checkout
 #      - restore_cache:
@@ -238,8 +241,9 @@ workflows:
 #
 #  release-build:
 #    executor:
-#      name: android/android-docker
-#      tag: 2022.08.1
+#      name: android/android_machine
+#      resource_class: large
+#      tag: default
 #    steps:
 #      - checkout
 #      - restore_cache:
