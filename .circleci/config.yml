@@ -42,10 +42,15 @@ jobs:
       - checkout
       - run: ls
       - run: ./gradlew dependencies
-      - android/restore-gradle-cache
+      - restore_cache:
+          keys:
+            - v3-gradle-{{ checksum "build.gradle" }}
       - android/run-tests:
           test-command: ./gradlew testDebug
-      - android/save-gradle-cache
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v3-gradle-{{ checksum "build.gradle" }}
       - run:
           name: Save test results
           command: |
@@ -198,7 +203,9 @@ workflows:
 #      tag: 2022.08.1-node
 #    steps:
 #      - checkout
-#      - android/restore-gradle-cache
+#      - restore_cache:
+#          keys:
+#            - v3-gradle-{{ checksum "build.gradle" }}
 #      - run:
 #          name: Build app and test app
 #          command: ./gradlew app:assembleRelease macrobenchmark:assemble
@@ -235,7 +242,9 @@ workflows:
 #      tag: 2022.08.1
 #    steps:
 #      - checkout
-#      - android/restore-gradle-cache
+#      - restore_cache:
+#          keys:
+#            - v3-gradle-{{ checksum "build.gradle" }}
 #      - run:
 #          name: Assemble release build
 #          command: |
