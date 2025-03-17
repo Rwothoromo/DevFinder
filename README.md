@@ -101,3 +101,8 @@ export KEYSTORE_PASSWORD="my-pass"
 export KEY_ALIAS="my-alias"
 export KEY_PASSWORD="my-pass"
 ```
+
+### Base64 encode Google Services
+```
+cat google-services.json | base64
+```

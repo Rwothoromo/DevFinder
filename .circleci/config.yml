@@ -63,235 +63,101 @@ jobs:
       - store_artifacts:
           path: ~/test-results/junit
 
+  jacoco_code_coverage:
+    executor:
+      name: android/android_machine
+      resource_class: large
+      tag: default
+    steps:
+      - checkout
+      - run:
+          name: Decode the base64 encoded text back into the keystore.jks file
+          command: |
+            mkdir -p ${HOME}/repo/keystores
+            echo $ENCODED_KEYSTORE | base64 --decode >> ${HOME}/repo/keystores/keystore.jks
+      - run:
+          name: Set the KEYSTORE environment variable to it’s location.
+          command: echo 'export KEYSTORE=${HOME}/repo/keystores/keystore.jks' >> $BASH_ENV
+      - restore_cache:
+          keys:
+            - v3-gradle-{{ checksum "build.gradle" }}
+            - v3-dependencies-
+      - run:
+          name: List Android Dependencies
+          command: |
+            ./gradlew androidDependencies
+      - run:
+          name: Move Firebase coverage report
+          command: |
+            mkdir -p app/build/outputs/code-coverage/connected/flavors/MOCK
+            cp firebase/sailfish-26-en_US-portrait/artifacts/coverage.ec app/build/outputs/code-coverage/connected/flavors/MOCK/coverage.ec
+      - run: export_gservices_key
+      - run: decode_gservices_key
+      - run:
+          name: Code Climate Test Setup
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          name: Code Climate Pretest
+          command: ./cc-test-reporter before-build
+      - run:
+          name: Generate JaCoCo report
+          command: ./gradlew jacocoTestReport
+      - run:
+          name: Upload coverage to code climate
+          command: |
+            export JACOCO_SOURCE_PATH=app/src/main/java
+            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml -t jacoco
+            ./cc-test-reporter upload-coverage
+      - store_artifacts:
+          path: app/build/reports/
+          destination: /reports/
+
+  release_build:
+    executor:
+      name: android/android_machine
+      resource_class: large
+      tag: default
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v3-gradle-{{ checksum "build.gradle" }}
+      - run:
+          name: Assemble release build
+          command: |
+            ./gradlew assembleRelease
+      - store_artifacts:
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+
+
 workflows:
-  tests:
+  test_and_build:
     jobs:
       - unit_test
+      - jacoco_code_coverage
+      - release_build
 
 #  install_and_configure_cli:
 #    jobs:
 #      - use-gcp:
 #          context: myContext
 
-#jobs:
-#  build:
-#    docker:
-#      - image: cimg/openjdk:17.0.9-node  # Base with JDK 17
-#    environment:
-#      _JAVA_OPTIONS: "-Xmx4g"  # Explicit memory limits
-#    steps:
-#      - checkout
-#      - run:
-#          name: Purge conflicting JDKs
-#          command: |
-#            sudo apt-get remove --purge -y openjdk-11-*  # Remove JDK 11 entirely
-#      - run:
-#          name: Verify system Java
-#          command: |
-#            java -version
-#            which java
-#            echo "JAVA_HOME=$JAVA_HOME"
-#      - run:
-#          name: Kill Gradle daemons
-#          command: |
-#            pkill -9 -f gradle-daemon || true
-#            rm -rf ~/.gradle/daemon
-#      - restore_cache:
-#          keys:
-#            - v3-gradle-{{ checksum "build.gradle" }}
-#      - save_cache:
-#          paths:
-#            - ~/.gradle
-#          key: v3-gradle-{{ checksum "build.gradle" }}
-#      - run:
-#          name: Find Java 17 installation path
-#          command: ls -l /usr/lib/jvm/
-#      - run:
-#          name: Check Java version
-#          command: java -version
-#
-#  # Generate and upload JaCoCo coverage report
-#  report_coverage:
-#    executor:
-#      name: android/android_machine
-#      resource_class: large
-#      tag: default
-#    steps:
-#      - checkout
-#      - run:
-#          name: Decode the base64 encoded text back into the keystore.jks file
-#          command: |
-#            mkdir -p ${HOME}/repo/keystores
-#            echo $ENCODED_KEYSTORE | base64 --decode >> ${HOME}/repo/keystores/keystore.jks
-#      - run:
-#          name: Set the KEYSTORE environment variable to it’s location.
-#          command: echo 'export KEYSTORE=${HOME}/repo/keystores/keystore.jks' >> $BASH_ENV
-#      - restore_cache:
-#          keys:
-#            - v3-gradle-{{ checksum "build.gradle" }}
-#            - v3-dependencies-
-#      - run:
-#          name: List Android Dependencies
-#          command: |
-#            ./gradlew androidDependencies
-#      - run:
-#          name: Move Firebase coverage report
-#          command: |
-#            mkdir -p app/build/outputs/code-coverage/connected/flavors/MOCK
-#            cp firebase/sailfish-26-en_US-portrait/artifacts/coverage.ec app/build/outputs/code-coverage/connected/flavors/MOCK/coverage.ec
-#      - run:
-#          name: Export Google Services key environment variable
-#          command: echo 'export GOOGLE_SERVICES_JSON="$GOOGLE_SERVICES_JSON"' >> $BASH_ENV
-#      - run:
-#          name: Decode Google Services JSON key
-#          command: |
-#            mkdir app/src/mock/
-#            mkdir app/src/prod/
-#            touch app/google-services.json
-#            touch app/src/mock/google-services.json
-#            touch app/src/prod/google-services.json
-#            echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/google-services.json
-#            echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/mock/google-services.json
-#            echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/prod/google-services.json
-#      - run:
-#          name: Code Climate Test Setup
-#          command: |
-#            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-#            chmod +x ./cc-test-reporter
-#      - run:
-#          name: Code Climate Pretest
-#          command: ./cc-test-reporter before-build
-#      - run:
-#          name: Generate JaCoCo report
-#          command: ./gradlew jacocoTestReport
-#      - run:
-#          name: Upload coverage to code climate
-#          command: |
-#            export JACOCO_SOURCE_PATH=app/src/main/java
-#            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml -t jacoco
-#            ./cc-test-reporter upload-coverage
-#      - store_artifacts:
-#          path: app/build/reports/
-#          destination: /reports/
-#
-#  android-test:
-#    parameters:
-#      system-image:
-#        type: string
-#        default: system-images;android-30;google_apis;x86
-#    executor:
-#      name: android/android-machine
-#      resource-class: xlarge
-#      tag: 2022.08.1
-#    steps:
-#      - checkout
-#      - android/start-emulator-and-run-tests:
-#          test_command: ./gradlew connectedDebugAndroidTest
-#          system-image: << parameters.system-image >>
-#      - run:
-#          name: Save test results
-#          command: |
-#            mkdir -p ~/test-results/junit/
-#            find . -type f -regex ".*/build/outputs/androidTest-results/.*xml" -exec cp {} ~/test-results/junit/ \;
-#          when: always
-#      - store_test_results:
-#          path: ~/test-results
-#      - store_artifacts:
-#          path: ~/test-results/junit
-#
-#  benchmarks-ftl:
-#    executor:
-#      name: android/android_machine
-#      resource_class: large
-#      tag: default
-#    steps:
-#      - checkout
-#      - restore_cache:
-#          keys:
-#            - v3-gradle-{{ checksum "build.gradle" }}
-#      - run:
-#          name: Build app and test app
-#          command: ./gradlew app:assembleRelease macrobenchmark:assemble
-#      - gcp-cli/initialize:
-#          gcloud-service-key: GCP_SA_KEY
-#          google-project-id: GCP_PROJECT_ID
-#      - run:
-#          name: run on FTL
-#          command: |
-#            gcloud firebase test android run \
-#              --type instrumentation \
-#              --app app/build/outputs/apk/release/app-release.apk \
-#              --test macrobenchmark/build/outputs/apk/release/macrobenchmark-release.apk \
-#              --device model=redfin:,version=30,locale=en,orientation=portrait \
-#              --directories-to-pull /sdcard/Download \
-#              --results-bucket gs://android-sample-benchmarks \
-#              --results-dir macrobenchmark \
-#              --environment-variables clearPackageData=true,additionalTestOutputDir=/sdcard/Download,no-isolated-storage=true
-#      - run:
-#          name: Download benchmark data
-#          command: |
-#            mkdir ~/benchmarks
-#            gsutil cp -r 'gs://android-sample-benchmarks/macrobenchmark/**/artifacts/sdcard/Download/*'  ~/benchmarks
-#            gsutil rm -r gs://android-sample-benchmarks/macrobenchmark
-#      - store_artifacts:
-#          path: ~/benchmarks
-#      - run:
-#          name: Evaluate benchmark results
-#          command: node scripts/eval_startup_benchmark_output.js
-#
-#  release-build:
-#    executor:
-#      name: android/android_machine
-#      resource_class: large
-#      tag: default
-#    steps:
-#      - checkout
-#      - restore_cache:
-#          keys:
-#            - v3-gradle-{{ checksum "build.gradle" }}
-#      - run:
-#          name: Assemble release build
-#          command: |
-#            ./gradlew assembleRelease
-#      - store_artifacts:
-#          path: app/build/outputs/apk/release/app-release-unsigned.apk
-#
-#workflows:
-#  test-and-build:
-#    jobs:
-#      - unit_test
-#      - android/run_ui_tests:
-#          executor:
-#            name: android/android-machine
-#            tag: 2022.08.1
-#            resource-class: xlarge
-#          filters:
-#            branches:
-#              ignore: main # regular commits
-#      - android-test:
-#          matrix:
-#            alias: android-test-all
-#            parameters:
-#              system-image:
-#                - system-images;android-30;google_apis;x86
-#                - system-images;android-29;google_apis;x86
-#                - system-images;android-28;google_apis;x86
-#                - system-images;android-27;google_apis;x86
-#                - system-images;android-26;google_apis;x86
-#                - system-images;android-25;google_apis;x86
-#                - system-images;android-24;google_apis;x86
-#                - system-images;android-23;google_apis;x86
-#          name: android-test-<<matrix.system-image>>
-#          filters:
-#            branches:
-#              only: develop # Commits to develop branch
-#      #      - benchmarks-emulator
-#      #      - benchmarks-ftl
-#      - release-build:
-#          requires:
-#            - unit_test
-#            - android-test-all
-#          #            - benchmarks-ftl
-#          filters:
-#            branches:
-#              only: develop # Commits to develop branch
+export_gservices_key: &export_gservices_key
+  run:
+    name: Export Google Services key environment variable
+    command: echo 'export GOOGLE_SERVICES_JSON="$GOOGLE_SERVICES_JSON"' >> $BASH_ENV
+
+decode_gservices_key: &decode_gservices_key
+  run:
+    name: Decode Google Services JSON key
+    command: |
+      mkdir app/src/mock/
+      mkdir app/src/prod/
+      touch app/google-services.json
+      touch app/src/mock/google-services.json
+      touch app/src/prod/google-services.json
+      echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/google-services.json
+      echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/mock/google-services.json
+      echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/prod/google-services.json
