@@ -34,7 +34,7 @@ jobs:
       - gcp-cli/setup:
           version: 404.0.0
 
-  unit-test:
+  unit_test:
     executor:
       name: android/android-docker
       tag: 2022.08.1
@@ -46,7 +46,7 @@ jobs:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
       - android/run_tests:
-          test-command: ./gradlew testDebug
+          test_command: ./gradlew testDebug
       - save_cache:
           paths:
             - ~/.gradle
@@ -65,7 +65,7 @@ jobs:
 workflows:
   tests:
     jobs:
-      - unit-test
+      - unit_test
 
   install_and_configure_cli:
     jobs:
@@ -184,7 +184,7 @@ workflows:
 #    steps:
 #      - checkout
 #      - android/start-emulator-and-run-tests:
-#          test-command: ./gradlew connectedDebugAndroidTest
+#          test_command: ./gradlew connectedDebugAndroidTest
 #          system-image: << parameters.system-image >>
 #      - run:
 #          name: Save test results
@@ -255,7 +255,7 @@ workflows:
 #workflows:
 #  test-and-build:
 #    jobs:
-#      - unit-test
+#      - unit_test
 #      - android/run_ui_tests:
 #          executor:
 #            name: android/android-machine
@@ -285,7 +285,7 @@ workflows:
 #      #      - benchmarks-ftl
 #      - release-build:
 #          requires:
-#            - unit-test
+#            - unit_test
 #            - android-test-all
 #          #            - benchmarks-ftl
 #          filters:
