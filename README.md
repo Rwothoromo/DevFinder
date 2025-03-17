@@ -106,3 +106,8 @@ export KEY_PASSWORD="my-pass"
 ```
 cat google-services.json | base64
 ```
+
+### Base64 encode Keystore
+```
+cat keystores/keystore.jks | base64
+```
