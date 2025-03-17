@@ -46,8 +46,8 @@ jobs:
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
-      - run: export_gservices_key
-      - run: decode_gservices_key
+      - export_gservices_key
+      - decode_gservices_key
       - run: ls -l
       - android/run_tests:
           test_command: ./gradlew testMockDebugUnitTest
@@ -94,8 +94,8 @@ jobs:
           command: |
             mkdir -p app/build/outputs/code-coverage/connected/flavors/MOCK
             cp firebase/sailfish-26-en_US-portrait/artifacts/coverage.ec app/build/outputs/code-coverage/connected/flavors/MOCK/coverage.ec
-      - run: export_gservices_key
-      - run: decode_gservices_key
+      - export_gservices_key
+      - decode_gservices_key
       - run:
           name: Code Climate Test Setup
           command: |
