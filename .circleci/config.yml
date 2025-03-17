@@ -45,7 +45,7 @@ jobs:
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
-      - android/run-tests:
+      - android/run_tests:
           test-command: ./gradlew testDebug
       - save_cache:
           paths:
@@ -256,7 +256,7 @@ workflows:
 #  test-and-build:
 #    jobs:
 #      - unit-test
-#      - android/run-ui-tests:
+#      - android/run_ui_tests:
 #          executor:
 #            name: android/android-machine
 #            tag: 2022.08.1
