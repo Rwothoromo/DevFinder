@@ -62,7 +62,13 @@ commands:
             - v3-gradle-{{ checksum "build.gradle" }}
 
 jobs:
-  build:
+  #  use-gcp:
+  #    executor: gcp-cli/default
+  #    steps:
+  #      - gcp-cli/setup:
+  #          version: 404.0.0
+
+  lint_check:
     docker:
       - image: cimg/android:2025.03
     working_directory: ~/
@@ -89,12 +95,8 @@ jobs:
       name: android/android_machine
       resource_class: large
       tag: default
-
-  #  use-gcp:
-  #    executor: gcp-cli/default
-  #    steps:
-  #      - gcp-cli/setup:
-  #          version: 404.0.0
+    machine:
+    macos:
 
   unit_tests:
     executor:
@@ -249,9 +251,10 @@ jobs:
           path: app/prod/release/app-prod-release.apk
 
 workflows:
-  test_and_build:
+  build_test_deploy:
     jobs:
-      - build
+      - lint_check
+
 #      - unit_tests:
 #          requires:
 #            - build
