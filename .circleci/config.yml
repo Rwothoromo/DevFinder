@@ -284,6 +284,7 @@ jobs:
           name: Assemble release build
           command: |
             ./gradlew assembleRelease --warning-mode all
+      - run: ls -l app/prod/release/
       - store_artifacts:
           path: app/prod/release/app-prod-release.apk
 
