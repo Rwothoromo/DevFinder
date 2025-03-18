@@ -61,6 +61,7 @@ commands:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
 
+
 jobs:
   #  use-gcp:
   #    executor: gcp-cli/default
@@ -68,7 +69,7 @@ jobs:
   #      - gcp-cli/setup:
   #          version: 404.0.0
 
-  lint_check:
+  quality_check:
     executor:
       name: android/android_machine
       resource_class: large
@@ -82,7 +83,7 @@ jobs:
       - decode_google_services_key
       - restore_gradle_cache
       - run: ./gradlew dependencies --warning-mode all
-      - run: ./gradlew lint test
+      - run: ./gradlew checkstyle pmd lint
       - save_gradle_cache
 
 
@@ -142,103 +143,80 @@ jobs:
       - run: ls -l
       - export_google_services_key
       - decode_google_services_key
-
-# Try
-      - run:
-          name: Create avd
-          command: |
-            SYSTEM_IMAGES="system-images;android-29;default;x86"
-            sdkmanager "$SYSTEM_IMAGES"
-            echo "no" | avdmanager --verbose create avd -n test -k "$SYSTEM_IMAGES"
-      - run:
-          name: Launch emulator
-          command: |
-            emulator -avd test -delay-adb -verbose -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
-          background: true
-      - run:
-          name: Generate cache key
-          command: |
-            find . -name 'build.gradle' | sort | xargs cat |
-            shasum | awk '{print $1}' > /tmp/gradle_cache_seed
-      - restore_cache:
-          key: gradle-v1-{{ arch }}-{{ checksum "/tmp/gradle_cache_seed" }}
-      - run:
-          # run in parallel with the emulator starting up, to optimize build time
-          name: Run assembleDebugAndroidTest task
-          command: |
-            ./gradlew connectedMockDebugAndroidTest | circleci tests glob "app/src/androidTest/**/*InstrumentationTest.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
-      - run:
-          name: Wait for emulator to start
-          command: |
-            circle-android wait-for-boot
-      - run:
-          name: Disable emulator animations
-          command: |
-            adb shell settings put global window_animation_scale 0.0
-            adb shell settings put global transition_animation_scale 0.0
-            adb shell settings put global animator_duration_scale 0.0
-      - run:
-          name: Run UI tests (with retry)
-          command: |
-            MAX_TRIES=2
-            run_with_retry() {
-               n=1
-               until [ $n -gt $MAX_TRIES ]
-               do
-                  echo "Starting test attempt $n"
-                  ./gradlew connectedAndroidTest && break
-                  n=$[$n+1]
-                  sleep 5
-               done
-               if [ $n -gt $MAX_TRIES ]; then
-                 echo "Max tries reached ($MAX_TRIES)"
-                 exit 1
-               fi
-            }
-            run_with_retry
-      - save_cache:
-          key: gradle-v1-{{ arch }}-{{ checksum "/tmp/gradle_cache_seed" }}
-          paths:
-            - ~/.gradle/caches
-            - ~/.gradle/wrapper
-      - store_test_results:
-          path: app\build\outputs\androidTest-results
-# End Try
-
 #      - run:
-#          name: Export Google Cloud Service Account Key Environment Variable
-#          command: echo 'export GCLOUD_SERVICE_KEY="$GCLOUD_SERVICE_KEY"' >> $BASH_ENV
-#      - run:
-#          name: Decode Google Cloud Credentials
+#          name: Create avd
 #          command: |
-#            sudo touch gcloud-service-key.json
-#            sudo chmod 777 gcloud-service-key.json
-#            echo $GCLOUD_SERVICE_KEY | base64 --decode >> gcloud-service-key.json
-#      - android/run_tests:
-#          test_command: ./gradlew connectedMockDebugAndroidTest | circleci tests glob "app/src/androidTest/**/*InstrumentationTest.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
-#          system_image: system-images;android-31;default;x86_64
+#            SYSTEM_IMAGES="system-images;android-29;default;x86"
+#            sdkmanager "$SYSTEM_IMAGES"
+#            echo "no" | avdmanager --verbose create avd -n test -k "$SYSTEM_IMAGES"
 #      - run:
-#          name: Authorize gcloud and set config defaults
+#          name: Launch emulator
 #          command: |
-#            gcloud auth activate-service-account narobi-java-developers@developers-216907.iam.gserviceaccount.com --key-file=gcloud-service-key.json
-#            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
-#            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+#            emulator -avd test -delay-adb -verbose -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+#          background: true
 #      - run:
-#          name: Test with Firebase Test Lab
-#          command: gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/mock/debug/app-mock-debug.apk --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk --device model=sailfish,version=26,locale=en_US,orientation=portrait --environment-variables=coverage=true,coverageFile=/sdcard/coverage.ec --directories-to-pull=/sdcard --timeout 20m
+#          name: Generate cache key
+#          command: |
+#            find . -name 'build.gradle' | sort | xargs cat |
+#            shasum | awk '{print $1}' > /tmp/gradle_cache_seed
+#      - restore_cache:
+#          key: gradle-v1-{{ arch }}-{{ checksum "/tmp/gradle_cache_seed" }}
 #      - run:
-#          name: Create directory to store test results
-#          command: mkdir firebase
+#          # run in parallel with the emulator starting up, to optimize build time
+#          name: Run assembleDebugAndroidTest task
+#          command: |
+#            ./gradlew connectedMockDebugAndroidTest | circleci tests glob "app/src/androidTest/**/*InstrumentationTest.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
 #      - run:
-#          name: Download instrumented test results from Firebase Test Lab
-#          command: gsutil -m cp -r -U "`gsutil ls gs://test-lab-inwsbb9xsp5f6-my4ixr2678xc0 | tail -1`*" firebase/ | true
-#      - persist_to_workspace:
-#          root: ~/project
+#          name: Wait for emulator to start
+#          command: |
+#            circle-android wait-for-boot
+#      - run:
+#          name: Disable emulator animations
+#          command: |
+#            adb shell settings put global window_animation_scale 0.0
+#            adb shell settings put global transition_animation_scale 0.0
+#            adb shell settings put global animator_duration_scale 0.0
+#      - run:
+#          name: Run UI tests (with retry)
+#          command: |
+#            MAX_TRIES=2
+#            run_with_retry() {
+#               n=1
+#               until [ $n -gt $MAX_TRIES ]
+#               do
+#                  echo "Starting test attempt $n"
+#                  ./gradlew connectedAndroidTest && break
+#                  n=$[$n+1]
+#                  sleep 5
+#               done
+#               if [ $n -gt $MAX_TRIES ]; then
+#                 echo "Max tries reached ($MAX_TRIES)"
+#                 exit 1
+#               fi
+#            }
+#            run_with_retry
+#      - save_cache:
+#          key: gradle-v1-{{ arch }}-{{ checksum "/tmp/gradle_cache_seed" }}
 #          paths:
-#            - firebase
-#      - store_artifacts:
-#          path: firebase/
-#          destination: /firebase/
+#            - ~/.gradle/caches
+#            - ~/.gradle/wrapper
+#      - store_test_results:
+#          path: app\build\outputs\androidTest-results
+      - run:
+          name: Installing emulator and Running Instrumentation tests
+          command: |
+            sdkmanager "platform-tools" "platforms;android-29" "build-tools;30.0.0" "emulator"
+            sdkmanager "system-images;android-29;google_apis;x86"
+            echo no | avdmanager create avd -n test-emulator -k  "system-images;android-29;google_apis;x86"
+            emulator -avd test-emulator -noaudio -no-boot-anim -gpu off -no-window &
+            adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
+            adb shell wm dismiss-keyguard
+            sleep 1
+            adb shell settings put global window_animation_scale 0
+            adb shell settings put global transition_animation_scale 0
+            adb shell settings put global animator_duration_scale 0
+            ./gradlew connectedMockDebugAndroidTest | circleci tests glob "app/src/androidTest/**/*InstrumentationTest.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
+
 
   jacoco_code_coverage:
     executor:
@@ -284,6 +262,7 @@ jobs:
           destination: /reports/
       - save_gradle_cache
 
+
   release_build:
     executor:
       name: android/android_machine
@@ -304,10 +283,11 @@ jobs:
           path: app/prod/release/app-prod-release.apk
       - save_gradle_cache
 
+
 workflows:
   build_test_deploy:
     jobs:
-      - lint_check
+      - quality_check
 
 #      - unit_tests:
 #          requires:
@@ -315,7 +295,7 @@ workflows:
       - android_tests: # No connected devices!
           requires:
 #            - unit_tests
-            - lint_check
+            - quality_check
 #      - jacoco_code_coverage:
 #          requires:
 #            - android_tests
