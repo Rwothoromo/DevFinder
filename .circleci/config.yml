@@ -60,7 +60,7 @@ jobs:
       - run:
           name: Decode Google Services JSON key
           command: |
-#            sudo chmod 600 /root/.
+            sudo chmod 600 /root/.
             sudo mkdir -m 0755 -p app/src/mock/
             sudo mkdir -m 0755 -p app/src/prod/
             sudo touch -m 0755 app/google-services.json
