@@ -85,8 +85,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: workspace
-      - export_gservices_key
-      - decode_gservices_key
       - run: ls
       - run: ./gradlew dependencies
       - restore_cache:
@@ -188,7 +186,13 @@ jobs:
 workflows:
   test_and_build:
     jobs:
-      - unit_test
+      - export_gservices_key
+      - decode_gservices_key:
+          requires:
+            - export_gservices_key
+      - unit_test:
+          requires:
+            - decode_gservices_key
       - jacoco_code_coverage:
           requires:
             - unit_test
