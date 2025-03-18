@@ -107,7 +107,7 @@ jobs:
   android_tests:
     executor:
       name: android/android_machine
-      resource-class: xlarge
+      resource_class: xlarge
       tag: default
     parallelism: 4
     steps:
