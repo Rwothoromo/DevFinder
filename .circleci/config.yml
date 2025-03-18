@@ -45,8 +45,8 @@ jobs:
 
   unit_test:
     executor:
-      name: android/android-docker
-      tag: 2022.08.1
+      name: android/android_machine
+      tag: default
     parallelism: 4
     steps:
       - checkout
