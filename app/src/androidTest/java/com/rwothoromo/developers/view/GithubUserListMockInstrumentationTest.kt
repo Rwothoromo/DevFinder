@@ -1,9 +1,9 @@
 package com.rwothoromo.developers.view
 
+import android.content.Context
 import android.content.Intent
-import android.support.test.InstrumentationRegistry
-import android.support.test.InstrumentationRegistry.getInstrumentation
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
@@ -33,6 +33,7 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class GithubUserListMockInstrumentationTest {
+    private val context: Context = ApplicationProvider.getApplicationContext()
 
     /**
      * Mock MainActivity test rule.
@@ -43,8 +44,7 @@ class GithubUserListMockInstrumentationTest {
         object : ActivityTestRule<MainActivity>(MainActivity::class.java, true, true) {
 
             override fun getActivityIntent(): Intent {
-                val targetContext = InstrumentationRegistry.getTargetContext()
-                return Intent(targetContext, MainActivity::class.java)
+                return Intent(context, MainActivity::class.java)
             }
         }
 
@@ -64,7 +64,7 @@ class GithubUserListMockInstrumentationTest {
         server = MockWebServer()
 
         // Schedule some responses.
-        val fileName = "mock_api_200_response.json"
+        val fileName = "app/src/androidTestMock/assets/mock_api_200_response.json"
         server!!.enqueue(
             MockResponse()
                 .addHeader("Content-Type", "application/json; charset=utf-8")
@@ -72,7 +72,7 @@ class GithubUserListMockInstrumentationTest {
                 .setResponseCode(200)
                 .setBody(
                     RestServiceTestHelper.getStringFromFile(
-                        getInstrumentation().context,
+                        context,
                         fileName
                     )
                 )

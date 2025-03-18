@@ -53,13 +53,13 @@ commands:
       - save_cache:
           paths:
             - ~/.gradle
-          key: v3-gradle-{{ checksum "build.gradle" }}
+          key: v1-gradle-{{ checksum "build.gradle" }}
 
   restore_gradle_cache:
     steps:
       - restore_cache:
           keys:
-            - v3-gradle-{{ checksum "build.gradle" }}
+            - v1-gradle-{{ checksum "build.gradle" }}
 
 
 jobs:
@@ -143,17 +143,7 @@ jobs:
       - run: ls -l
       - export_google_services_key
       - decode_google_services_key
-#      - run:
-#          name: Create avd
-#          command: |
-#            SYSTEM_IMAGES="system-images;android-29;default;x86"
-#            sdkmanager "$SYSTEM_IMAGES"
-#            echo "no" | avdmanager --verbose create avd -n test -k "$SYSTEM_IMAGES"
-#      - run:
-#          name: Launch emulator
-#          command: |
-#            emulator -avd test -delay-adb -verbose -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
-#          background: true
+
 #      - run:
 #          name: Generate cache key
 #          command: |
@@ -161,40 +151,6 @@ jobs:
 #            shasum | awk '{print $1}' > /tmp/gradle_cache_seed
 #      - restore_cache:
 #          key: gradle-v1-{{ arch }}-{{ checksum "/tmp/gradle_cache_seed" }}
-#      - run:
-#          # run in parallel with the emulator starting up, to optimize build time
-#          name: Run assembleDebugAndroidTest task
-#          command: |
-#            ./gradlew connectedMockDebugAndroidTest | circleci tests glob "app/src/androidTest/**/*InstrumentationTest.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
-#      - run:
-#          name: Wait for emulator to start
-#          command: |
-#            circle-android wait-for-boot
-#      - run:
-#          name: Disable emulator animations
-#          command: |
-#            adb shell settings put global window_animation_scale 0.0
-#            adb shell settings put global transition_animation_scale 0.0
-#            adb shell settings put global animator_duration_scale 0.0
-#      - run:
-#          name: Run UI tests (with retry)
-#          command: |
-#            MAX_TRIES=2
-#            run_with_retry() {
-#               n=1
-#               until [ $n -gt $MAX_TRIES ]
-#               do
-#                  echo "Starting test attempt $n"
-#                  ./gradlew connectedAndroidTest && break
-#                  n=$[$n+1]
-#                  sleep 5
-#               done
-#               if [ $n -gt $MAX_TRIES ]; then
-#                 echo "Max tries reached ($MAX_TRIES)"
-#                 exit 1
-#               fi
-#            }
-#            run_with_retry
 #      - save_cache:
 #          key: gradle-v1-{{ arch }}-{{ checksum "/tmp/gradle_cache_seed" }}
 #          paths:
@@ -202,11 +158,13 @@ jobs:
 #            - ~/.gradle/wrapper
 #      - store_test_results:
 #          path: app\build\outputs\androidTest-results
+
       - run:
           name: Installing emulator and Running Instrumentation tests
           command: |
             sdkmanager "platform-tools" "platforms;android-29" "build-tools;30.0.0" "emulator"
             sdkmanager "system-images;android-29;google_apis;x86"
+            sdkmanager --update
             echo no | avdmanager create avd -n test-emulator -k  "system-images;android-29;google_apis;x86"
             emulator -avd test-emulator -noaudio -no-boot-anim -gpu off -no-window &
             adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
@@ -215,7 +173,7 @@ jobs:
             adb shell settings put global window_animation_scale 0
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
-            ./gradlew connectedMockDebugAndroidTest | circleci tests glob "app/src/androidTest/**/*InstrumentationTest.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
+            ./gradlew connectedMockDebugAndroidTest --stacktrace | circleci tests glob "app/src/androidTest/**/*InstrumentationTest.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
 
 
   jacoco_code_coverage:
@@ -287,15 +245,14 @@ jobs:
 workflows:
   build_test_deploy:
     jobs:
-      - quality_check
-
+      - android_tests
+#      - quality_check
 #      - unit_tests:
 #          requires:
-#            - build
-      - android_tests: # No connected devices!
-          requires:
+#            - quality_check
+#      - android_tests: # No connected devices!
+#          requires:
 #            - unit_tests
-            - quality_check
 #      - jacoco_code_coverage:
 #          requires:
 #            - android_tests

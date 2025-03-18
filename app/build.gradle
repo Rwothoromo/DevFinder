@@ -48,7 +48,8 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // The app's state will be completely cleared between tests.
         testInstrumentationRunnerArguments clearPackageData: 'true'
         multiDexEnabled = true
     }
@@ -95,7 +96,8 @@ android {
     }
 
     testOptions {
-        execution = 'ANDROID_TEST_ORCHESTRATOR'
+//        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        unitTests.includeAndroidResources = true
         animationsDisabled = true
 
         unitTests.all {
@@ -161,26 +163,32 @@ dependencies {
 
     // Testing
     testImplementation "junit:junit:${rootProject.jUnit}"
-    testImplementation "androidx.test:core:${rootProject.androidXTestVersion}" // Robolectric
+    testImplementation "androidx.test:core:${rootProject.androidXTestVersion}"
     testImplementation "io.mockk:mockk:${rootProject.mockkVersion}" // Mocking lib for Kotlin
     testImplementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
     testImplementation "org.mockito:mockito-inline:${rootProject.mockitoInlineVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${rootProject.mockitoKotlinVersion}"
+//    testImplementation "org.robolectric:robolectric:${rootProject.robolectricVersion}"
 
     androidTestImplementation "androidx.test:core:${rootProject.androidXTestVersion}"
     androidTestImplementation "androidx.test:core-ktx:${rootProject.androidXTestVersion}"
     androidTestImplementation "androidx.test.espresso:espresso-core:${rootProject.espressoVersion}"
-    androidTestImplementation "androidx.test.ext:junit:${rootProject.jUnitExt}" // JUnit Ext APIs
+    androidTestImplementation("androidx.test.ext:junit:${rootProject.jUnitExt}") { // JUnit Ext APIs
+        // AndroidX Test Orchestrator dependency
+        exclude group: 'androidx.test', module: 'orchestrator'
+    }
     androidTestImplementation "androidx.test.ext:junit-ktx:${rootProject.jUnitExt}"
     androidTestImplementation "androidx.test.ext:truth:${rootProject.truthVersion}"// Truth Ext APIs
     androidTestImplementation "androidx.test:runner:${rootProject.testRunner}"
+    androidTestImplementation "androidx.test:rules:${rootProject.testRules}"
 
-    // To use android test orchestrator
-    androidTestUtil "androidx.test:orchestrator:${rootProject.orchestratorVersion}"
     androidTestImplementation "com.android.support.test:runner:${rootProject.testRunner}"
     androidTestImplementation "com.android.support.test:rules:${rootProject.testRunner}"
     androidTestImplementation "com.android.support.test.espresso:espresso-core:${rootProject.espressoVersion}"
     androidTestImplementation "com.android.support.test.espresso:espresso-contrib:${rootProject.espressoVersion}"
     androidTestImplementation "com.android.support.test.espresso:espresso-intents:${rootProject.espressoVersion}"
     androidTestImplementation "com.android.support.test.espresso:espresso-idling-resource:${rootProject.espressoVersion}"
+
+    // To use android test orchestrator
+//    androidTestUtil "androidx.test:orchestrator:${rootProject.orchestratorVersion}"
 }
