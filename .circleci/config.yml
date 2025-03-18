@@ -53,7 +53,7 @@ jobs:
       - run:
           name: Export Google Services key environment variable
           command: echo 'export GOOGLE_SERVICES_JSON="$GOOGLE_SERVICES_JSON"' >> $BASH_ENV
-
+      - run: ls -l app/google-services.json
       - run:
           name: Decode Google Services JSON key
           command: |
@@ -76,7 +76,7 @@ jobs:
       - android/run_tests:
           test_command: ./gradlew testMockDebugUnitTest | circleci tests glob "app/src/**/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
       - persist_to_workspace:
-          root: ~/repo
+          root: ~/
           paths:
             - app/build/intermediates
             - app/build/outputs/androidTest-results
