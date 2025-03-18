@@ -102,9 +102,9 @@ export KEY_ALIAS="my-alias"
 export KEY_PASSWORD="my-pass"
 ```
 
-### Base64 encode Google Services
+### Base64 encode Google Services (Remove EOL characters when copying)
 ```
-cat google-services.json | base64
+cat app/google-services.json | base64
 ```
 
 ### Base64 encode Keystore
