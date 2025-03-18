@@ -1,7 +1,7 @@
 package com.rwothoromo.developers.view
 
 import android.os.Parcel
-import androidx.test.runner.AndroidJUnit4
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rwothoromo.developers.model.GithubUser
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
@@ -10,6 +10,8 @@ import org.junit.runner.RunWith
 
 /**
  * Tests that the GithubUser parcelable interface is implemented correctly.
+ * For Parcelable and Parcel classes, use an Espresso test to run against the Android API.
+ * If run as a JUnit test, we get a null exception when `Parcel.obtain()` returns null in the test.
  */
 @RunWith(AndroidJUnit4::class)
 class GithubUserInstrumentationTest {

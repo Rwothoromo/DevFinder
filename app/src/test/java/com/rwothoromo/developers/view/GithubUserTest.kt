@@ -7,17 +7,19 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnit
-import java.util.*
 
 class GithubUserTest {
 
     @Rule
     @JvmField
     var mockitoRule = MockitoJUnit.rule()!!
+
     @Mock
     internal var githubPresenter: GithubPresenter? = null
+
     @Mock
     private var githubUserView: GithubUserView? = null
+
     @Mock
     private val githubUsers: ArrayList<GithubUser>? = null
 

@@ -40,7 +40,7 @@ jobs:
   #      - gcp-cli/setup:
   #          version: 404.0.0
 
-  unit_test:
+  unit_tests:
     executor:
       name: android/android_machine
       tag: default
@@ -69,7 +69,7 @@ jobs:
             sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/mock/google-services.json
             sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/prod/google-services.json
       - run: ls -l app/google-services.json
-      - run: ./gradlew dependencies
+      - run: ./gradlew dependencies --warning-mode all
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
@@ -84,6 +84,9 @@ jobs:
             - app/build/outputs/apk
             - app/build/outputs/code-coverage
             - app/build/test-results
+            - app/build/reports
+            - app/build/reports/androidTests/connected/debug/flavors/mock/index.html
+            - app/build/reports/tests/testMockDebugUnitTest/index.html
             - firebase
       - save_cache:
           paths:
@@ -93,12 +96,25 @@ jobs:
           name: Save test results
           command: |
             sudo mkdir -m 0755 -p ~/test-results/junit/
-            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -name "*Test/index.html" -print0 | xargs -0 -I {} -exec cp {} ~/test-results/junit/ \;
           when: always
+      - run: ls -l ~/test-results/junit/
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
           path: ~/test-results/junit
+
+  android_tests:
+    executor:
+      name: android/android_machine
+      resource-class: xlarge
+      tag: default
+    parallelism: 4
+    steps:
+      - checkout
+      - android/start-emulator-and-run-tests:
+          test-command: ./gradlew connectedMockDebugAndroidTest
+          system-image: system-images;android-30;google_apis;x86
 
   jacoco_code_coverage:
     executor:
@@ -217,10 +233,13 @@ jobs:
 workflows:
   test_and_build:
     jobs:
-      - unit_test
+      - unit_tests
+      - android_tests:
+          requires:
+            - unit_tests
       - jacoco_code_coverage:
           requires:
-            - unit_test
+            - android_tests
       - release_build:
           requires:
             - jacoco_code_coverage

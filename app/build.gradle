@@ -29,11 +29,10 @@ jacoco {
 tasks.withType(Test).configureEach {
     jacoco.includeNoLocationClasses = true
     jacoco.excludes = ['jdk.internal.*']
-    useJUnitPlatform() // the kotlin-test library automatically includes JUnit 5 as a dependency.
+//    useJUnitPlatform() // causes unit tests to fail or get skipped
     testLogging {
         exceptionFormat = 'full'
-
-        // Optionally do:
+        events("passed", "skipped", "failed")
         showStackTraces = true
     }
 }

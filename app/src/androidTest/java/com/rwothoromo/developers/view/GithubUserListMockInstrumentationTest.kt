@@ -14,8 +14,8 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
-import androidx.test.runner.AndroidJUnit4
 import com.rwothoromo.developers.RestServiceTestHelper
 import com.rwothoromo.developers.util.EspressoIdlingResource
 import com.rwothoromo.devfinder.R
@@ -32,7 +32,7 @@ import org.junit.runner.RunWith
  * Mock MainActivity test.
  */
 @RunWith(AndroidJUnit4::class)
-class GithubUserListMockTest {
+class GithubUserListMockInstrumentationTest {
 
     /**
      * Mock MainActivity test rule.
