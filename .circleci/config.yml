@@ -66,9 +66,9 @@ jobs:
             sudo chmod 777 app/google-services.json
             sudo chmod 777 app/src/mock/google-services.json
             sudo chmod 777 app/src/prod/google-services.json
-            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/google-services.json
-            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/mock/google-services.json
-            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/prod/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/mock/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/prod/google-services.json
       - run: ls -l app/google-services.json
 
   ## Workspace
