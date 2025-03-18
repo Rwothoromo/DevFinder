@@ -7,7 +7,6 @@ def coverageSourceDirs = [
 
 tasks.register('jacocoTestReport', JacocoReport) {
     check.dependsOn 'clean', 'test'
-//    dependsOn['clean', 'test']
     description = 'Generate JaCoCo coverage report'
     group = 'Reporting'
 
@@ -49,7 +48,6 @@ tasks.register('jacocoTestReport', JacocoReport) {
 
 tasks.register('unifiedCoverageReport') {
     check.dependsOn 'clean', 'jacocoTestReport', 'createProdDebugCoverageReport'
-//    dependsOn['clean', 'jacocoTestReport', 'createProdDebugCoverageReport']
     description = 'Generates coverage report which includes both local unit tests and instrumentation tests'
     group = 'Reporting'
 }

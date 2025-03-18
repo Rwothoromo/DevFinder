@@ -85,7 +85,7 @@ jobs:
           restore_gradle_cache_prefix: v1a
       - android/run_tests
       - android/save_gradle_cache:
-          cache_prefix: v1a
+          cache_prefix: v3
     executor:
       name: android/android_machine
       resource_class: large
@@ -163,6 +163,7 @@ jobs:
             echo $GCLOUD_SERVICE_KEY | base64 --decode >> gcloud-service-key.json
       - android/run_tests:
           test_command: ./gradlew connectedMockDebugAndroidTest | circleci tests glob "app/src/androidTest/**/*InstrumentationTest.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
+          system_image: system-images;android-31;default;x86_64
       - run:
           name: Authorize gcloud and set config defaults
           command: |
@@ -244,14 +245,17 @@ jobs:
           name: Assemble release build
           command: |
             ./gradlew assembleRelease --warning-mode all
-      - run: ls -l app/prod/
+      - run: ls -l app/
       - store_artifacts:
           path: app/prod/release/app-prod-release.apk
 
 workflows:
   test_and_build:
     jobs:
-      - unit_tests
+      - build
+      - unit_tests:
+          requires:
+            - build
 #      - android_tests: # No connected devices!
 #          requires:
 #            - unit_tests
