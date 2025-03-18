@@ -127,7 +127,7 @@ jobs:
 #      - android/start-emulator-and-run-tests:
       - android/run_tests:
           test_command: ./gradlew connectedMockDebugAndroidTest | circleci tests glob "app/src/androidTest/**/*InstrumentationTest.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
-          system-image: system-images;android-30;google_apis;x86
+          system_image: system-images;android-30;google_apis;x86
       - run:
           name: Authorize gcloud and set config defaults
           command: |
