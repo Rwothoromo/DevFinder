@@ -289,18 +289,17 @@ jobs:
 workflows:
   test_and_build:
     jobs:
-      - jacoco_code_coverage
+      - release_build
 #      - unit_tests
-#      - android_tests:
+#      - android_tests: # No connected devices!
 #          requires:
 #            - unit_tests
 #      - jacoco_code_coverage:
 #          requires:
-##            - android_tests # No connected devices!
-#            - unit_tests
-      - release_build:
-          requires:
-            - jacoco_code_coverage
+#            - android_tests
+#      - release_build:
+#          requires:
+#            - jacoco_code_coverage
 
 #  install_and_configure_cli:
 #    jobs:
