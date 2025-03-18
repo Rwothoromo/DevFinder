@@ -79,7 +79,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - app/build/intermediates
+            - circleci/app/build/intermediates
             - app/build/outputs/androidTest-results
             - app/build/outputs/apk
             - app/build/outputs/code-coverage
