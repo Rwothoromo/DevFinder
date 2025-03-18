@@ -74,50 +74,6 @@ jobs:
   ## Workspace
   workspace: ~/repo
 
-  attach_debug_workspace:
-    executor:
-      name: android/android_machine
-      resource_class: large
-      tag: default
-    steps:
-      - attach_workspace:
-          at: workspace
-
-  persist_debug_workspace:
-    executor:
-      name: android/android_machine
-      resource_class: large
-      tag: default
-    steps:
-      - persist_to_workspace:
-          root: workspace
-          paths:
-            - app/build/intermediates
-            - app/build/outputs/androidTest-results
-            - app/build/outputs/apk
-            - app/build/outputs/code-coverage
-            - app/build/test-results
-
-  attach_firebase_workspace:
-    executor:
-      name: android/android_machine
-      resource_class: large
-      tag: default
-    steps:
-      - attach_workspace:
-          at: workspace
-
-  persist_firebase_workspace:
-    executor:
-      name: android/android_machine
-      resource_class: large
-      tag: default
-    steps:
-      - persist_to_workspace:
-          root: workspace
-          paths:
-            - firebase
-
   unit_test:
     executor:
       name: android/android_machine
@@ -127,8 +83,8 @@ jobs:
     resource_class: large
     steps:
       - checkout
-      - attach_workspace: attach_debug_workspace
-      - attach_workspace: attach_firebase_workspace
+      - attach_workspace:
+          at: workspace
       - run: ls
       - run: ./gradlew dependencies
       - restore_cache:
@@ -137,7 +93,15 @@ jobs:
       - run: ls -l
       - android/run_tests:
           test_command: ./gradlew testMockDebugUnitTest |     circleci tests glob "app/src/**/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
-      - persist_to_workspace: persist_debug_workspace
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - app/build/intermediates
+            - app/build/outputs/androidTest-results
+            - app/build/outputs/apk
+            - app/build/outputs/code-coverage
+            - app/build/test-results
+            - firebase
       - save_cache:
           paths:
             - ~/.gradle
