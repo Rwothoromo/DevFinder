@@ -283,24 +283,24 @@ jobs:
       - run:
           name: Assemble release build
           command: |
-            ./gradlew assembleRelease
+            ./gradlew assembleRelease --warning-mode all
       - store_artifacts:
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          path: app/prod/release/app-prod-release.apk
 
 workflows:
   test_and_build:
     jobs:
-      - release_build
-#      - unit_tests
+      - unit_tests
 #      - android_tests: # No connected devices!
 #          requires:
 #            - unit_tests
 #      - jacoco_code_coverage:
 #          requires:
 #            - android_tests
-#      - release_build:
-#          requires:
+      - release_build:
+          requires:
 #            - jacoco_code_coverage
+            - unit_tests
 
 #  install_and_configure_cli:
 #    jobs:
