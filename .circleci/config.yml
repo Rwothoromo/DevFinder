@@ -112,9 +112,44 @@ jobs:
     parallelism: 4
     steps:
       - checkout
-      - android/start-emulator-and-run-tests:
-          test-command: ./gradlew connectedMockDebugAndroidTest
+      - attach_workspace:
+          at: ~/
+      - run: ls -l
+      - run:
+          name: Export Google Cloud Service Account Key Environment Variable
+          command: echo 'export GCLOUD_SERVICE_KEY="$GCLOUD_SERVICE_KEY"' >> $BASH_ENV
+      - run:
+          name: Decode Google Cloud Credentials
+          command: |
+            sudo touch gcloud-service-key.json
+            sudo chmod 777 gcloud-service-key.json
+            echo $GCLOUD_SERVICE_KEY | base64 --decode >> gcloud-service-key.json
+#      - android/start-emulator-and-run-tests:
+      - android/run_tests:
+          test_command: ./gradlew connectedMockDebugAndroidTest | circleci tests glob "app/src/androidTest/**/*InstrumentationTest.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
           system-image: system-images;android-30;google_apis;x86
+      - run:
+          name: Authorize gcloud and set config defaults
+          command: |
+            gcloud auth activate-service-account narobi-java-developers@developers-216907.iam.gserviceaccount.com --key-file=gcloud-service-key.json
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+      - run:
+          name: Test with Firebase Test Lab
+          command: gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/mock/debug/app-mock-debug.apk --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk --device model=sailfish,version=26,locale=en_US,orientation=portrait --environment-variables=coverage=true,coverageFile=/sdcard/coverage.ec --directories-to-pull=/sdcard --timeout 20m
+      - run:
+          name: Create directory to store test results
+          command: mkdir firebase
+      - run:
+          name: Download instrumented test results from Firebase Test Lab
+          command: gsutil -m cp -r -U "`gsutil ls gs://test-lab-inwsbb9xsp5f6-my4ixr2678xc0 | tail -1`*" ${HOME}/repo/firebase | true
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - firebase
+      - store_artifacts:
+          path: firebase/
+          destination: /firebase/
 
   jacoco_code_coverage:
     executor:
