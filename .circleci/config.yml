@@ -127,9 +127,8 @@ jobs:
     resource_class: large
     steps:
       - checkout
-      - attach_workspace:
-          attach_debug_workspace
-          attach_firebase_workspace
+      - attach_workspace: attach_debug_workspace
+      - attach_workspace: attach_firebase_workspace
       - run: ls
       - run: ./gradlew dependencies
       - restore_cache:
@@ -138,8 +137,7 @@ jobs:
       - run: ls -l
       - android/run_tests:
           test_command: ./gradlew testMockDebugUnitTest |     circleci tests glob "app/src/**/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
-      - persist_to_workspace:
-          - persist_debug_workspace
+      - persist_to_workspace: persist_debug_workspace
       - save_cache:
           paths:
             - ~/.gradle
