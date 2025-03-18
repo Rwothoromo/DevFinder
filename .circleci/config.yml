@@ -144,6 +144,10 @@ jobs:
       tag: default
     steps:
       - checkout
+      - run: export_gservices_key
+      - run: decode_gservices_key
+      - run: export_keystore_keys
+      - run: decode_keystore_keys
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
@@ -184,6 +188,10 @@ jobs:
       tag: default
     steps:
       - checkout
+      - run: export_gservices_key
+      - run: decode_gservices_key
+      - run: export_keystore_keys
+      - run: decode_keystore_keys
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
@@ -197,18 +205,7 @@ jobs:
 workflows:
   test_and_build:
     jobs:
-      - unit_test:
-          requires:
-            - export_gservices_key
-            - decode_gservices_key:
-                requires:
-                  - export_gservices_key
-            - export_keystore_keys:
-                requires:
-                  - decode_gservices_key
-            - decode_keystore_keys:
-                requires:
-                  - export_keystore_keys
+      - unit_test
       - jacoco_code_coverage:
           requires:
             - unit_test
