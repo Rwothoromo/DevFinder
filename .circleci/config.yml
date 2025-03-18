@@ -8,7 +8,7 @@ jobs:
   build:
     docker:
       - image: cimg/android:2025.03
-    working_directory: ~/repo
+    working_directory: ~/
     environment:
       TERM: dumb
       # Customize the JVM maximum heap limit
@@ -48,7 +48,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/repo
+          at: ~/
       - run: ls -l
       - run:
           name: Export Google Services key environment variable
@@ -75,6 +75,7 @@ jobs:
             - v3-gradle-{{ checksum "build.gradle" }}
       - android/run_tests:
           test_command: ./gradlew testMockDebugUnitTest | circleci tests glob "app/src/**/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
+      - run: ls -l
       - persist_to_workspace:
           root: ~/
           paths:
