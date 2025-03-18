@@ -96,7 +96,7 @@ jobs:
           name: Save test results
           command: |
             sudo mkdir -m 0755 -p ~/test-results/junit/
-            find . -name "*Test/index.html" -print0 | xargs -0 -I {} -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/build/reports/tests/.*xml" -exec cp {} ~/test-results/junit/ \;
           when: always
       - run: ls -l ~/test-results/junit/
       - store_test_results:
