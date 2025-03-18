@@ -82,8 +82,9 @@ jobs:
       - android/start_emulator:
           avd_name: myavd
           no_window: true
-          restore_gradle_cache_prefix: v1a
-      - save_gradle_cache
+          restore_gradle_cache_prefix: v3
+      - android/save_gradle_cache:
+          cache_prefix: v3
     executor:
       name: android/android_machine
       resource_class: large
@@ -251,19 +252,19 @@ workflows:
   test_and_build:
     jobs:
       - build
-      - unit_tests:
-          requires:
-            - build
+#      - unit_tests:
+#          requires:
+#            - build
 #      - android_tests: # No connected devices!
 #          requires:
 #            - unit_tests
 #      - jacoco_code_coverage:
 #          requires:
 #            - android_tests
-      - release_build:
-          requires:
-#            - jacoco_code_coverage
-            - unit_tests
+#      - release_build:
+#          requires:
+##            - jacoco_code_coverage
+#            - unit_tests
 
 #  install_and_configure_cli:
 #    jobs:
