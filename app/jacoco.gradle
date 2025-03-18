@@ -12,7 +12,7 @@ tasks.register('jacocoTestReport', JacocoReport) {
     group = 'Reporting'
 
     reports {
-        xml.required = false
+        xml.required = true
         html.required = true
         html.outputLocation = layout.getBuildDirectory().dir('jacocoHtml')
     }

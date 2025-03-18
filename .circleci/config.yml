@@ -96,7 +96,7 @@ jobs:
           name: Save test results
           command: |
             sudo mkdir -m 0755 -p ~/test-results/junit/
-            find . -type f -regex ".*/build/reports/tests/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/build/reports/tests/.*html" -exec cp {} ~/test-results/junit/ \;
           when: always
       - run: ls -l ~/test-results/junit/
       - store_test_results:
@@ -107,7 +107,6 @@ jobs:
   android_tests:
     executor:
       name: android/android_machine
-      resource_class: xlarge
       tag: default
     parallelism: 4
     steps:
