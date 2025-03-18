@@ -75,11 +75,11 @@ jobs:
             - v3-gradle-{{ checksum "build.gradle" }}
       - android/run_tests:
           test_command: ./gradlew testMockDebugUnitTest | circleci tests glob "app/src/**/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
-      - run: ls -l
+      - run: ls -l && pwd
       - persist_to_workspace:
           root: ~/
           paths:
-            - circleci/app/build/intermediates
+            - app/build/intermediates
             - app/build/outputs/androidTest-results
             - app/build/outputs/apk
             - app/build/outputs/code-coverage
