@@ -196,13 +196,13 @@ jobs:
       - run:
           name: Decode the base64 encoded text back into the keystore.jks file
           command: |
-            sudo mkdir -m 0755 -p keystores/
-            sudo chmod 777 keystores/
-            echo $ENCODED_KEYSTORE | base64 --decode >> keystores/keystore.jks
+            sudo mkdir -m 0755 -p ~/project/keystores/
+            sudo chmod 777 ~/project/keystores/
+            echo $ENCODED_KEYSTORE | base64 --decode >> ~/project/keystores/keystore.jks
       - run:
           name: Set the KEYSTORE environment variable to it’s location.
-          command: echo 'export KEYSTORE=project/keystores/keystore.jks' >> $BASH_ENV
-      - run: ls -l keystores/keystore.jks
+          command: echo 'export KEYSTORE=~/project/keystores/keystore.jks' >> $BASH_ENV
+      - run: ls -l ~/project/keystores/keystore.jks
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
@@ -270,13 +270,13 @@ jobs:
       - run:
           name: Decode the base64 encoded text back into the keystore.jks file
           command: |
-            sudo mkdir -m 0755 -p keystores/
-            sudo chmod 777 keystores/
-            echo $ENCODED_KEYSTORE | base64 --decode >> keystores/keystore.jks
+            sudo mkdir -m 0755 -p ~/project/keystores/
+            sudo chmod 777 ~/project/keystores/
+            echo $ENCODED_KEYSTORE | base64 --decode >> ~/project/keystores/keystore.jks
       - run:
           name: Set the KEYSTORE environment variable to it’s location.
-          command: echo 'export KEYSTORE=project/keystores/keystore.jks' >> $BASH_ENV
-      - run: ls -l keystores/keystore.jks
+          command: echo 'export KEYSTORE=~/project/keystores/keystore.jks' >> $BASH_ENV
+      - run: ls -l ~/project/keystores/keystore.jks
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
