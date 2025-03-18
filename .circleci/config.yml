@@ -75,28 +75,48 @@ jobs:
   workspace: ~/repo
 
   attach_debug_workspace:
-    attach_workspace:
-      at: workspace
+    executor:
+      name: android/android_machine
+      resource_class: large
+      tag: default
+    steps:
+      - attach_workspace:
+          at: workspace
 
   persist_debug_workspace:
-    persist_to_workspace:
-      root: workspace
-      paths:
-        - app/build/intermediates
-        - app/build/outputs/androidTest-results
-        - app/build/outputs/apk
-        - app/build/outputs/code-coverage
-        - app/build/test-results
+    executor:
+      name: android/android_machine
+      resource_class: large
+      tag: default
+    steps:
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - app/build/intermediates
+            - app/build/outputs/androidTest-results
+            - app/build/outputs/apk
+            - app/build/outputs/code-coverage
+            - app/build/test-results
 
-#  attach_firebase_workspace:
-#    attach_workspace:
-#      at: workspace
-#
-#  persist_firebase_workspace:
-#    persist_to_workspace:
-#      root: workspace
-#      paths:
-#        - firebase
+  attach_firebase_workspace:
+    executor:
+      name: android/android_machine
+      resource_class: large
+      tag: default
+    steps:
+      - attach_workspace:
+          at: workspace
+
+  persist_firebase_workspace:
+    executor:
+      name: android/android_machine
+      resource_class: large
+      tag: default
+    steps:
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - firebase
 
   unit_test:
     executor:
@@ -108,7 +128,7 @@ jobs:
     steps:
       - checkout
       - attach_debug_workspace
-#      - attach_firebase_workspace
+      - attach_firebase_workspace
       - run: ls
       - run: ./gradlew dependencies
       - restore_cache:
