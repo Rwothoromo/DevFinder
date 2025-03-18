@@ -35,7 +35,6 @@ tasks.withType(Test).configureEach {
         events("passed", "skipped", "failed")
         showStackTraces = true
     }
-    junitXml.isEnabled = true
 }
 
 android {
