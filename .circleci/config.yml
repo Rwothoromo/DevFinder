@@ -96,6 +96,7 @@ jobs:
           name: Save test results
           command: |
             sudo mkdir -m 0755 -p ~/test-results/junit/
+            sudo chmod 777 ~/test-results/junit/
             find . -type f -regex ".*/build/reports/tests/.*html" -exec cp {} ~/test-results/junit/ \;
           when: always
       - run: ls -l ~/test-results/junit/
