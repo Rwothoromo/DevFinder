@@ -106,7 +106,7 @@ jobs:
       - attach_workspace:
           at: workspace
       - run: ls -l
-      - run: export_gservices_key
+      - export_gservices_key
       - run: decode_gservices_key
       - run: ./gradlew dependencies
       - restore_cache:
