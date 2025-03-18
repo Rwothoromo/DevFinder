@@ -71,6 +71,28 @@ jobs:
             sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/prod/google-services.json
       - run: ls -l app/google-services.json
 
+  export_keystore_keys:
+    executor:
+      name: android/android_machine
+      tag: default
+    steps:
+      - run:
+          name: Decode the base64 encoded text back into the keystore.jks file
+          command: |
+            sudo mkdir -m 0755 -p ${HOME}/repo/keystores
+            echo $ENCODED_KEYSTORE | base64 --decode >> ${HOME}/repo/keystores/keystore.jks
+
+
+  decode_keystore_keys:
+    executor:
+      name: android/android_machine
+      tag: default
+    steps:
+      - run:
+          name: Set the KEYSTORE environment variable to it’s location.
+          command: echo 'export KEYSTORE=${HOME}/repo/keystores/keystore.jks' >> $BASH_ENV
+
+
   ## Workspace
   workspace: ~/repo
 
@@ -84,12 +106,14 @@ jobs:
       - attach_workspace:
           at: workspace
       - run: ls -l
+      - run: export_gservices_key
+      - run: decode_gservices_key
       - run: ./gradlew dependencies
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
       - android/run_tests:
-          test_command: ./gradlew testMockDebugUnitTest |     circleci tests glob "app/src/**/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
+          test_command: ./gradlew testMockDebugUnitTest | circleci tests glob "app/src/**/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
       - persist_to_workspace:
           root: workspace
           paths:
@@ -120,14 +144,10 @@ jobs:
       tag: default
     steps:
       - checkout
-      - run:
-          name: Decode the base64 encoded text back into the keystore.jks file
-          command: |
-            sudo mkdir -m 0755 -p ${HOME}/repo/keystores
-            echo $ENCODED_KEYSTORE | base64 --decode >> ${HOME}/repo/keystores/keystore.jks
-      - run:
-          name: Set the KEYSTORE environment variable to it’s location.
-          command: echo 'export KEYSTORE=${HOME}/repo/keystores/keystore.jks' >> $BASH_ENV
+      - run: export_gservices_key
+      - run: decode_gservices_key
+      - run: export_keystore_keys
+      - run: decode_keystore_keys
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
@@ -181,13 +201,7 @@ jobs:
 workflows:
   test_and_build:
     jobs:
-      - export_gservices_key
-      - decode_gservices_key:
-          requires:
-            - export_gservices_key
-      - unit_test:
-          requires:
-            - decode_gservices_key
+      - unit_test
       - jacoco_code_coverage:
           requires:
             - unit_test
