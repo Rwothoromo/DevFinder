@@ -195,10 +195,10 @@ workflows:
             - decode_gservices_key
       - jacoco_code_coverage:
           requires:
-            - unit_test
+            - decode_gservices_key
       - release_build:
           requires:
-            - jacoco_code_coverage
+            - decode_gservices_key
 
 #  install_and_configure_cli:
 #    jobs:
