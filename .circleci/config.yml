@@ -16,7 +16,7 @@ jobs:
       GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m"'
     steps:
       - checkout
-      - run: ./gradlew androidDependencies
+      - run: ./gradlew dependencies --warning-mode all
       - run: ./gradlew lint test
       - android/create_avd:
           avd_name: myavd
@@ -210,8 +210,11 @@ jobs:
       - run:
           name: List Android Dependencies
           command: |
-            ./gradlew androidDependencies
-      - run: ls -l firebase/
+            ./gradlew dependencies --warning-mode all
+      - run:
+          name: Create directory to store test results
+          command: mkdir firebase
+      - run: ls -l ~/project/firebase/
       - run:
           name: Move Firebase coverage report
           command: |
