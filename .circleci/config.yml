@@ -69,16 +69,14 @@ jobs:
   #          version: 404.0.0
 
   lint_check:
-    docker:
-      - image: cimg/android:2025.03
-    working_directory: ~/
-    environment:
-      TERM: dumb
-      # Customize the JVM maximum heap limit
-      _JAVA_OPTIONS: "-Xmx2048m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
-      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m"'
+    executor:
+      name: android/android_machine
+      resource_class: large
+      tag: default
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/
       - run: ./gradlew dependencies --warning-mode all
       - run: ./gradlew lint test
       - android/create_avd:
@@ -91,12 +89,6 @@ jobs:
           restore_gradle_cache_prefix: v3
       - android/save_gradle_cache:
           cache_prefix: v3
-    executor:
-      name: android/android_machine
-      resource_class: large
-      tag: default
-    machine:
-    macos:
 
   unit_tests:
     executor:
