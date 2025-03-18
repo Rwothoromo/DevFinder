@@ -211,6 +211,7 @@ jobs:
           name: List Android Dependencies
           command: |
             ./gradlew androidDependencies
+      - run: ls -l firebase/
       - run:
           name: Move Firebase coverage report
           command: |
@@ -285,14 +286,15 @@ jobs:
 workflows:
   test_and_build:
     jobs:
-      - unit_tests
+      - jacoco_code_coverage
+#      - unit_tests
 #      - android_tests:
 #          requires:
 #            - unit_tests
-      - jacoco_code_coverage:
-          requires:
-#            - android_tests # No connected devices!
-            - unit_tests
+#      - jacoco_code_coverage:
+#          requires:
+##            - android_tests # No connected devices!
+#            - unit_tests
       - release_build:
           requires:
             - jacoco_code_coverage
