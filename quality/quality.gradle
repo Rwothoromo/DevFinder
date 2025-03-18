@@ -55,7 +55,7 @@ tasks.register('pmd', Pmd) {
 android {
     lintOptions {
         abortOnError = true
-        xmlReport = false
+        xmlReport = true
         htmlReport = true
         lintConfig = file("$configDir/lint/lint.xml")
         htmlOutput = file("$reportsDir/lint/lint-result.html")

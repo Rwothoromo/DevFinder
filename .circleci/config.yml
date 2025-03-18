@@ -74,7 +74,7 @@ jobs:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
       - android/run_tests:
-          test_command: ./gradlew testMockDebugUnitTest | circleci tests glob "app/src/**/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
+          test_command: ./gradlew testMockDebugUnitTest | circleci tests glob "app/src/test/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
       - run: ls -l && pwd
       - persist_to_workspace:
           root: ~/project
@@ -85,8 +85,8 @@ jobs:
             - app/build/outputs/code-coverage
             - app/build/test-results
             - app/build/reports
-            - app/build/reports/androidTests/connected/debug/flavors/mock/index.html
-            - app/build/reports/tests/testMockDebugUnitTest/index.html
+            - app/build/reports/androidTests
+            - app/build/reports/tests
             - firebase
       - save_cache:
           paths:
@@ -97,7 +97,7 @@ jobs:
           command: |
             sudo mkdir -m 0755 -p ~/test-results/junit/
             sudo chmod 777 ~/test-results/junit/
-            find . -type f -regex ".*/build/reports/tests/.*html" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
           when: always
       - run: ls -l ~/test-results/junit/
       - store_test_results:
