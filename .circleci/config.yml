@@ -88,15 +88,15 @@ jobs:
         - app/build/outputs/code-coverage
         - app/build/test-results
 
-  attach_firebase_workspace:
-    attach_workspace:
-      at: workspace
-
-  persist_firebase_workspace:
-    persist_to_workspace:
-      root: workspace
-      paths:
-        - firebase
+#  attach_firebase_workspace:
+#    attach_workspace:
+#      at: workspace
+#
+#  persist_firebase_workspace:
+#    persist_to_workspace:
+#      root: workspace
+#      paths:
+#        - firebase
 
   unit_test:
     executor:
@@ -107,17 +107,17 @@ jobs:
     resource_class: large
     steps:
       - checkout
-      - attach_de
+      - attach_debug_workspace
+#      - attach_firebase_workspace
       - run: ls
       - run: ./gradlew dependencies
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
       - run: ls -l
-      - attach_workspace: attach_debug_workspace
       - android/run_tests:
           test_command: ./gradlew testMockDebugUnitTest |     circleci tests glob "app/src/**/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
-      - persist_to_workspace: persist_debug_workspace
+      - persist_debug_workspace
       - save_cache:
           paths:
             - ~/.gradle
