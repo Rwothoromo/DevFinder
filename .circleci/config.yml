@@ -188,7 +188,7 @@ jobs:
 workflows:
   test_and_build:
     jobs:
-      - unit_test:
+      - unit_test
       - jacoco_code_coverage:
           requires:
             - unit_test
