@@ -41,21 +41,21 @@ jobs:
   #          version: 404.0.0
 
   export_gservices_key:
-    executor:
-      name: android/android_machine
-      resource_class: large
-      tag: default
-    steps:
+#    executor:
+#      name: android/android_machine
+#      resource_class: large
+#      tag: default
+#    steps:
       - run:
           name: Export Google Services key environment variable
           command: echo 'export GOOGLE_SERVICES_JSON="$GOOGLE_SERVICES_JSON"' >> $BASH_ENV
 
   decode_gservices_key:
-    executor:
-      name: android/android_machine
-      resource_class: large
-      tag: default
-    steps:
+#    executor:
+#      name: android/android_machine
+#      resource_class: large
+#      tag: default
+#    steps:
       - run: ls
       - run:
           name: Decode Google Services JSON key
