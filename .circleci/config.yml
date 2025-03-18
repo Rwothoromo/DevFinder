@@ -8,6 +8,12 @@ jobs:
   build:
     docker:
       - image: cimg/android:2025.03
+    working_directory: ~/repo
+    environment:
+      TERM: dumb
+      # Customize the JVM maximum heap limit
+      _JAVA_OPTIONS: "-Xmx2048m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m"'
     steps:
       - checkout
       - run: ./gradlew androidDependencies
@@ -28,11 +34,11 @@ jobs:
       resource_class: large
       tag: default
 
-#  use-gcp:
-#    executor: gcp-cli/default
-#    steps:
-#      - gcp-cli/setup:
-#          version: 404.0.0
+  #  use-gcp:
+  #    executor: gcp-cli/default
+  #    steps:
+  #      - gcp-cli/setup:
+  #          version: 404.0.0
 
   export_gservices_key:
     executor:
@@ -65,21 +71,53 @@ jobs:
             echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/prod/google-services.json
       - run: ls -l
 
+  ## Workspace
+  workspace: ~/repo
+
+  attach_debug_workspace:
+    attach_workspace:
+      at: workspace
+
+  persist_debug_workspace:
+    persist_to_workspace:
+      root: workspace
+      paths:
+        - app/build/intermediates
+        - app/build/outputs/androidTest-results
+        - app/build/outputs/apk
+        - app/build/outputs/code-coverage
+        - app/build/test-results
+
+  attach_firebase_workspace:
+    attach_workspace:
+      at: workspace
+
+  persist_firebase_workspace:
+    persist_to_workspace:
+      root: workspace
+      paths:
+        - firebase
+
   unit_test:
     executor:
       name: android/android_machine
       resource_class: large
       tag: default
+    parallelism: 4
+    resource_class: large
     steps:
       - checkout
+      - attach_de
       - run: ls
       - run: ./gradlew dependencies
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
       - run: ls -l
+      - attach_workspace: attach_debug_workspace
       - android/run_tests:
-          test_command: ./gradlew testMockDebugUnitTest
+          test_command: ./gradlew testMockDebugUnitTest |     circleci tests glob "app/src/**/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
+      - persist_to_workspace: persist_debug_workspace
       - save_cache:
           paths:
             - ~/.gradle
@@ -165,19 +203,18 @@ workflows:
   test_and_build:
     jobs:
       - export_gservices_key
-      - decode_gservices_key
-      - unit_test:
+      - decode_gservices_key:
           requires:
             - export_gservices_key
+      - unit_test:
+          requires:
             - decode_gservices_key
       - jacoco_code_coverage:
           requires:
-            - export_gservices_key
-            - decode_gservices_key
+            - unit_test
       - release_build:
           requires:
-            - export_gservices_key
-            - decode_gservices_key
+            - jacoco_code_coverage
 
 #  install_and_configure_cli:
 #    jobs:
