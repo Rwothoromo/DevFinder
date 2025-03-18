@@ -64,9 +64,9 @@ jobs:
             sudo touch -m 0755 app/google-services.json
             sudo touch -m 0755 app/src/mock/google-services.json
             sudo touch -m 0755 app/src/prod/google-services.json
-            echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/google-services.json
-            echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/mock/google-services.json
-            echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/prod/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/mock/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/prod/google-services.json
       - run: ls -l
 
   ## Workspace
