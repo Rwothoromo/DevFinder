@@ -201,7 +201,7 @@ jobs:
             echo $ENCODED_KEYSTORE | base64 --decode >> keystores/keystore.jks
       - run:
           name: Set the KEYSTORE environment variable to it’s location.
-          command: echo 'export KEYSTORE=keystores/keystore.jks' >> $BASH_ENV
+          command: echo 'export KEYSTORE=project/keystores/keystore.jks' >> $BASH_ENV
       - run: ls -l keystores/keystore.jks
       - restore_cache:
           keys:
@@ -275,7 +275,7 @@ jobs:
             echo $ENCODED_KEYSTORE | base64 --decode >> keystores/keystore.jks
       - run:
           name: Set the KEYSTORE environment variable to it’s location.
-          command: echo 'export KEYSTORE=keystores/keystore.jks' >> $BASH_ENV
+          command: echo 'export KEYSTORE=project/keystores/keystore.jks' >> $BASH_ENV
       - run: ls -l keystores/keystore.jks
       - restore_cache:
           keys:
