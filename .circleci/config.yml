@@ -40,9 +40,6 @@ jobs:
   #      - gcp-cli/setup:
   #          version: 404.0.0
 
-  ## Workspace
-  workspace: ~/repo
-
   unit_test:
     executor:
       name: android/android_machine
@@ -51,7 +48,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: workspace
+          at: ~/repo
       - run: ls -l
       - run:
           name: Export Google Services key environment variable
@@ -79,7 +76,7 @@ jobs:
       - android/run_tests:
           test_command: ./gradlew testMockDebugUnitTest | circleci tests glob "app/src/**/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
       - persist_to_workspace:
-          root: workspace
+          root: ~/repo
           paths:
             - app/build/intermediates
             - app/build/outputs/androidTest-results
