@@ -45,7 +45,7 @@ jobs:
 #      name: android/android_machine
 #      resource_class: large
 #      tag: default
-#    steps:
+    steps:
       - run:
           name: Export Google Services key environment variable
           command: echo 'export GOOGLE_SERVICES_JSON="$GOOGLE_SERVICES_JSON"' >> $BASH_ENV
@@ -55,7 +55,7 @@ jobs:
 #      name: android/android_machine
 #      resource_class: large
 #      tag: default
-#    steps:
+    steps:
       - run: ls
       - run:
           name: Decode Google Services JSON key
