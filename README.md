@@ -42,6 +42,7 @@ $ git clone https://github.com/Rwothoromo/Android-Codelab.git
 - Send in a request for `keystore.jks`, alias and passwords, and add the file received to `keystores/keystore.jks`.
 - Wait for the project to complete building and indexing.
 - Go to `Run` in the menu and select `Run` to run the project on an emulator or your connected Android device.
+- For Circle CI, refer to [Android Config Blog](https://circleci.com/blog/building-android-on-circleci/).
 
 ### Run tests
 

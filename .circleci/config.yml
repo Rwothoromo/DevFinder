@@ -40,20 +40,23 @@ jobs:
   #      - gcp-cli/setup:
   #          version: 404.0.0
 
-  export_gservices_key:
+  ## Workspace
+  workspace: ~/repo
+
+  unit_test:
     executor:
-      name: android/android_machine
-      tag: default
+      name: android/android-docker
+      tag: 2022.08.1
+    parallelism: 4
     steps:
+      - checkout
+      - attach_workspace:
+          at: workspace
+      - run: ls -l
       - run:
           name: Export Google Services key environment variable
           command: echo 'export GOOGLE_SERVICES_JSON="$GOOGLE_SERVICES_JSON"' >> $BASH_ENV
 
-  decode_gservices_key:
-    executor:
-      name: android/android_machine
-      tag: default
-    steps:
       - run:
           name: Decode Google Services JSON key
           command: |
@@ -69,45 +72,6 @@ jobs:
             sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/google-services.json
             sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/mock/google-services.json
             sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/prod/google-services.json
-      - run: ls -l app/google-services.json
-
-  export_keystore_keys:
-    executor:
-      name: android/android_machine
-      tag: default
-    steps:
-      - run:
-          name: Decode the base64 encoded text back into the keystore.jks file
-          command: |
-            sudo mkdir -m 0755 -p ${HOME}/repo/keystores
-            echo $ENCODED_KEYSTORE | base64 --decode >> ${HOME}/repo/keystores/keystore.jks
-
-
-  decode_keystore_keys:
-    executor:
-      name: android/android_machine
-      tag: default
-    steps:
-      - run:
-          name: Set the KEYSTORE environment variable to it’s location.
-          command: echo 'export KEYSTORE=${HOME}/repo/keystores/keystore.jks' >> $BASH_ENV
-
-
-  ## Workspace
-  workspace: ~/repo
-
-  unit_test:
-    executor:
-      name: android/android_machine
-      tag: default
-    parallelism: 4
-    steps:
-      - checkout
-      - attach_workspace:
-          at: workspace
-      - run: ls -l
-      - export_gservices_key
-      - run: decode_gservices_key
       - run: ./gradlew dependencies
       - restore_cache:
           keys:
@@ -144,10 +108,34 @@ jobs:
       tag: default
     steps:
       - checkout
-      - run: export_gservices_key
-      - run: decode_gservices_key
-      - run: export_keystore_keys
-      - run: decode_keystore_keys
+      - run:
+          name: Export Google Services key environment variable
+          command: echo 'export GOOGLE_SERVICES_JSON="$GOOGLE_SERVICES_JSON"' >> $BASH_ENV
+      - run:
+          name: Decode Google Services JSON key
+          command: |
+            sudo chmod 600 /root/.
+            sudo mkdir -m 0755 -p app/src/mock/
+            sudo mkdir -m 0755 -p app/src/prod/
+            sudo touch -m 0755 app/google-services.json
+            sudo touch -m 0755 app/src/mock/google-services.json
+            sudo touch -m 0755 app/src/prod/google-services.json
+            sudo chmod 777 app/google-services.json
+            sudo chmod 777 app/src/mock/google-services.json
+            sudo chmod 777 app/src/prod/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/mock/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/prod/google-services.json
+      - run: ls -l app/google-services.json
+      - run:
+          name: Decode the base64 encoded text back into the keystore.jks file
+          command: |
+            sudo mkdir -m 0755 -p ${HOME}/repo/keystores
+            echo $ENCODED_KEYSTORE | base64 --decode >> ${HOME}/repo/keystores/keystore.jks
+      - run: ls -l ${HOME}/repo/keystores/keystore.jks
+      - run:
+          name: Set the KEYSTORE environment variable to it’s location.
+          command: echo 'export KEYSTORE=${HOME}/repo/keystores/keystore.jks' >> $BASH_ENV
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
@@ -188,10 +176,34 @@ jobs:
       tag: default
     steps:
       - checkout
-      - run: export_gservices_key
-      - run: decode_gservices_key
-      - run: export_keystore_keys
-      - run: decode_keystore_keys
+      - run:
+          name: Export Google Services key environment variable
+          command: echo 'export GOOGLE_SERVICES_JSON="$GOOGLE_SERVICES_JSON"' >> $BASH_ENV
+      - run: ls -l app/google-services.json
+      - run:
+          name: Decode Google Services JSON key
+          command: |
+            sudo chmod 600 /root/.
+            sudo mkdir -m 0755 -p app/src/mock/
+            sudo mkdir -m 0755 -p app/src/prod/
+            sudo touch -m 0755 app/google-services.json
+            sudo touch -m 0755 app/src/mock/google-services.json
+            sudo touch -m 0755 app/src/prod/google-services.json
+            sudo chmod 777 app/google-services.json
+            sudo chmod 777 app/src/mock/google-services.json
+            sudo chmod 777 app/src/prod/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/mock/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/prod/google-services.json
+      - run:
+          name: Decode the base64 encoded text back into the keystore.jks file
+          command: |
+            sudo mkdir -m 0755 -p ${HOME}/repo/keystores
+            echo $ENCODED_KEYSTORE | base64 --decode >> ${HOME}/repo/keystores/keystore.jks
+      - run: ls -l ${HOME}/repo/keystores/keystore.jks
+      - run:
+          name: Set the KEYSTORE environment variable to it’s location.
+          command: echo 'export KEYSTORE=${HOME}/repo/keystores/keystore.jks' >> $BASH_ENV
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
