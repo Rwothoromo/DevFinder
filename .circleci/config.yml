@@ -54,9 +54,6 @@ jobs:
       name: android/android_machine
       tag: default
     steps:
-      - run: ls -l app/google-services.json
-      - run: ls -l app/src/mock/google-services.json
-      - run: ls -l app/src/prod/google-services.json
       - run:
           name: Decode Google Services JSON key
           command: |
@@ -72,6 +69,9 @@ jobs:
             sudo echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/google-services.json
             sudo echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/mock/google-services.json
             sudo echo $GOOGLE_SERVICES_JSON | base64 --decode >> app/src/prod/google-services.json
+      - run: ls -l app/google-services.json
+      - run: ls -l app/src/mock/google-services.json
+      - run: ls -l app/src/prod/google-services.json
 
   ## Workspace
   workspace: ~/repo
@@ -85,12 +85,11 @@ jobs:
       - checkout
       - attach_workspace:
           at: workspace
-      - run: ls
+      - run: ls -l
       - run: ./gradlew dependencies
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
-      - run: ls -l
       - android/run_tests:
           test_command: ./gradlew testMockDebugUnitTest |     circleci tests glob "app/src/**/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
       - persist_to_workspace:
