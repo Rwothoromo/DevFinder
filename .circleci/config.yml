@@ -159,7 +159,7 @@ jobs:
           command: mkdir firebase
       - run:
           name: Download instrumented test results from Firebase Test Lab
-          command: gsutil -m cp -r -U "`gsutil ls gs://test-lab-inwsbb9xsp5f6-my4ixr2678xc0 | tail -1`*" ${HOME}/repo/firebase | true
+          command: gsutil -m cp -r -U "`gsutil ls gs://test-lab-inwsbb9xsp5f6-my4ixr2678xc0 | tail -1`*" firebase/ | true
       - persist_to_workspace:
           root: ~/project
           paths:
@@ -196,13 +196,13 @@ jobs:
       - run:
           name: Decode the base64 encoded text back into the keystore.jks file
           command: |
-            sudo mkdir -m 0755 -p ${HOME}/repo/keystores
-            sudo chmod 777 ${HOME}/repo/keystores
-            echo $ENCODED_KEYSTORE | base64 --decode >> ${HOME}/repo/keystores/keystore.jks
+            sudo mkdir -m 0755 -p keystores/
+            sudo chmod 777 keystores/
+            echo $ENCODED_KEYSTORE | base64 --decode >> keystores/keystore.jks
       - run:
           name: Set the KEYSTORE environment variable to it’s location.
-          command: echo 'export KEYSTORE=${HOME}/repo/keystores/keystore.jks' >> $BASH_ENV
-      - run: ls -l ${HOME}/repo/keystores/keystore.jks
+          command: echo 'export KEYSTORE=keystores/keystore.jks' >> $BASH_ENV
+      - run: ls -l keystores/keystore.jks
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
@@ -270,12 +270,12 @@ jobs:
       - run:
           name: Decode the base64 encoded text back into the keystore.jks file
           command: |
-            sudo mkdir -m 0755 -p ${HOME}/repo/keystores
-            echo $ENCODED_KEYSTORE | base64 --decode >> ${HOME}/repo/keystores/keystore.jks
+            sudo mkdir -m 0755 -p keystores/
+            echo $ENCODED_KEYSTORE | base64 --decode >> keystores/keystore.jks
       - run:
           name: Set the KEYSTORE environment variable to it’s location.
-          command: echo 'export KEYSTORE=${HOME}/repo/keystores/keystore.jks' >> $BASH_ENV
-      - run: ls -l ${HOME}/repo/keystores/keystore.jks
+          command: echo 'export KEYSTORE=keystores/keystore.jks' >> $BASH_ENV
+      - run: ls -l keystores/keystore.jks
       - restore_cache:
           keys:
             - v3-gradle-{{ checksum "build.gradle" }}
