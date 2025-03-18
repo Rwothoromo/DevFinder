@@ -77,7 +77,7 @@ jobs:
           test_command: ./gradlew testMockDebugUnitTest | circleci tests glob "app/src/**/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
       - run: ls -l && pwd
       - persist_to_workspace:
-          root: ~/
+          root: ~/project
           paths:
             - app/build/intermediates
             - app/build/outputs/androidTest-results
