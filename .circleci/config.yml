@@ -116,6 +116,25 @@ jobs:
           at: ~/
       - run: ls -l
       - run:
+          name: Export Google Services key environment variable
+          command: echo 'export GOOGLE_SERVICES_JSON="$GOOGLE_SERVICES_JSON"' >> $BASH_ENV
+      - run:
+          name: Decode Google Services JSON key
+          command: |
+            sudo chmod 600 /root/.
+            sudo mkdir -m 0755 -p app/src/mock/
+            sudo mkdir -m 0755 -p app/src/prod/
+            sudo touch -m 0755 app/google-services.json
+            sudo touch -m 0755 app/src/mock/google-services.json
+            sudo touch -m 0755 app/src/prod/google-services.json
+            sudo chmod 777 app/google-services.json
+            sudo chmod 777 app/src/mock/google-services.json
+            sudo chmod 777 app/src/prod/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/mock/google-services.json
+            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/prod/google-services.json
+      - run: ls -l app/google-services.json
+      - run:
           name: Export Google Cloud Service Account Key Environment Variable
           command: echo 'export GCLOUD_SERVICE_KEY="$GCLOUD_SERVICE_KEY"' >> $BASH_ENV
       - run:
@@ -124,7 +143,6 @@ jobs:
             sudo touch gcloud-service-key.json
             sudo chmod 777 gcloud-service-key.json
             echo $GCLOUD_SERVICE_KEY | base64 --decode >> gcloud-service-key.json
-#      - android/start-emulator-and-run-tests:
       - android/run_tests:
           test_command: ./gradlew connectedMockDebugAndroidTest | circleci tests glob "app/src/androidTest/**/*InstrumentationTest.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
       - run:
