@@ -72,6 +72,7 @@ jobs:
   quality_check:
     executor:
       name: android/android_machine
+      tag: default
     steps:
       - checkout
       - attach_workspace:
