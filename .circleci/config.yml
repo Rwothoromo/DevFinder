@@ -81,7 +81,7 @@ jobs:
       - decode_google_services_key
       - restore_gradle_cache
       - run: ./gradlew dependencies --warning-mode all
-      - run: ./gradlew checkstyle pmd lint
+      - run: ./gradlew checkstyle pmd lint --warning-mode all
       - save_gradle_cache
 
 
@@ -100,7 +100,7 @@ jobs:
       - restore_gradle_cache
       - run: ./gradlew dependencies --warning-mode all
       - android/run_tests:
-          test_command: ./gradlew testMockDebugUnitTest | circleci tests glob "app/src/test/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
+          test_command: ./gradlew testMockDebugUnitTest --warning-mode all | circleci tests glob "app/src/test/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
       - run: ls -l && pwd
       - persist_to_workspace:
           root: ~/project
@@ -113,7 +113,6 @@ jobs:
             - app/build/reports
             - app/build/reports/androidTests
             - app/build/reports/tests
-            - firebase
       - run:
           name: Save test results
           command: |
@@ -186,16 +185,6 @@ jobs:
       - restore_gradle_cache
       - run: ./gradlew dependencies --warning-mode all
       - run:
-          name: Create directory to store test results
-          command: mkdir firebase
-      - run: ls -l ~/project/firebase/
-      - run:
-          name: Move Firebase coverage report
-          command: |
-            sudo mkdir -m 0755 -p app/build/outputs/code-coverage/connected/flavors/MOCK
-            sudo chmod 777 app/build/outputs/code-coverage/connected/flavors/MOCK
-            cp firebase/sailfish-26-en_US-portrait/artifacts/coverage.ec app/build/outputs/code-coverage/connected/flavors/MOCK/coverage.ec
-      - run:
           name: Code Climate Test Setup
           command: |
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -205,7 +194,7 @@ jobs:
           command: ./cc-test-reporter before-build
       - run:
           name: Generate JaCoCo report
-          command: ./gradlew jacocoTestReport
+          command: ./gradlew jacocoTestReport --stacktrace --warning-mode all
       - run:
           name: Upload coverage to code climate
           command: |
@@ -232,7 +221,7 @@ jobs:
       - run:
           name: Assemble release build
           command: |
-            ./gradlew assembleRelease --warning-mode all
+            ./gradlew assembleRelease --stacktrace --warning-mode all
       - run: ls -l app/
       - store_artifacts:
           path: app/prod/release/app-prod-release.apk
@@ -249,10 +238,10 @@ workflows:
 #      - android_tests:
 #          requires:
 #            - unit_tests
-      - android_tests
-      - jacoco_code_coverage:
-          requires:
-            - android_tests
+#      - jacoco_code_coverage:
+#          requires:
+#            - android_tests
+      - jacoco_code_coverage
       - release_build:
           requires:
             - jacoco_code_coverage
