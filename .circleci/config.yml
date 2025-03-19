@@ -159,6 +159,11 @@ jobs:
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
             ./gradlew connectedMockDebugAndroidTest --stacktrace --warning-mode all
+      - when:
+          condition: false
+          steps:
+            - run:
+                command: circleci-agent step halt
       - store_test_results:
           path: app/build/outputs/androidTest-results
       - store_artifacts:
