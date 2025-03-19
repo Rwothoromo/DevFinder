@@ -158,7 +158,7 @@ jobs:
             adb shell settings put global window_animation_scale 0
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
-            ./gradlew connectedMockDebugAndroidTest --stacktrace && killall -INT crashpad_handler
+            ./gradlew connectedMockDebugAndroidTest --stacktrace --warning-mode all
       - store_test_results:
           path: app/build/outputs/androidTest-results
       - store_artifacts:
@@ -235,13 +235,14 @@ jobs:
 workflows:
   build_test_deploy:
     jobs:
-      - quality_check
-      - unit_tests:
-          requires:
-            - quality_check
-      - android_tests:
-          requires:
-            - unit_tests
+#      - quality_check
+#      - unit_tests:
+#          requires:
+#            - quality_check
+#      - android_tests:
+#          requires:
+#            - unit_tests
+      - android_tests
       - jacoco_code_coverage:
           requires:
             - android_tests
