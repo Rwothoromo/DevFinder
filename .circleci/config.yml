@@ -183,8 +183,6 @@ jobs:
       - run: ls -l
       - export_google_services_key
       - decode_google_services_key
-      - decode_keystore_key
-      - export_keystore_key
       - restore_gradle_cache
       - run: ./gradlew dependencies --warning-mode all
       - run:
@@ -216,6 +214,9 @@ jobs:
       tag: default
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/
+      - run: ls -l
       - export_google_services_key
       - decode_google_services_key
       - decode_keystore_key
@@ -234,17 +235,16 @@ jobs:
 workflows:
   build_test_deploy:
     jobs:
-#      - quality_check
-#      - unit_tests:
-#          requires:
-#            - quality_check
-#      - android_tests:
-#          requires:
-#            - unit_tests
-#      - jacoco_code_coverage:
-#          requires:
-#            - android_tests
-      - jacoco_code_coverage
+      - quality_check
+      - unit_tests:
+          requires:
+            - quality_check
+      - android_tests:
+          requires:
+            - unit_tests
+      - jacoco_code_coverage:
+          requires:
+            - android_tests
       - release_build:
           requires:
             - jacoco_code_coverage
