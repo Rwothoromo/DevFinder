@@ -88,6 +88,7 @@ jobs:
   unit_tests:
     executor:
       name: android/android_machine
+      tag: default
     parallelism: 4
     steps:
       - checkout
@@ -133,6 +134,7 @@ jobs:
       - image: cimg/android-sdk:latest
     executor:
       name: android/android_machine
+      tag: default
     parallelism: 4
     environment:
       ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 120 # seconds to wait before killing emu
@@ -176,6 +178,7 @@ jobs:
   jacoco_code_coverage:
     executor:
       name: android/android_machine
+      tag: default
     steps:
       - checkout
       - export_google_services_key
@@ -220,6 +223,7 @@ jobs:
   release_build:
     executor:
       name: android/android_machine
+      tag: default
     steps:
       - checkout
       - export_google_services_key
