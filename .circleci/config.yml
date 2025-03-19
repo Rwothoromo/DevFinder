@@ -72,8 +72,6 @@ jobs:
   quality_check:
     executor:
       name: android/android_machine
-      resource_class: large
-      tag: default
     steps:
       - checkout
       - attach_workspace:
@@ -90,7 +88,6 @@ jobs:
   unit_tests:
     executor:
       name: android/android_machine
-      tag: default
     parallelism: 4
     steps:
       - checkout
@@ -132,10 +129,13 @@ jobs:
 
 
   android_tests:
+    docker:
+      - image: cimg/android-sdk:latest
     executor:
       name: android/android_machine
-      tag: default
     parallelism: 4
+    environment:
+      ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 120 # seconds to wait before killing emu
     steps:
       - checkout
       - attach_workspace:
@@ -145,12 +145,7 @@ jobs:
       - decode_google_services_key
       - restore_gradle_cache
       - run:
-          name: Kill crashpad_handler processes
-          command: pkill -SIGTERM crashpad_handler || true, sleep 5, pkill -SIGKILL crashpad_handler || true
-      - run:
           name: Installing emulator and Running Instrumentation tests
-          environment:
-            ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 120 # seconds to wait before killing emu
           command: |
             sdkmanager "platform-tools" "platforms;android-34" "build-tools;30.0.0" "emulator"
             sdkmanager "system-images;android-34;google_apis;x86_64"
@@ -165,7 +160,7 @@ jobs:
             adb shell settings put global window_animation_scale 0
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
-            ./gradlew :app:connectedMockDebugAndroidTest --stacktrace --warning-mode all
+            ./gradlew :app:connectedMockDebugAndroidTest --stacktrace --warning-mode all && pkill -SIGTERM crashpad_handler || true, sleep 5, pkill -SIGKILL crashpad_handler || true
       - when:
           condition: false
           steps:
@@ -181,7 +176,6 @@ jobs:
   jacoco_code_coverage:
     executor:
       name: android/android_machine
-      tag: default
     steps:
       - checkout
       - export_google_services_key
@@ -226,7 +220,6 @@ jobs:
   release_build:
     executor:
       name: android/android_machine
-      tag: default
     steps:
       - checkout
       - export_google_services_key
