@@ -1,10 +1,10 @@
 package com.rwothoromo.developers
 
 import android.content.Context
-
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
+
 
 /**
  * Rest Service test helper.
@@ -35,14 +35,15 @@ object RestServiceTestHelper {
      * Open and return dtring from a file.
      *
      * @param context the context
-     * @param filePath the input file path
+     * @param rawJsonResource the input file path
      * @return String the output
      * @throws Exception if fails
      */
     @Throws(Exception::class)
-    fun getStringFromFile(context: Context, filePath: String): String {
+    fun getStringFromFile(context: Context, rawJsonResource: Int): String {
 
-        val inputStream = context.resources.assets.open(filePath)
+        // Assuming the rawJsonResource e.g. R.raw.mock_api_200_response in the res folder under raw
+        val inputStream: InputStream = context.resources.openRawResource(rawJsonResource)
 
         val outStream = convertStreamToString(inputStream)
         inputStream.close()

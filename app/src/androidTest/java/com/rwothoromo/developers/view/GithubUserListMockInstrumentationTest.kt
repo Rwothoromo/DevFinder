@@ -2,6 +2,9 @@ package com.rwothoromo.developers.view
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
+import android.support.test.InstrumentationRegistry.getContext
+import android.support.test.InstrumentationRegistry.getInstrumentation
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -27,6 +30,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.InputStream
+
 
 /**
  * Mock MainActivity test.
@@ -64,7 +69,7 @@ class GithubUserListMockInstrumentationTest {
         server = MockWebServer()
 
         // Schedule some responses.
-        val fileName = "app/src/androidTestMock/assets/mock_api_200_response.json"
+        val fileName = R.raw.mock_api_200_response
         server!!.enqueue(
             MockResponse()
                 .addHeader("Content-Type", "application/json; charset=utf-8")
