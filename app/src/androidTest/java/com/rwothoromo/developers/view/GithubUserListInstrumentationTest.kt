@@ -1,9 +1,11 @@
 package com.rwothoromo.developers.view
 
+import android.content.Context
 import android.content.Intent
 import android.support.test.InstrumentationRegistry
 import android.support.test.InstrumentationRegistry.getInstrumentation
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.IdlingRegistry
@@ -35,6 +37,7 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class GithubUserListInstrumentationTest {
+    private val context: Context = ApplicationProvider.getApplicationContext()
 
     /**
      * MainActivity test rule.
@@ -49,8 +52,7 @@ class GithubUserListInstrumentationTest {
         object : ActivityTestRule<MainActivity>(MainActivity::class.java) {
 
             override fun getActivityIntent(): Intent {
-                val targetContext = InstrumentationRegistry.getTargetContext()
-                return Intent(targetContext, MainActivity::class.java)
+                return Intent(context, MainActivity::class.java)
             }
         }
 
@@ -116,7 +118,7 @@ class GithubUserListInstrumentationTest {
     fun clickActionBarOverflowSettings() {
         // Open the options menu OR open the overflow menu, depending on whether
         // the device has a hardware or software overflow menu button.
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+        openActionBarOverflowOrOptionsMenu(context)
 
         // Click the item.
         onView(withText(R.string.action_settings)).perform(click())
@@ -129,7 +131,7 @@ class GithubUserListInstrumentationTest {
     fun clickActionBarOverflowRefresh() {
         // Open the options menu OR open the overflow menu, depending on whether
         // the device has a hardware or software overflow menu button.
-        openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+        openActionBarOverflowOrOptionsMenu(context)
 
         // Click the item.
         onView(withText(R.string.action_refresh)).perform(click())
