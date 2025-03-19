@@ -149,11 +149,11 @@ jobs:
       - run:
           name: Installing emulator and Running Instrumentation tests
           command: |
-            sdkmanager "platform-tools" "platforms;android-35" "build-tools;30.0.0" "emulator"
+            sdkmanager "platform-tools" "platforms;android-34" "build-tools;30.0.0" "emulator"
             sdkmanager "system-images;android-34;google_apis;x86_64"
             sdkmanager --update
             sdkmanager "emulator" "platform-tools"
-            echo no | avdmanager create avd -n test-emulator -k  "system-images;android-35;google_apis;x86_64"
+            echo no | avdmanager create avd -n test-emulator -k  "system-images;android-34;google_apis;x86_64"
             emulator -avd test-emulator -no-window -no-audio -no-boot-anim -accel on -gpu swiftshader_indirect &
             adb wait-for-device
             until adb shell getprop sys.boot_completed | grep 1; do sleep 3; done;
