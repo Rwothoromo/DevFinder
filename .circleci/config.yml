@@ -178,6 +178,9 @@ jobs:
       tag: default
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/
+      - run: ls -l
       - export_google_services_key
       - decode_google_services_key
       - decode_keystore_key
