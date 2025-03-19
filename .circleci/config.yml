@@ -130,8 +130,6 @@ jobs:
 
 
   android_tests:
-    docker:
-      - image: cimg/android-sdk:latest
     executor:
       name: android/android_machine
       tag: default
