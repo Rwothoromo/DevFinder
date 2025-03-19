@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DevFinder</string>
+    <string name="app_name" translatable="false">DevFinder</string>
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
     <string name="action_share">Share</string>
@@ -7,9 +7,11 @@
     <string name="profile">Profile</string>
     <string name="username">Username</string>
     <string name="action_refresh">Refresh</string>
-    <string name="url">https://github.com/Username</string>
-    <string name="app_subtitle">Location: Nairobi, Stack: Java</string>
+    <string name="url" translatable="false">https://github.com/Username</string>
+    <string name="app_subtitle">Location: Kampala, Stack: Kotlin</string>
     <string name="failed_data_retrieval">Failed to get data from GitHub! Check Internet Connectivity!</string>
+    <string name="feature_pending">Coming Soon! This is not yet available!</string>
     <string name="refreshing">Fetching data from the GitHub API…</string>
     <string name="settings">Go to SETTINGS</string>
+    <string name="close">CLOSE</string>
 </resources>

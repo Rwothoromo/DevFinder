@@ -143,22 +143,13 @@ jobs:
       - run: ls -l
       - export_google_services_key
       - decode_google_services_key
-
-#      - run:
-#          name: Generate cache key
-#          command: |
-#            find . -name 'build.gradle' | sort | xargs cat |
-#            shasum | awk '{print $1}' > /tmp/gradle_cache_seed
-#      - restore_cache:
-#          key: gradle-v1-{{ arch }}-{{ checksum "/tmp/gradle_cache_seed" }}
-#      - save_cache:
-#          key: gradle-v1-{{ arch }}-{{ checksum "/tmp/gradle_cache_seed" }}
-#          paths:
-#            - ~/.gradle/caches
-#            - ~/.gradle/wrapper
-#      - store_test_results:
-#          path: app\build\outputs\androidTest-results
-
+      - run:
+          name: Generate cache key
+          command: |
+            find . -name 'build.gradle' | sort | xargs cat |
+            shasum | awk '{print $1}' > /tmp/gradle_cache_seed
+      - restore_cache:
+          key: gradle-v1-{{ arch }}-{{ checksum "/tmp/gradle_cache_seed" }}
       - run:
           name: Installing emulator and Running Instrumentation tests
           command: |
@@ -173,7 +164,17 @@ jobs:
             adb shell settings put global window_animation_scale 0
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
-            ./gradlew connectedMockDebugAndroidTest --stacktrace | circleci tests glob "app/src/androidTest/**/*InstrumentationTest.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
+            ./gradlew connectedMockDebugAndroidTest --stacktrace | circleci tests glob "app/src/androidTest/**/*InstrumentationTest.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname -metrics-collection
+      - store_test_results:
+          path: ~/test-results
+#          path: app\build\outputs\androidTest-results
+      - store_artifacts:
+          path: ~/test-results/androidTest
+      - save_cache:
+          key: gradle-v1-{{ arch }}-{{ checksum "/tmp/gradle_cache_seed" }}
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
 
 
   jacoco_code_coverage:

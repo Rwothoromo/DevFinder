@@ -43,6 +43,8 @@ $ git clone https://github.com/Rwothoromo/Android-Codelab.git
 - Wait for the project to complete building and indexing.
 - Go to `Run` in the menu and select `Run` to run the project on an emulator or your connected Android device.
 - For Circle CI, refer to [Android Config Blog](https://circleci.com/blog/building-android-on-circleci/).
+- When running Instrumented Tests, ensure that in the developer options of the device/emulator,
+  - that you have Animations off (instead of 1x) selected in all 3 animations scale - Window/Transition/Animator
 
 ### Run tests
 

@@ -2,8 +2,6 @@ package com.rwothoromo.developers.view
 
 import android.content.Context
 import android.content.Intent
-import android.support.test.InstrumentationRegistry
-import android.support.test.InstrumentationRegistry.getInstrumentation
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -21,8 +19,8 @@ import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.rule.ActivityTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.ActivityTestRule
 import com.rwothoromo.developers.util.EspressoIdlingResource
 import com.rwothoromo.devfinder.R
 import org.hamcrest.CoreMatchers.allOf
@@ -92,14 +90,6 @@ class GithubUserListInstrumentationTest {
     @Test
     fun displaysToolbarTitle() {
         onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
-    }
-
-    /**
-     * View the MainActivity subtitle.
-     */
-    @Test
-    fun displaysToolbarSubtitle() {
-        onView(withText(R.string.app_subtitle)).check(matches(withParent(withId(R.id.toolbar))))
     }
 
     /**

@@ -23,12 +23,13 @@ import com.rwothoromo.developers.util.NetworkConnectivity
 import com.rwothoromo.developers.util.NetworkConnectivity.isNetworkConnected
 import com.rwothoromo.devfinder.R
 
+
 /**
  * MainActivity class with the Developer list.
  */
 class MainActivity : AppCompatActivity(), GithubUserView {
 
-    internal var githubUserListState: Parcelable? = null
+    private var githubUserListState: Parcelable? = null
     private var recyclerView: RecyclerView? = null
     private var layoutManager: RecyclerView.LayoutManager? = null
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
@@ -38,9 +39,13 @@ class MainActivity : AppCompatActivity(), GithubUserView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        window.decorView.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.apply { subtitle = "Location: Nairobi, Stack: Java" }
+        supportActionBar?.apply { subtitle = "Location: Kampala, Stack: Java" }
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView!!.setHasFixedSize(true)
@@ -52,7 +57,10 @@ class MainActivity : AppCompatActivity(), GithubUserView {
             Snackbar.make(
                 recyclerView!!, getString(R.string.failed_data_retrieval),
                 Snackbar.LENGTH_LONG
-            ).show()
+            )
+                .setAction(getString(R.string.close)) { }
+                .setActionTextColor(resources.getColor(android.R.color.holo_red_light))
+                .show()
         } else {
             githubPresenter.getGithubUsers()
         }
@@ -68,15 +76,15 @@ class MainActivity : AppCompatActivity(), GithubUserView {
     /**
      * Save state of the Developer list.
      *
-     * @param savedInstanceState a Bundle
+     * @param outState a Bundle
      */
-    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+    override fun onSaveInstanceState(outState: Bundle) {
         // Always call the superclass so it can save the view hierarchy state
-        super.onSaveInstanceState(savedInstanceState)
+        super.onSaveInstanceState(outState)
 
         // Save the list state to the bundle
         githubUserListState = layoutManager!!.onSaveInstanceState()
-        savedInstanceState.putParcelable(EXTRA_DEVELOPER_LIST_STATE, githubUserListState)
+        outState.putParcelable(EXTRA_DEVELOPER_LIST_STATE, githubUserListState)
     }
 
     /**
@@ -123,13 +131,29 @@ class MainActivity : AppCompatActivity(), GithubUserView {
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.action_settings ->
+            R.id.action_settings -> {
                 // User chose the "Settings" item, show the app settings UI...
+                Snackbar.make(
+                    recyclerView!!, getString(R.string.feature_pending),
+                    Snackbar.LENGTH_LONG
+                )
+                    .setAction(getString(R.string.close)) { }
+                    .setActionTextColor(resources.getColor(android.R.color.holo_red_light))
+                    .show()
                 return true
+            }
 
-            R.id.action_search ->
+            R.id.action_search -> {
                 // User chose the "Search" action, set the toolbar to a search field
+                Snackbar.make(
+                    recyclerView!!, getString(R.string.feature_pending),
+                    Snackbar.LENGTH_LONG
+                )
+                    .setAction(getString(R.string.close)) { }
+                    .setActionTextColor(resources.getColor(android.R.color.holo_red_light))
+                    .show()
                 return true
+            }
 
             R.id.action_refresh -> {
                 // User chose the "Refresh" action, refresh the Developer list
@@ -171,7 +195,7 @@ class MainActivity : AppCompatActivity(), GithubUserView {
      *
      * @param githubUsers a GitHub user list
      */
-    fun showGithubUsers(githubUsers: List<GithubUser>) {
+    private fun showGithubUsers(githubUsers: List<GithubUser>) {
         recyclerView!!.layoutManager = layoutManager
         val adapter = GithubAdapter(githubUsers, this)
         recyclerView!!.adapter = adapter
@@ -180,7 +204,7 @@ class MainActivity : AppCompatActivity(), GithubUserView {
     /**
      * Update Developer list with GitHub API data.
      */
-    fun reloadGithubUsers() {
+    private fun reloadGithubUsers() {
 
         customProgressDialog(
             this@MainActivity,
@@ -198,7 +222,7 @@ class MainActivity : AppCompatActivity(), GithubUserView {
      * @param context a Context
      * @param message a message
      */
-    fun customProgressDialog(context: Context, message: String) {
+    private fun customProgressDialog(context: Context, message: String) {
         // Add a progress dialogue
         val progressDialog = ProgressDialog(context)
         progressDialog.setTitle("Status")
