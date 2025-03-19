@@ -132,6 +132,8 @@ jobs:
 
 
   android_tests:
+    environment:
+      ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 120 # seconds to wait before killing emu
     executor:
       name: android/android_machine
       tag: default
@@ -148,24 +150,26 @@ jobs:
           name: Installing emulator and Running Instrumentation tests
           command: |
             sdkmanager "platform-tools" "platforms;android-35" "build-tools;30.0.0" "emulator"
-            sdkmanager "system-images;android-35;google_apis;x86_64"
+            sdkmanager "system-images;android-34;google_apis;x86_64"
             sdkmanager --update
+            sdkmanager "emulator" "platform-tools"
             echo no | avdmanager create avd -n test-emulator -k  "system-images;android-35;google_apis;x86_64"
-            emulator -avd test-emulator -noaudio -no-boot-anim -gpu off -no-window -metrics-collection &
-            adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
+            emulator -avd test-emulator -no-window -no-audio -no-boot-anim -accel on -gpu swiftshader_indirect &
+            adb wait-for-device
+            until adb shell getprop sys.boot_completed | grep 1; do sleep 3; done;
             adb shell wm dismiss-keyguard
             sleep 1
             adb shell settings put global window_animation_scale 0
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
-            ./gradlew connectedMockDebugAndroidTest --stacktrace --warning-mode all
+            ./gradlew :app:connectedMockDebugAndroidTest --stacktrace --warning-mode all && killall -INT crashpad_handler
       - when:
           condition: false
           steps:
             - run:
                 command: circleci-agent step halt
       - store_test_results:
-          path: app/build/outputs/androidTest-results
+          path: emulator.log # app/build/outputs/androidTest-results
       - store_artifacts:
           path: app/build/outputs/androidTest-results
       - save_gradle_cache

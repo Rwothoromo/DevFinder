@@ -69,3 +69,6 @@ fabric.properties
 # apk dir's
 app/mock
 app/prod
+
+# kotlin sessions et al
+.kotlin/
