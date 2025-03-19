@@ -146,6 +146,7 @@ jobs:
       - restore_gradle_cache
       - run:
           name: Installing emulator and Running Instrumentation tests
+          timeout-minutes: 3
           command: |
             sdkmanager "platform-tools" "platforms;android-35" "build-tools;30.0.0" "emulator"
             sdkmanager "system-images;android-35;google_apis;x86_64"
@@ -160,10 +161,11 @@ jobs:
             adb shell settings put global animator_duration_scale 0
             ./gradlew connectedMockDebugAndroidTest --stacktrace
       - store_test_results:
-          path: ~/test-results
-      #          path: app\build\outputs\androidTest-results
+#          path: ~/test-results
+          path: app/build/outputs/androidTest-results
       - store_artifacts:
-          path: ~/test-results/androidTest
+#          path: ~/test-results/androidTest
+          path: app/build/outputs/androidTest-results
       - save_gradle_cache
 
 
