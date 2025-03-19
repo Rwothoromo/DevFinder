@@ -151,14 +151,14 @@ jobs:
             sdkmanager "system-images;android-35;google_apis;x86_64"
             sdkmanager --update
             echo no | avdmanager create avd -n test-emulator -k  "system-images;android-35;google_apis;x86_64"
-            emulator -avd test-emulator -noaudio -no-boot-anim -gpu off -no-window &
+            emulator -avd test-emulator -noaudio -no-boot-anim -gpu off -no-window -metrics-collection &
             adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done;'
             adb shell wm dismiss-keyguard
             sleep 1
             adb shell settings put global window_animation_scale 0
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
-            ./gradlew connectedMockDebugAndroidTest --stacktrace | circleci tests glob "app/src/androidTest/**/*InstrumentationTest.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
+            ./gradlew connectedMockDebugAndroidTest --stacktrace
       - store_test_results:
           path: ~/test-results
       #          path: app\build\outputs\androidTest-results
