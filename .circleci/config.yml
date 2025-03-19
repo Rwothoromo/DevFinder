@@ -132,8 +132,6 @@ jobs:
 
 
   android_tests:
-    environment:
-      ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 120 # seconds to wait before killing emu
     executor:
       name: android/android_machine
       tag: default
@@ -147,14 +145,19 @@ jobs:
       - decode_google_services_key
       - restore_gradle_cache
       - run:
+          name: Kill crashpad_handler processes
+          command: pkill -SIGTERM crashpad_handler || true, sleep 5, pkill -SIGKILL crashpad_handler || true
+      - run:
           name: Installing emulator and Running Instrumentation tests
+          environment:
+            ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 120 # seconds to wait before killing emu
           command: |
             sdkmanager "platform-tools" "platforms;android-34" "build-tools;30.0.0" "emulator"
             sdkmanager "system-images;android-34;google_apis;x86_64"
             sdkmanager --update
             sdkmanager "emulator" "platform-tools"
             echo no | avdmanager create avd -n test-emulator -k  "system-images;android-34;google_apis;x86_64"
-            emulator -avd test-emulator -no-window -no-audio -no-boot-anim -accel on -gpu swiftshader_indirect &
+            emulator -avd test-emulator -no-window -no-audio -no-boot-anim -accel on -gpu swiftshader_indirect -metrics-collection &
             adb wait-for-device
             until adb shell getprop sys.boot_completed | grep 1; do sleep 3; done;
             adb shell wm dismiss-keyguard
@@ -162,7 +165,7 @@ jobs:
             adb shell settings put global window_animation_scale 0
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
-            ./gradlew :app:connectedMockDebugAndroidTest --stacktrace --warning-mode all && killall -INT crashpad_handler
+            ./gradlew :app:connectedMockDebugAndroidTest --stacktrace --warning-mode all
       - when:
           condition: false
           steps:
