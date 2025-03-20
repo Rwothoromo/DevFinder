@@ -63,7 +63,7 @@ commands:
 
   run_android_tests:
     steps:
-      - android/start-emulator-and-run-tests:
+      - android/start_emulator_and_run-tests:
           system-image: system-images;android-35;google_apis;x86_64
           # The command to be run, while waiting for emulator startup, can be overridden
           post-emulator-launch-assemble-command: ./gradlew assembleDebugAndroidTest
