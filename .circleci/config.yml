@@ -116,6 +116,7 @@ jobs:
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
             adb shell input keyevent 82
+            adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
             adb shell wm dismiss-keyguard
             sleep 1
             ./gradlew :app:connectedMockDebugAndroidTest --stacktrace --warning-mode all && pkill -SIGTERM crashpad_handler || true, sleep 5, pkill -SIGKILL crashpad_handler || true
@@ -127,27 +128,14 @@ jobs:
       - run: ls -l app/build/outputs/androidTest-results/connected/debug/flavors/mock/
       - run: ls -l app/build/reports/androidTests/connected/debug/flavors/mock/
       - run: pwd
-      - run:
-          name: Save test results
-          command: |
-            sudo mkdir -m 0755 -p ~/test-results/androidTest/
-            sudo chmod 777 ~/test-results/androidTest/
-            find . -type f -regex "app/build/reports/androidTests/connected/debug/flavors/mock/.*xml" -exec cp {} ~/test-results/androidTest/ \;
-            find . -type f -regex "app/build/outputs/androidTest-results/connected/debug/flavors/mock/.*html" -exec cp {} ~/test-results/androidTest/ \;
-          when: always
-      - run: ls -l ~/test-results/androidTest/
       - store_test_results:
-          path: ~/test-results
+          path: app/build/reports/androidTests/connected/debug/flavors/mock/
+      - store_test_results:
+          path: app/build/outputs/androidTest-results/connected/debug/flavors/mock/
       - store_artifacts:
-          path: ~/test-results/androidTest
-#      - store_test_results:
-#          path: app/build/reports/androidTests/connected/debug/flavors/mock/
-#      - store_test_results:
-#          path: app/build/outputs/androidTest-results/connected/debug/flavors/mock/
-#      - store_artifacts:
-#          path: app/build/reports/androidTests/connected/debug/flavors/mock/
-#      - store_artifacts:
-#          path: app/build/outputs/androidTest-results/connected/debug/flavors/mock/
+          path: app/build/reports/androidTests/connected/debug/flavors/mock/
+      - store_artifacts:
+          path: app/build/outputs/androidTest-results/connected/debug/flavors/mock/
       - save_gradle_cache
 
 
@@ -170,27 +158,14 @@ jobs:
       - run: ls -l app/build/test-results/testMockDebugUnitTest/
       - run: ls -l app/build/reports/tests/testMockDebugUnitTest/
       - run: pwd
-      - run:
-          name: Save test results
-          command: |
-            sudo mkdir -m 0755 -p ~/test-results/JUnit/
-            sudo chmod 777 ~/test-results/JUnit/
-            find . -type f -regex "app/build/reports/tests/testMockDebugUnitTest/.*xml" -exec cp {} ~/test-results/JUnit/ \;
-            find . -type f -regex "app/build/test-results/testMockDebugUnitTest/.*html" -exec cp {} ~/test-results/JUnit/ \;
-          when: always
-      - run: ls -l ~/test-results/JUnit/
       - store_test_results:
-          path: ~/test-results
+          path: app/build/reports/tests/testMockDebugUnitTest/
+      - store_test_results:
+          path: app/build/test-results/testMockDebugUnitTest/
       - store_artifacts:
-          path: ~/test-results/JUnit
-#      - store_test_results:
-#          path: app/build/reports/tests/testMockDebugUnitTest/
-#      - store_test_results:
-#          path: app/build/test-results/testMockDebugUnitTest/
-#      - store_artifacts:
-#          path: app/build/reports/tests/testMockDebugUnitTest/
-#      - store_artifacts:
-#          path: app/build/test-results/testMockDebugUnitTest/
+          path: app/build/reports/tests/testMockDebugUnitTest/
+      - store_artifacts:
+          path: app/build/test-results/testMockDebugUnitTest/
       - save_gradle_cache
 
 
@@ -214,10 +189,8 @@ jobs:
             chmod +x ./cc-test-reporter
       - run: ls -l app/build/outputs/androidTest-results/connected/debug/flavors/mock/
       - run: ls -l app/build/reports/androidTests/connected/debug/flavors/mock/
-      - run: ls -l ~/test-results/androidTest/
       - run: ls -l app/build/test-results/testMockDebugUnitTest/
       - run: ls -l app/build/reports/tests/testMockDebugUnitTest/
-      - run: ls -l ~/test-results/JUnit/
       - run:
           name: Generate JaCoCo report
           command: ./gradlew jacocoTestReport --stacktrace --warning-mode all
