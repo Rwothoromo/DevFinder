@@ -73,7 +73,7 @@ commands:
             echo "no" | avdmanager --verbose create avd -n test -k "$SYSTEM_IMAGES"
             
             # Launch emulator
-            emulator -avd test -delay-adb -verbose -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -no-boot-anim -accel -metrics-collection
+            emulator -avd test -delay-adb -verbose -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -no-boot-anim -accel on -metrics-collection
             
             # Wait for emulator to start
             circle-android wait-for-boot
