@@ -27,7 +27,6 @@ jacoco {
 }
 
 tasks.withType(Test).configureEach {
-//    useJUnitPlatform()
     testLogging {
         exceptionFormat = 'full'
         events("passed", "skipped", "failed")
@@ -97,22 +96,14 @@ android {
     }
 
     testOptions {
-//        execution = "ANDROIDX_TEST_ORCHESTRATOR"
-        unitTests.includeAndroidResources = true
         animationsDisabled = true
-
+        unitTests.includeAndroidResources = true
+        unitTests.returnDefaultValues = true
         unitTests.all {
-//            useJUnitPlatform()
             jacoco {
                 includeNoLocationClasses = true
                 // Include all classes for coverage, unit tests are optimized for coverage reporting
             }
-        }
-
-        unitTests.returnDefaultValues = true
-
-        unitTests {
-            includeAndroidResources = true
         }
     }
 

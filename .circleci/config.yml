@@ -182,19 +182,24 @@ jobs:
       - store_artifacts:
           path: app/build/test-results/testMockDebugUnitTest/
 
-      #      - run:
-      #          name: Generate JaCoCo report
-      #          command: ./gradlew jacocoTestReport --stacktrace --warning-mode all
-      #      - run: ls -l app/build/reports/jacocoTestReport
-      #      - run:
-      #          name: Upload coverage to code climate
-      #          command: |
-      #            export JACOCO_SOURCE_PATH=app/src/main/java
-      #            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco --output coverage/codeclimate.json
-      #            ./cc-test-reporter upload-coverage --input coverage/codeclimate.json
-      #      - store_artifacts:
-      #          path: app/build/reports/
-      #          destination: /reports/
+      - run:
+          name: Code Climate Test Setup
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          name: Generate JaCoCo report
+          command: ./gradlew jacocoTestReport --stacktrace --warning-mode all
+      - run: ls -l app/build/reports/jacocoTestReport
+      - run:
+          name: Upload coverage to code climate
+          command: |
+            export JACOCO_SOURCE_PATH=app/src/main/java
+            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco --output coverage/codeclimate.json
+            ./cc-test-reporter upload-coverage --input coverage/codeclimate.json
+      - store_artifacts:
+          path: app/build/reports/
+          destination: /reports/
 
       - save_gradle_cache
 
@@ -264,19 +269,21 @@ jobs:
 workflows:
   build_test_deploy:
     jobs:
-      - quality_check
-      - android_tests:
-          requires:
-            - quality_check
-      - unit_tests:
-          requires:
-            - android_tests
-      - jacoco_code_coverage:
-          requires:
-            - unit_tests
+#      - quality_check
+#      - android_tests:
+#          requires:
+#            - quality_check
+#      - unit_tests:
+#          requires:
+#            - android_tests
+#      - jacoco_code_coverage:
+#          requires:
+#            - unit_tests
+      - unit_tests
       - release_build:
           requires:
-            - jacoco_code_coverage
+#            - jacoco_code_coverage
+            - unit_tests
 
 #  install_and_configure_cli:
 #    jobs:

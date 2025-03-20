@@ -1,8 +1,6 @@
 package com.rwothoromo.developers.view
 
 import android.Manifest
-import android.R.attr.name
-import android.app.KeyguardManager
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
@@ -57,14 +55,6 @@ class MainActivity : AppCompatActivity(), GithubUserView {
         swipeRefreshLayout = findViewById(R.id.swiperefresh)
 
         layoutManager = GridLayoutManager(this, 2)
-
-        try {
-            val keyguardManager = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
-            val mLock = keyguardManager.newKeyguardLock(KEYGUARD_SERVICE)
-            mLock.disableKeyguard()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
 
         if (!isNetworkConnected(this)) {
             Snackbar.make(
