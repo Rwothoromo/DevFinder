@@ -2,9 +2,9 @@ package com.rwothoromo.developers.view
 
 import android.content.Context
 import android.content.Intent
-import android.view.WindowManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.IdlingRegistry
@@ -20,8 +20,9 @@ import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.rwothoromo.developers.util.EspressoIdlingResource
 import com.rwothoromo.devfinder.R
 import org.hamcrest.CoreMatchers.allOf
@@ -38,37 +39,9 @@ import org.junit.runner.RunWith
 class GithubUserListInstrumentationTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
-    /**
-     * MainActivity test rule.
-     * Used for functional testing of a single activity.
-     * The activity will be launched before each test annotated with @Test and before methods
-     * annotated with @Before. It will be terminated after the test and methods annotated
-     * with @After are complete. This rule allows direct access to the activity during the test.
-     */
-    @Rule
-    @JvmField
-    var mActivityTestRule: ActivityTestRule<MainActivity> =
-        object : ActivityTestRule<MainActivity>(MainActivity::class.java) {
-
-            override fun getActivityIntent(): Intent {
-                return Intent(context, MainActivity::class.java)
-            }
-        }
-
-    @Before
-    fun unlockScreen() {
-        val activity: MainActivity = mActivityTestRule.getActivity()
-
-        val wakeUpDevice = Runnable {
-            activity.window.addFlags(
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-                        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-            )
-        }
-
-        activity.runOnUiThread(wakeUpDevice)
-    }
+    @get:Rule
+    var activityScenarioRule: ActivityScenarioRule<MainActivity> =
+        activityScenarioRule<MainActivity>()
 
     /**
      * Register any resource that needs to be synchronized with Espresso before the test is run.
@@ -148,23 +121,24 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickableRecyclerViewItems() {
+        launchActivity<MainActivity>().use {
+            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
 
-        onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
+            Intents.init()
 
-        Intents.init()
-
-        // Scroll to an item at a position and click on it.
-        val mockPosition = 0
-        onView(withId(R.id.recyclerView)).perform(
-            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                mockPosition,
-                click()
+            // Scroll to an item at a position and click on it.
+            val mockPosition = 0
+            onView(withId(R.id.recyclerView)).perform(
+                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                    mockPosition,
+                    click()
+                )
             )
-        )
 
-        intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
+            intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
 
-        Intents.release()
+            Intents.release()
+        }
     }
 
     /**

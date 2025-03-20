@@ -79,6 +79,13 @@ commands:
             # unlock the emulator screen
             sleep 30
             adb shell input keyevent 82
+            # Tap the "OK" button on a 320x480 screen
+            adb shell input tap 233 293
+            # Simulate keystrokes
+            sleep 3; adb shell input keyevent 22
+            sleep 3; adb shell input keyevent 22
+            sleep 3; adb shell input keyevent 66
+            # keep display on
             adb shell svc power stayon true
             adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
             adb shell wm dismiss-keyguard
@@ -146,7 +153,7 @@ commands:
           name: Upload coverage to code climate
           command: |
             export JACOCO_SOURCE_PATH=app/src/main/java
-            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
+#            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
             ./cc-test-reporter format-coverage app/build/outputs/code_coverage/mockDebugAndroidTest/connected/
             ./cc-test-reporter format-coverage app/build/outputs/unit_test_code_coverage/mockDebugUnitTest/
             ./cc-test-reporter upload-coverage

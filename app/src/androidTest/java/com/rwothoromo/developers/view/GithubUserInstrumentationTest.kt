@@ -3,8 +3,7 @@ package com.rwothoromo.developers.view
 import android.os.Parcel
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rwothoromo.developers.model.GithubUser
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert.assertThat
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -40,12 +39,12 @@ class GithubUserInstrumentationTest {
         val createdFromParcel = GithubUser.CREATOR.createFromParcel(parcel)
 
         // Verify that the received data is correct.
-        assertThat(createdFromParcel.id, `is`(1))
-        assertThat(createdFromParcel.username, `is`("Username"))
-        assertThat(
+        assertEquals(createdFromParcel.id, 1)
+        assertEquals(createdFromParcel.username, "Username")
+        assertEquals(
             createdFromParcel.avatarUrl,
-            `is`("https://avatars0.githubusercontent.com/u/6739804?v=4")
+            "https://avatars0.githubusercontent.com/u/6739804?v=4"
         )
-        assertThat(createdFromParcel.htmlUrl, `is`("https://github.com/Username"))
+        assertEquals(createdFromParcel.htmlUrl, "https://github.com/Username")
     }
 }

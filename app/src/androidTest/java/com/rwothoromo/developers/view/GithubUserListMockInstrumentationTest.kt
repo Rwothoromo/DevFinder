@@ -2,9 +2,9 @@ package com.rwothoromo.developers.view
 
 import android.content.Context
 import android.content.Intent
-import android.view.WindowManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
@@ -15,8 +15,9 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import com.rwothoromo.developers.RestServiceTestHelper
 import com.rwothoromo.developers.util.EspressoIdlingResource
 import com.rwothoromo.devfinder.R
@@ -37,35 +38,28 @@ import org.junit.runner.RunWith
 class GithubUserListMockInstrumentationTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
-    /**
-     * Mock MainActivity test rule.
-     */
-    @Rule
-    @JvmField
-    var mActivityTestRule: ActivityTestRule<MainActivity> =
-        object : ActivityTestRule<MainActivity>(MainActivity::class.java, true, true) {
-
-            override fun getActivityIntent(): Intent {
-                return Intent(context, MainActivity::class.java)
-            }
-        }
+    @get:Rule
+    var activityScenarioRule: ActivityScenarioRule<MainActivity> =
+        activityScenarioRule<MainActivity>()
 
     private var server: MockWebServer? = null
 
-    @Before
-    fun unlockScreen() {
-        val activity: MainActivity = mActivityTestRule.getActivity()
-
-        val wakeUpDevice = Runnable {
-            activity.window.addFlags(
-                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-                        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-            )
-        }
-
-        activity.runOnUiThread(wakeUpDevice)
-    }
+//    @Before
+//    fun unlockScreen() {
+//        launchActivity<MainActivity>().use { scenario ->
+//            scenario.onActivity { activity ->
+//                val wakeUpDevice = Runnable {
+//                    activity.window.addFlags(
+//                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+//                                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+//                                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+//                    )
+//                }
+//
+//                activity.runOnUiThread(wakeUpDevice)
+//            }
+//        }
+//    }
 
     /**
      * Set up the server.
@@ -109,20 +103,21 @@ class GithubUserListMockInstrumentationTest {
      */
     @Test
     fun testClickableRecyclerViewItem() {
+        launchActivity<MainActivity>().use {
+            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
 
-        onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
+            Intents.init()
 
-        Intents.init()
+            // Scroll to an item at a position and click on it.
+            val mockPosition = 0
+            onView(withId(R.id.recyclerView)).perform(
+                actionOnItemAtPosition<RecyclerView.ViewHolder>(mockPosition, click())
+            )
 
-        // Scroll to an item at a position and click on it.
-        val mockPosition = 0
-        onView(withId(R.id.recyclerView)).perform(
-            actionOnItemAtPosition<RecyclerView.ViewHolder>(mockPosition, click())
-        )
+            intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
 
-        intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
-
-        Intents.release()
+            Intents.release()
+        }
     }
 
     /**
@@ -133,7 +128,7 @@ class GithubUserListMockInstrumentationTest {
     @After
     @Throws(Exception::class)
     fun tearDown() {
-        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.idlingResource)
         server!!.shutdown()
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.idlingResource)
     }
 }
