@@ -64,11 +64,11 @@ commands:
   run_android_tests:
     steps:
       - android/start_emulator_and_run_tests:
-          system-image: system-images;android-35;google_apis;x86_64
+          system_image: system-images;android-35;google_apis;x86_64
           # The command to be run, while waiting for emulator startup, can be overridden
-          post-emulator-launch-assemble-command: ./gradlew assembleDebugAndroidTest
+          post_emulator_launch_assemble_command: ./gradlew assembleDebugAndroidTest
           # The test command can be overridden
-          test-command: ./gradlew connectedMockDebugAndroidTest --stacktrace --warning-mode all
+          test_command: ./gradlew connectedMockDebugAndroidTest --stacktrace --warning-mode all
       - run:
           name: Android Instrumentation Test Locations
           command: |
