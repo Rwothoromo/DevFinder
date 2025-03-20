@@ -1,5 +1,8 @@
 package com.rwothoromo.developers.view
 
+import android.Manifest
+import android.R.attr.name
+import android.app.KeyguardManager
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
@@ -9,6 +12,7 @@ import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
@@ -36,6 +40,7 @@ class MainActivity : AppCompatActivity(), GithubUserView {
     private val githubPresenter = GithubPresenter(this)
     private var networkConnectivity: NetworkConnectivity? = null
 
+    @RequiresPermission(Manifest.permission.DISABLE_KEYGUARD)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -52,6 +57,14 @@ class MainActivity : AppCompatActivity(), GithubUserView {
         swipeRefreshLayout = findViewById(R.id.swiperefresh)
 
         layoutManager = GridLayoutManager(this, 2)
+
+        try {
+            val keyguardManager = getSystemService(KEYGUARD_SERVICE) as KeyguardManager
+            val mLock = keyguardManager.newKeyguardLock(KEYGUARD_SERVICE)
+            mLock.disableKeyguard()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         if (!isNetworkConnected(this)) {
             Snackbar.make(

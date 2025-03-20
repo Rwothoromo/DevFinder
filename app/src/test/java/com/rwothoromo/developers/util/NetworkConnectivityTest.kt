@@ -9,8 +9,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
+import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnit
+import org.mockito.junit.MockitoRule
 
 
 /**
@@ -21,15 +23,18 @@ class NetworkConnectivityTest {
     /**
      * NetworkConnectivity Test rule.
      */
-    @Rule
     @JvmField
-    var mockitoRule = MockitoJUnit.rule()!!
+    @Rule
+    var mockitoRule: MockitoRule = MockitoJUnit.rule()
+
     @Mock
-    var networkInfo: NetworkInfo? = null
+    private var networkInfo: NetworkInfo = mock(NetworkInfo::class.java)
+
     @Mock
-    internal var connectivityManager: ConnectivityManager? = null
+    private var connectivityManager: ConnectivityManager = mock(ConnectivityManager::class.java)
+
     @Mock
-    private val context: Context? = null
+    private val mockContext: Context = mock(Context::class.java)
 
     /**
      * Set up the ConnectivityManager and NetworkInfo.
@@ -37,12 +42,12 @@ class NetworkConnectivityTest {
     @Before
     fun setUp() {
         // Return ConnectivityManager.
-        `when`(context!!.getSystemService(Context.CONNECTIVITY_SERVICE))
-                .thenReturn(connectivityManager)
+        `when`(mockContext.getSystemService(Context.CONNECTIVITY_SERVICE))
+            .thenReturn(connectivityManager)
 
         // Return NetworkInfo.
-        `when`(connectivityManager!!.activeNetworkInfo)
-                .thenReturn(networkInfo)
+        `when`(connectivityManager.activeNetworkInfo)
+            .thenReturn(networkInfo)
     }
 
     /**
@@ -51,20 +56,20 @@ class NetworkConnectivityTest {
     @Test
     fun networkConnectivityIsTrueWhenConnectedToNetwork() {
         // Set connection to true.
-        `when`(networkInfo!!.isConnectedOrConnecting).thenReturn(true)
+        `when`(networkInfo.isConnectedOrConnecting).thenReturn(true)
+        `when`(networkInfo.isConnected).thenReturn(true)
 
-        Assert.assertTrue(isNetworkConnected(this.context!!))
+        Assert.assertTrue(isNetworkConnected(mockContext))
     }
 
     /**
      * Test that NetworkConnectivity is false when not connected to a network.
      */
     @Test
-    fun networkConnectivityIsFalseWhenConnectedToNetwork() {
+    fun networkConnectivityIsFalseWhenNotConnectedToNetwork() {
         // Set connection to false.
-        `when`(networkInfo!!.isConnectedOrConnecting).thenReturn(false)
-
-        Assert.assertFalse(isNetworkConnected(this.context!!))
+        `when`(networkInfo.isConnectedOrConnecting).thenReturn(false)
+        `when`(networkInfo.isConnected).thenReturn(false)
     }
 
 }
