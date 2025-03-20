@@ -70,10 +70,10 @@ commands:
             SYSTEM_IMAGES="system-images;android-35;google_apis;x86_64"
             sdkmanager "$SYSTEM_IMAGES" "platform-tools" "platforms;android-35" "build-tools;30.0.0" "emulator"
             sdkmanager --update
-            echo "no" | avdmanager --verbose create avd -n test -k "$SYSTEM_IMAGES"
+            echo "no" | avdmanager create avd -n test -k "$SYSTEM_IMAGES"
             
             # Launch emulator
-            emulator -avd test -delay-adb -verbose -no-window -gpu swiftshader_indirect -no-snapshot -no-audio -no-boot-anim -accel on -metrics-collection
+            emulator -avd test -delay-adb -no-window -no-audio -no-boot-anim -accel on -gpu -no-snapshot -metrics-collection swiftshader_indirect
             
             # Wait for emulator to start
             circle-android wait-for-boot
@@ -88,11 +88,6 @@ commands:
             ./gradlew :app:connectedMockDebugAndroidTest --stacktrace --warning-mode all
             # && sleep 5, pkill -SIGKILL -SIGTERM crashpad_handler || true
 
-#            adb wait-for-device
-#            until adb shell getprop sys.boot_completed | grep 1; do sleep 3; done;
-#            adb shell settings put global window_animation_scale 0
-#            adb shell settings put global transition_animation_scale 0
-#            adb shell settings put global animator_duration_scale 0
 #            adb shell input keyevent 82
 #            adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
 #            adb shell wm dismiss-keyguard
