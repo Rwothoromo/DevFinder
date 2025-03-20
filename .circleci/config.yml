@@ -92,7 +92,7 @@ jobs:
       tag: default
     parallelism: 4
     environment:
-      ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 120 # seconds to wait before killing emu
+      ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 120
     steps:
       - checkout
       - attach_workspace:
@@ -112,14 +112,12 @@ jobs:
             emulator -avd test-emulator -no-window -no-audio -no-boot-anim -accel on -gpu swiftshader_indirect -metrics-collection &
             adb wait-for-device
             until adb shell getprop sys.boot_completed | grep 1; do sleep 3; done;
-#           disable animation scale
             adb shell settings put global window_animation_scale 0
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
-#           unlock screen
             adb shell input keyevent 82
-#            adb shell wm dismiss-keyguard
-#            sleep 1
+            adb shell wm dismiss-keyguard
+            sleep 1
             ./gradlew :app:connectedMockDebugAndroidTest --stacktrace --warning-mode all && pkill -SIGTERM crashpad_handler || true, sleep 5, pkill -SIGKILL crashpad_handler || true
       - when:
           condition: false
