@@ -2,6 +2,7 @@ package com.rwothoromo.developers.view
 
 import android.content.Context
 import android.content.Intent
+import android.view.WindowManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -53,6 +54,21 @@ class GithubUserListInstrumentationTest {
                 return Intent(context, MainActivity::class.java)
             }
         }
+
+    @Before
+    fun unlockScreen() {
+        val activity: MainActivity = mActivityTestRule.getActivity()
+
+        val wakeUpDevice = Runnable {
+            activity.window.addFlags(
+                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+                        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+            )
+        }
+
+        activity.runOnUiThread(wakeUpDevice)
+    }
 
     /**
      * Register any resource that needs to be synchronized with Espresso before the test is run.

@@ -2,9 +2,7 @@ package com.rwothoromo.developers.view
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
-import android.support.test.InstrumentationRegistry.getContext
-import android.support.test.InstrumentationRegistry.getInstrumentation
+import android.view.WindowManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
@@ -30,7 +28,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.InputStream
 
 
 /**
@@ -54,6 +51,21 @@ class GithubUserListMockInstrumentationTest {
         }
 
     private var server: MockWebServer? = null
+
+    @Before
+    fun unlockScreen() {
+        val activity: MainActivity = mActivityTestRule.getActivity()
+
+        val wakeUpDevice = Runnable {
+            activity.window.addFlags(
+                WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+                        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+            )
+        }
+
+        activity.runOnUiThread(wakeUpDevice)
+    }
 
     /**
      * Set up the server.
