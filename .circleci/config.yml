@@ -67,8 +67,8 @@ commands:
           name: Installing emulator and Running Instrumentation tests
           command: |
             # Create Android Virtual Device
-            SYSTEM_IMAGES="system-images;android-35;google_apis;x86_64"
-            sdkmanager "$SYSTEM_IMAGES" "platform-tools" "platforms;android-35" "build-tools;30.0.0" "emulator"
+            SYSTEM_IMAGES="system-images;android-34;google_apis;x86_64"
+            sdkmanager "$SYSTEM_IMAGES" "platform-tools" "platforms;android-34" "build-tools;30.0.0" "emulator"
             sdkmanager --update
             echo "no" | avdmanager create avd -n test -k "$SYSTEM_IMAGES"
             
