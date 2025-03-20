@@ -71,7 +71,19 @@ commands:
           # The command to be run, while waiting for emulator startup, can be overridden
           post_emulator_launch_assemble_command: ./gradlew assembleMockDebugAndroidTest
           # The test command can be overridden
-          test_command: ./gradlew connectedMockDebugAndroidTest --stacktrace --warning-mode all
+          test_command: |
+            # Disable animations
+            adb shell settings put global window_animation_scale 0
+            adb shell settings put global transition_animation_scale 0
+            adb shell settings put global animator_duration_scale 0
+            
+            # Unlock emulator screen
+            adb shell input keyevent 82
+            adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
+            adb shell wm dismiss-keyguard
+            
+            # Run Android Instrumented Tests
+            ./gradlew connectedMockDebugAndroidTest --stacktrace --warning-mode all
       - run:
           name: Android Instrumentation Test Locations
           command: |
