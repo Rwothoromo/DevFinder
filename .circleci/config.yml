@@ -146,7 +146,7 @@ jobs:
       - run: ./gradlew dependencies --warning-mode all
       - android/run_tests:
           test_command: ./gradlew testMockDebugUnitTest --warning-mode all | circleci tests glob "app/src/test/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
-      - run: ls -l && pwd
+      - run: ls -l app/build/test-results/ && pwd
       - persist_to_workspace:
           root: ~/project
           paths:
@@ -161,7 +161,7 @@ jobs:
           command: |
             sudo mkdir -m 0755 -p ~/test-results/junit/
             sudo chmod 777 ~/test-results/junit/
-            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+            find . -type f -regex "app/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
           when: always
       - run: ls -l ~/test-results/junit/
       - store_test_results:
