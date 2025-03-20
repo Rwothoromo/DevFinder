@@ -78,12 +78,11 @@ commands:
             adb shell settings put global animator_duration_scale 0
             
             # Unlock emulator screen
+            sleep 30
             adb shell input keyevent 82
-            adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
-            adb shell wm dismiss-keyguard
             
             # Run Android Instrumented Tests
-            ./gradlew connectedMockDebugAndroidTest --stacktrace --warning-mode all
+            ./gradlew connectedMockDebugAndroidTest -PdisablePreDex --stacktrace --warning-mode all
       - run:
           name: Android Instrumentation Test Locations
           command: |
@@ -171,6 +170,10 @@ jobs:
       tag: default
     parallelism: 4
     environment:
+      # PATH: "~/$CIRCLE_PROJECT_REPONAME/gradle-2.9/bin:$PATH"
+      TERM: "dumb"
+      ADB_INSTALL_TIMEOUT: "10"
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
       ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 120
     steps:
       - checkout

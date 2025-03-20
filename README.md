@@ -45,6 +45,7 @@ $ git clone https://github.com/Rwothoromo/Android-Codelab.git
 - For Circle CI, refer to [Android Config Blog](https://circleci.com/blog/building-android-on-circleci/).
 - When running Instrumented Tests, ensure that in the developer options of the device/emulator,
   - that you have Animations off (instead of 1x) selected in all 3 animations scale - Window/Transition/Animator
+  - Also look at Circle CI's recommended [test example](https://github.com/circleci/EspressoSample?tab=readme-ov-file).
 
 ### Run tests
 

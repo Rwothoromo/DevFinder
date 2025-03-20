@@ -1,3 +1,5 @@
+import com.android.ddmlib.DdmPreferences
+
 buildscript {
     repositories {
     }
@@ -49,6 +51,7 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        DdmPreferences.setTimeOut(60000)
         // The app's state will be completely cleared between tests.
         testInstrumentationRunnerArguments clearPackageData: 'true'
         multiDexEnabled = true
