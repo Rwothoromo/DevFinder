@@ -137,7 +137,7 @@ commands:
           name: Upload coverage to code climate
           command: |
             export JACOCO_SOURCE_PATH=app/src/main/java
-            ./cc-test-reporter format-coverage app/build/outputs/code_coverage/mockDebugAndroidTest/connected/TEST-test-emulator(AVD) - 14/coverage.ec
+            ./cc-test-reporter format-coverage app/build/outputs/code_coverage/mockDebugAndroidTest/connected/test(AVD) - 15/coverage.ec
             ./cc-test-reporter format-coverage app/build/outputs/unit_test_code_coverage/mockDebugUnitTest/testMockDebugUnitTest.exec
             ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
             ./cc-test-reporter sum-coverage
