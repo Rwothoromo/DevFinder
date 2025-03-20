@@ -80,6 +80,9 @@ commands:
             # adb wait-for-device
             # until adb shell getprop sys.boot_completed | grep 1; do sleep 3; done;
             
+            # Prevent ERROR | Unable to connect to adb daemon on port: 5037
+            adb nodaemon server
+            
             # disable animations for testing purposes
             # adb shell settings put global window_animation_scale 0
             # adb shell settings put global transition_animation_scale 0
@@ -193,7 +196,7 @@ jobs:
       - restore_gradle_cache
 
       # Checkstyle, pmd and lint
-      - run: ./gradlew dependencies --warning-mode all
+      - run: ./gradlew dependencies --status --warning-mode all
       - run:
           name: Step 1 - Checkstyle, pmd and lint
           command: ./gradlew checkstyle pmd lint --warning-mode all
