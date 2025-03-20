@@ -124,17 +124,30 @@ jobs:
           steps:
             - run:
                 command: circleci-agent step halt
-      - run: ls -l app/build/outputs/androidTest-results/
-      - run: ls -l app/build/reports/androidTests/
+      - run: ls -l app/build/outputs/androidTest-results/connected/debug/flavors/mock/
+      - run: ls -l app/build/reports/androidTests/connected/debug/flavors/mock/
       - run: pwd
+      - run:
+          name: Save test results
+          command: |
+            sudo mkdir -m 0755 -p ~/test-results/androidTest/
+            sudo chmod 777 ~/test-results/androidTest/
+            find . -type f -regex "app/build/reports/androidTests/connected/debug/flavors/mock/.*xml" -exec cp {} ~/test-results/androidTest/ \;
+            find . -type f -regex "app/build/outputs/androidTest-results/connected/debug/flavors/mock/.*html" -exec cp {} ~/test-results/androidTest/ \;
+          when: always
+      - run: ls -l ~/test-results/androidTest/
       - store_test_results:
-          path: app/build/reports/androidTests
-      - store_test_results:
-          path: app/build/outputs/androidTest-results
+          path: ~/test-results
       - store_artifacts:
-          path: app/build/reports/androidTests
-      - store_artifacts:
-          path: app/build/outputs/androidTest-results
+          path: ~/test-results/androidTest
+#      - store_test_results:
+#          path: app/build/reports/androidTests/connected/debug/flavors/mock/
+#      - store_test_results:
+#          path: app/build/outputs/androidTest-results/connected/debug/flavors/mock/
+#      - store_artifacts:
+#          path: app/build/reports/androidTests/connected/debug/flavors/mock/
+#      - store_artifacts:
+#          path: app/build/outputs/androidTest-results/connected/debug/flavors/mock/
       - save_gradle_cache
 
 
@@ -154,17 +167,30 @@ jobs:
       - run: ./gradlew dependencies --warning-mode all
       - android/run_tests:
           test_command: ./gradlew :app:testMockDebugUnitTest --warning-mode all | circleci tests glob "app/src/test/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
-      - run: ls -l app/build/test-results/
+      - run: ls -l app/build/test-results/testMockDebugUnitTest/
       - run: ls -l app/build/reports/tests/testMockDebugUnitTest/
       - run: pwd
+      - run:
+          name: Save test results
+          command: |
+            sudo mkdir -m 0755 -p ~/test-results/JUnit/
+            sudo chmod 777 ~/test-results/JUnit/
+            find . -type f -regex "app/build/reports/tests/testMockDebugUnitTest/.*xml" -exec cp {} ~/test-results/JUnit/ \;
+            find . -type f -regex "app/build/test-results/testMockDebugUnitTest/.*html" -exec cp {} ~/test-results/JUnit/ \;
+          when: always
+      - run: ls -l ~/test-results/JUnit/
       - store_test_results:
-          path: app/build/reports/tests/testMockDebugUnitTest
-      - store_test_results:
-          path: app/build/test-results
+          path: ~/test-results
       - store_artifacts:
-          path: app/build/reports/tests/testMockDebugUnitTest
-      - store_artifacts:
-          path: app/build/test-results
+          path: ~/test-results/JUnit
+#      - store_test_results:
+#          path: app/build/reports/tests/testMockDebugUnitTest/
+#      - store_test_results:
+#          path: app/build/test-results/testMockDebugUnitTest/
+#      - store_artifacts:
+#          path: app/build/reports/tests/testMockDebugUnitTest/
+#      - store_artifacts:
+#          path: app/build/test-results/testMockDebugUnitTest/
       - save_gradle_cache
 
 
@@ -186,6 +212,12 @@ jobs:
           command: |
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
             chmod +x ./cc-test-reporter
+      - run: ls -l app/build/outputs/androidTest-results/connected/debug/flavors/mock/
+      - run: ls -l app/build/reports/androidTests/connected/debug/flavors/mock/
+      - run: ls -l ~/test-results/androidTest/
+      - run: ls -l app/build/test-results/testMockDebugUnitTest/
+      - run: ls -l app/build/reports/tests/testMockDebugUnitTest/
+      - run: ls -l ~/test-results/JUnit/
       - run:
           name: Generate JaCoCo report
           command: ./gradlew jacocoTestReport --stacktrace --warning-mode all
