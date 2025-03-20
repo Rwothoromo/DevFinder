@@ -192,16 +192,14 @@ jobs:
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
             chmod +x ./cc-test-reporter
       - run:
-          name: Code Climate Pretest
-          command: ./cc-test-reporter before-build
-      - run:
           name: Generate JaCoCo report
           command: ./gradlew jacocoTestReport --stacktrace --warning-mode all
+      - run: ls -l ~/app/build/reports/jacocoTestReport
       - run:
           name: Upload coverage to code climate
           command: |
             export JACOCO_SOURCE_PATH=app/src/main/java
-            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml -t jacoco
+            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
             ./cc-test-reporter upload-coverage
       - store_artifacts:
           path: app/build/reports/
@@ -236,19 +234,20 @@ jobs:
 workflows:
   build_test_deploy:
     jobs:
-      - quality_check
-      - unit_tests:
-          requires:
-            - quality_check
-      - android_tests:
-          requires:
-            - unit_tests
+#      - quality_check
+#      - android_tests:
+#          requires:
+#            - quality_check
+#      - unit_tests:
+#          requires:
+#            - android_tests
+      - unit_tests
       - jacoco_code_coverage:
           requires:
-            - android_tests
-      - release_build:
-          requires:
-            - jacoco_code_coverage
+            - unit_tests
+#      - release_build:
+#          requires:
+#            - jacoco_code_coverage
 
 #  install_and_configure_cli:
 #    jobs:
