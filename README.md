@@ -1,6 +1,6 @@
 # DevFinder
 
-[![CircleCI](https://circleci.com/gh/Rwothoromo/Android-Codelab.svg?style=svg)](https://circleci.com/gh/Rwothoromo/Android-Codelab)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/Rwothoromo/DevFinder/tree/develop.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Rwothoromo/DevFinder/tree/develop)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/78f03b429b83c9459a23/test_coverage)](https://codeclimate.com/github/Rwothoromo/Android-Codelab/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/78f03b429b83c9459a23/maintainability)](https://codeclimate.com/github/Rwothoromo/Android-Codelab/maintainability)
 
