@@ -52,7 +52,10 @@ commands:
     steps:
       - save_cache:
           paths:
-            - ~/.gradle
+            - ./settings.gradle
+            - ./build.gradle
+            - ./build.gradle.kts
+            - ./app/build.gradle
           key: v1-gradle-{{ checksum "build.gradle" }}
 
   restore_gradle_cache:
@@ -167,7 +170,7 @@ jobs:
       - decode_google_services_key
       - decode_keystore_key
       - export_keystore_key
-      # - restore_gradle_cache
+      - restore_gradle_cache
 
       # Checkstyle, pmd and lint
       - run: ./gradlew dependencies --status --warning-mode all

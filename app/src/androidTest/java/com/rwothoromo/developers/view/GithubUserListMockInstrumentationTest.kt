@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
@@ -86,21 +85,19 @@ class GithubUserListMockInstrumentationTest {
      */
     @Test
     fun testClickableRecyclerViewItem() {
-        launchActivity<MainActivity>().use {
-            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
+        onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
 
-            Intents.init()
+        Intents.init()
 
-            // Scroll to an item at a position and click on it.
-            val mockPosition = 0
-            onView(withId(R.id.recyclerView)).perform(
-                actionOnItemAtPosition<RecyclerView.ViewHolder>(mockPosition, click())
-            )
+        // Scroll to an item at a position and click on it.
+        val mockPosition = 0
+        onView(withId(R.id.recyclerView)).perform(
+            actionOnItemAtPosition<RecyclerView.ViewHolder>(mockPosition, click())
+        )
 
-            intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
+        intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
 
-            Intents.release()
-        }
+        Intents.release()
     }
 
     /**
