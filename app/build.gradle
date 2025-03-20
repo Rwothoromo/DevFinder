@@ -27,14 +27,15 @@ jacoco {
 }
 
 tasks.withType(Test).configureEach {
-    jacoco.includeNoLocationClasses = true
-    jacoco.excludes = ['jdk.internal.*']
-//    useJUnitPlatform() // causes unit tests to fail or get skipped
+    useJUnitPlatform()
     testLogging {
         exceptionFormat = 'full'
         events("passed", "skipped", "failed")
         showStackTraces = true
     }
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
+    finalizedBy jacocoTestReport
 }
 
 android {
