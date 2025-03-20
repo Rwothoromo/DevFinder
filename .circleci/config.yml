@@ -93,7 +93,7 @@ commands:
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
             sleep 1
-            ./gradlew :app:connectedMockDebugAndroidTest --stacktrace --warning-mode all && pkill -SIGTERM crashpad_handler || true, sleep 5, pkill -SIGKILL crashpad_handler || true
+            ./gradlew :app:connectedMockDebugAndroidTest --stacktrace --warning-mode all && sleep 5, pkill -SIGKILL -SIGTERM crashpad_handler || true
       - when:
           condition: false
           steps:
@@ -153,9 +153,10 @@ commands:
           name: Upload coverage to code climate
           command: |
             export JACOCO_SOURCE_PATH=app/src/main/java
-            # ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
-            ./cc-test-reporter format-coverage app/build/outputs/code_coverage/mockDebugAndroidTest/connected/
-            ./cc-test-reporter format-coverage app/build/outputs/unit_test_code_coverage/mockDebugUnitTest/
+            ./cc-test-reporter format-coverage app/build/outputs/code_coverage/mockDebugAndroidTest/connected/TEST-test-emulator(AVD) - 14/coverage.ec
+            ./cc-test-reporter format-coverage app/build/outputs/unit_test_code_coverage/mockDebugUnitTest/testMockDebugUnitTest.exec
+            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
+            ./cc-test-reporter sum-coverage
             ./cc-test-reporter upload-coverage
       - store_artifacts:
           path: app/build/reports/jacocoTestReport/

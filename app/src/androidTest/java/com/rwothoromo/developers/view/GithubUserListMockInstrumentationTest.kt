@@ -44,23 +44,6 @@ class GithubUserListMockInstrumentationTest {
 
     private var server: MockWebServer? = null
 
-//    @Before
-//    fun unlockScreen() {
-//        launchActivity<MainActivity>().use { scenario ->
-//            scenario.onActivity { activity ->
-//                val wakeUpDevice = Runnable {
-//                    activity.window.addFlags(
-//                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
-//                                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
-//                                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-//                    )
-//                }
-//
-//                activity.runOnUiThread(wakeUpDevice)
-//            }
-//        }
-//    }
-
     /**
      * Set up the server.
      *
