@@ -63,46 +63,12 @@ commands:
 
   run_android_tests:
     steps:
-      - run:
-          name: Installing emulator and Running Instrumentation tests
-          command: |
-            # Create Android Virtual Device
-            SYSTEM_IMAGES="system-images;android-35;google_apis;x86_64"
-            sdkmanager "platform-tools" "platforms;android-35" "build-tools;30.0.0" "emulator"
-            sdkmanager "$SYSTEM_IMAGES"
-            sdkmanager --update
-            echo no | avdmanager create avd -n test-emulator -k "$SYSTEM_IMAGES"
-            
-            # Launch emulator
-            emulator -avd test-emulator -delay-adb -no-window -no-audio -no-boot-anim -accel on -gpu -no-snapshot -metrics-collection swiftshader_indirect
-            
-            # Wait for emulator to start
-            circle-android wait-for-boot
-            adb wait-for-device
-            until adb shell getprop sys.boot_completed | grep 1; do sleep 3; done;
-            
-            # Unlock the emulator screen
-            sleep 30
-            adb shell input keyevent 82
-            
-            # Keep display on
-            adb shell svc power stayon true
-            adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
-            adb shell wm dismiss-keyguard
-            
-            # Disable animations for testing purposes
-            adb shell settings put global window_animation_scale 0
-            adb shell settings put global transition_animation_scale 0
-            adb shell settings put global animator_duration_scale 0
-            sleep 1
-            
-            # Run Android Instrumented Tests
-            ./gradlew :app:connectedMockDebugAndroidTest --stacktrace --warning-mode all && pkill -SIGTERM crashpad_handler || true, sleep 5, pkill -SIGKILL crashpad_handler || true
-      - when:
-          condition: false
-          steps:
-            - run:
-                command: circleci-agent step halt
+      - android/start-emulator-and-run-tests:
+          system-image: system-images;android-35;google_apis;x86_64
+          # The command to be run, while waiting for emulator startup, can be overridden
+          post-emulator-launch-assemble-command: ./gradlew assembleDebugAndroidTest
+          # The test command can be overridden
+          test-command: ./gradlew connectedMockDebugAndroidTest --stacktrace --warning-mode all
       - run:
           name: Android Instrumentation Test Locations
           command: |
