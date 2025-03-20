@@ -102,6 +102,7 @@ android {
         animationsDisabled = true
 
         unitTests.all {
+            useJUnitPlatform()
             jacoco {
                 includeNoLocationClasses = true
                 // Include all classes for coverage, unit tests are optimized for coverage reporting
