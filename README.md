@@ -72,7 +72,7 @@ $ ./gradlew test
 
 Before running any of these commands, run `./gradlew clean` to clear any previous reports.
  
-To Generate a JaCoCo coverage report:
+To Generate a JaCoCo coverage report (Use unifiedCoverageReport for Circle CI):
 ```
 $ ./gradlew jacocoTestReport
 ```
