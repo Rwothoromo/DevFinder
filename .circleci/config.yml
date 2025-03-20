@@ -77,26 +77,37 @@ commands:
             
             # Wait for emulator to start
             circle-android wait-for-boot
-            # adb wait-for-device
-            # until adb shell getprop sys.boot_completed | grep 1; do sleep 3; done;
+            adb wait-for-device
+            until adb shell getprop sys.boot_completed | grep 1; do sleep 3; done;
+            
+            # unlock the emulator screen
+            sleep 30
+            adb shell input keyevent 82
+            
+            # Tap the "OK" button on a 320x480 screen
+            adb shell input tap 233 293
+            
+            # Simulate keystrokes
+            sleep 3; adb shell input keyevent 22
+            sleep 3; adb shell input keyevent 22
+            sleep 3; adb shell input keyevent 66
+            
+            # keep display on
+            adb shell svc power stayon true
+            adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
+            adb shell wm dismiss-keyguard
             
             # disable animations for testing purposes
-            # adb shell settings put global window_animation_scale 0
-            # adb shell settings put global transition_animation_scale 0
-            # adb shell settings put global animator_duration_scale 0
-            
-            ./gradlew :app:connectedMockDebugAndroidTest --stacktrace --warning-mode all
-            # && sleep 5, pkill -SIGKILL -SIGTERM crashpad_handler || true
-
-#            adb shell input keyevent 82
-#            adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
-#            adb shell wm dismiss-keyguard
-#            sleep 1
-#      - when:
-#          condition: false
-#          steps:
-#            - run:
-#                command: circleci-agent step halt
+            adb shell settings put global window_animation_scale 0
+            adb shell settings put global transition_animation_scale 0
+            adb shell settings put global animator_duration_scale 0
+            sleep 1
+            ./gradlew :app:connectedMockDebugAndroidTest --stacktrace --warning-mode all && sleep 5, pkill -SIGKILL -SIGTERM crashpad_handler || true
+      - when:
+          condition: false
+          steps:
+            - run:
+                command: circleci-agent step halt
       - run:
           name: Android Instrumentation Test Locations
           command: |
