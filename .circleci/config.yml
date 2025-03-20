@@ -136,21 +136,23 @@ jobs:
           path: app/build/reports/androidTests/connected/debug/flavors/mock/
       - store_artifacts:
           path: app/build/outputs/androidTest-results/connected/debug/flavors/mock/
-
-      #      - run:
-      #          name: Generate JaCoCo report
-      #          command: ./gradlew jacocoTestReport --stacktrace --warning-mode all
-      #      - run: ls -l app/build/reports/jacocoTestReport
-      #      - run:
-      #          name: Upload coverage to code climate
-      #          command: |
-      #            export JACOCO_SOURCE_PATH=app/src/main/java
-      #            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco --output coverage/codeclimate.json
-      #            ./cc-test-reporter upload-coverage --input coverage/codeclimate.json
-      #      - store_artifacts:
-      #          path: app/build/reports/
-      #          destination: /reports/
-
+      - run:
+          name: Code Climate Test Setup
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          name: Generate JaCoCo report
+          command: ./gradlew jacocoTestReport --stacktrace --warning-mode all
+      - run: ls -l app/build/reports/jacocoTestReport
+      - run:
+          name: Upload coverage to code climate
+          command: |
+            export JACOCO_SOURCE_PATH=app/src/main/java
+            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
+            ./cc-test-reporter upload-coverage
+      - store_artifacts:
+          path: app/build/reports/jacocoTestReport/
       - save_gradle_cache
 
 
@@ -181,7 +183,6 @@ jobs:
           path: app/build/reports/tests/testMockDebugUnitTest/
       - store_artifacts:
           path: app/build/test-results/testMockDebugUnitTest/
-
       - run:
           name: Code Climate Test Setup
           command: |
@@ -195,50 +196,10 @@ jobs:
           name: Upload coverage to code climate
           command: |
             export JACOCO_SOURCE_PATH=app/src/main/java
-            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco --output coverage/codeclimate.json
-            ./cc-test-reporter upload-coverage --input coverage/codeclimate.json
+            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
+            ./cc-test-reporter upload-coverage
       - store_artifacts:
-          path: app/build/reports/
-          destination: /reports/
-
-      - save_gradle_cache
-
-
-  jacoco_code_coverage:
-    executor:
-      name: android/android_machine
-      tag: default
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/
-      - run: ls -l
-      - export_google_services_key
-      - decode_google_services_key
-      - restore_gradle_cache
-      - run: ./gradlew dependencies --warning-mode all
-      - run:
-          name: Code Climate Test Setup
-          command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
-      - run: ls -l app/build/outputs/androidTest-results/connected/debug/flavors/mock/
-      - run: ls -l app/build/reports/androidTests/connected/debug/flavors/mock/
-      - run: ls -l app/build/test-results/testMockDebugUnitTest/
-      - run: ls -l app/build/reports/tests/testMockDebugUnitTest/
-      - run:
-          name: Generate JaCoCo report
-          command: ./gradlew jacocoTestReport --stacktrace --warning-mode all
-      - run: ls -l app/build/reports/jacocoTestReport
-      - run:
-          name: Upload coverage to code climate
-          command: |
-            export JACOCO_SOURCE_PATH=app/src/main/java
-            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco --output coverage/codeclimate.json
-            ./cc-test-reporter upload-coverage --input coverage/codeclimate.json
-      - store_artifacts:
-          path: app/build/reports/
-          destination: /reports/
+          path: app/build/reports/jacocoTestReport/
       - save_gradle_cache
 
 
@@ -269,20 +230,15 @@ jobs:
 workflows:
   build_test_deploy:
     jobs:
-#      - quality_check
-#      - android_tests:
-#          requires:
-#            - quality_check
-#      - unit_tests:
-#          requires:
-#            - android_tests
-#      - jacoco_code_coverage:
-#          requires:
-#            - unit_tests
-      - unit_tests
+      - quality_check
+      - android_tests:
+          requires:
+            - quality_check
+      - unit_tests:
+          requires:
+            - android_tests
       - release_build:
           requires:
-#            - jacoco_code_coverage
             - unit_tests
 
 #  install_and_configure_cli:
