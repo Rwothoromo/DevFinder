@@ -69,7 +69,28 @@ jobs:
   #      - gcp-cli/setup:
   #          version: 404.0.0
 
-  build:
+  quality_check:
+    executor:
+      name: android/android_machine
+      tag: default
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run: ls -l
+      - export_google_services_key
+      - decode_google_services_key
+      - restore_gradle_cache
+      - run: ./gradlew dependencies --warning-mode all
+      - run: ./gradlew checkstyle pmd lint --warning-mode all
+      - run: ls -l /home/circleci/project/app/build/reports/lint/
+      - run: pwd
+      - store_artifacts:
+          path: /home/circleci/project/app/build/reports/lint/
+      - save_gradle_cache
+
+
+  android_tests:
     executor:
       name: android/android_machine
       tag: default
@@ -81,25 +102,11 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: ls -l
-      - run: pwd
       - export_google_services_key
       - decode_google_services_key
-      - decode_keystore_key
-      - export_keystore_key
       - restore_gradle_cache
-
-      # Checkstyle, pmd and lint
-      - run: ./gradlew dependencies --warning-mode all
       - run:
-          name: Step 1 - Checkstyle, pmd and lint
-          command: ./gradlew checkstyle pmd lint --warning-mode all
-      - run: ls -l /home/circleci/project/app/build/reports/lint/
-      - store_artifacts:
-          path: /home/circleci/project/app/build/reports/lint/
-
-      # Android Instrumented tests
-      - run:
-          name: Step 2 - Installing emulator and Running Instrumentation tests
+          name: Installing emulator and Running Instrumentation tests
           command: |
             sdkmanager "platform-tools" "platforms;android-34" "build-tools;30.0.0" "emulator"
             sdkmanager "system-images;android-34;google_apis;x86_64"
@@ -124,34 +131,17 @@ jobs:
                 command: circleci-agent step halt
       - run: ls -l app/build/outputs/androidTest-results/connected/debug/flavors/mock/
       - run: ls -l app/build/reports/androidTests/connected/debug/flavors/mock/
-      - store_test_results:
-          path: app/build/reports/androidTests/connected/debug/flavors/mock/
-      - store_test_results:
-          path: app/build/outputs/androidTest-results/connected/debug/flavors/mock/
-      - store_artifacts:
-          path: app/build/reports/androidTests/connected/debug/flavors/mock/
-      - store_artifacts:
-          path: app/build/outputs/androidTest-results/connected/debug/flavors/mock/
-
-      # Unit Tests
-      - android/run_tests:
-          name: Step 3 - Unit Tests
-          test_command: ./gradlew :app:testMockDebugUnitTest --warning-mode all | circleci tests glob "app/src/test/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
-      - run: ls -l app/build/test-results/testMockDebugUnitTest/
-      - run: ls -l app/build/reports/tests/testMockDebugUnitTest/
       - run: pwd
       - store_test_results:
-          path: app/build/reports/tests/testMockDebugUnitTest/
+          path: app/build/reports/androidTests/connected/debug/flavors/mock/
       - store_test_results:
-          path: app/build/test-results/testMockDebugUnitTest/
+          path: app/build/outputs/androidTest-results/connected/debug/flavors/mock/
       - store_artifacts:
-          path: app/build/reports/tests/testMockDebugUnitTest/
+          path: app/build/reports/androidTests/connected/debug/flavors/mock/
       - store_artifacts:
-          path: app/build/test-results/testMockDebugUnitTest/
-
-      # Code Climate and Jacoco
+          path: app/build/outputs/androidTest-results/connected/debug/flavors/mock/
       - run:
-          name: Step 4 - Code Climate Test Setup
+          name: Code Climate Test Setup
           command: |
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
             chmod +x ./cc-test-reporter
@@ -167,10 +157,72 @@ jobs:
             ./cc-test-reporter upload-coverage
       - store_artifacts:
           path: app/build/reports/jacocoTestReport/
+      - save_gradle_cache
 
-      # Release Build
+
+  unit_tests:
+    executor:
+      name: android/android_machine
+      tag: default
+    parallelism: 4
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run: ls -l
+      - export_google_services_key
+      - decode_google_services_key
+      - restore_gradle_cache
+      - run: ./gradlew dependencies --warning-mode all
+      - android/run_tests:
+          test_command: ./gradlew :app:testMockDebugUnitTest --warning-mode all | circleci tests glob "app/src/test/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
+      - run: ls -l app/build/test-results/testMockDebugUnitTest/
+      - run: ls -l app/build/reports/tests/testMockDebugUnitTest/
+      - run: pwd
+      - store_test_results:
+          path: app/build/reports/tests/testMockDebugUnitTest/
+      - store_test_results:
+          path: app/build/test-results/testMockDebugUnitTest/
+      - store_artifacts:
+          path: app/build/reports/tests/testMockDebugUnitTest/
+      - store_artifacts:
+          path: app/build/test-results/testMockDebugUnitTest/
       - run:
-          name: Step 5 - Assemble release build
+          name: Code Climate Test Setup
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          name: Generate JaCoCo report
+          command: ./gradlew jacocoTestReport --stacktrace --warning-mode all
+      - run: ls -l app/build/reports/jacocoTestReport
+      - run:
+          name: Upload coverage to code climate
+          command: |
+            export JACOCO_SOURCE_PATH=app/src/main/java
+            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
+            ./cc-test-reporter upload-coverage
+      - store_artifacts:
+          path: app/build/reports/jacocoTestReport/
+      - save_gradle_cache
+
+
+  release_build:
+    executor:
+      name: android/android_machine
+      tag: default
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run: ls -l
+      - export_google_services_key
+      - decode_google_services_key
+      - decode_keystore_key
+      - export_keystore_key
+      - restore_gradle_cache
+      - run:
+          name: Assemble release build
           command: |
             ./gradlew assembleRelease --stacktrace --warning-mode all
       - run: ls -l app/
@@ -182,7 +234,16 @@ jobs:
 workflows:
   build_test_deploy:
     jobs:
-      - build
+      - quality_check
+      - android_tests:
+          requires:
+            - quality_check
+      - unit_tests:
+          requires:
+            - android_tests
+      - release_build:
+          requires:
+            - unit_tests
 
 #  install_and_configure_cli:
 #    jobs:
