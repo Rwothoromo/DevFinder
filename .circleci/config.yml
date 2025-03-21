@@ -139,7 +139,7 @@ commands:
             export JACOCO_SOURCE_PATH=app/src/main/java
             ./cc-test-reporter format-coverage app/build/outputs/code_coverage/mockDebugAndroidTest/connected/'test(AVD) - 15'/coverage.ec --input-type jacoco
             ./cc-test-reporter format-coverage app/build/outputs/unit_test_code_coverage/mockDebugUnitTest/testMockDebugUnitTest.exec --input-type jacoco
-            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
+#            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
             ./cc-test-reporter sum-coverage
             ./cc-test-reporter upload-coverage
       - store_artifacts:
