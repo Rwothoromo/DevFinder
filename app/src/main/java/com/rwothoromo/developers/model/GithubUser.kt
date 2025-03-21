@@ -11,19 +11,19 @@ import com.google.gson.annotations.SerializedName
 class GithubUser : Parcelable {
 
     @SerializedName("login")
-    var username: String? = null
+    var username: String = ""
 
     var id: Int = 0
     var node_id: String = ""
 
     @SerializedName("avatar_url")
-    var avatarUrl: String? = null
+    var avatarUrl: String = ""
 
     var gravatar_id: String = ""
     var url: String = ""
 
     @SerializedName("html_url")
-    var htmlUrl: String? = null
+    var htmlUrl: String = ""
 
     var followers_url: String = ""
     var following_url: String = ""
@@ -36,7 +36,7 @@ class GithubUser : Parcelable {
     var received_events_url: String = ""
     var type: String = ""
     var user_view_type: String = ""
-    var site_admin: String = ""
+    var site_admin: Boolean = false
     var score: Float = 0.0F
 
     /**
@@ -61,9 +61,9 @@ class GithubUser : Parcelable {
      */
     constructor(`in`: Parcel) {
         id = `in`.readInt()
-        username = `in`.readString()
-        avatarUrl = `in`.readString()
-        htmlUrl = `in`.readString()
+        username = `in`.readString().toString()
+        avatarUrl = `in`.readString().toString()
+        htmlUrl = `in`.readString().toString()
     }
 
     /**
