@@ -13,30 +13,40 @@ import android.view.View
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.rwothoromo.developers.adapter.GithubAdapter
 import com.rwothoromo.developers.constants.Constants.EXTRA_DEVELOPER_LIST_STATE
-import com.rwothoromo.developers.model.GithubUser
-import com.rwothoromo.developers.presenter.GithubPresenter
+import com.rwothoromo.developers.models.GithubUser
+import com.rwothoromo.developers.models.GithubUsersResponse
 import com.rwothoromo.developers.util.NetworkConnectivity
 import com.rwothoromo.developers.util.NetworkConnectivity.isNetworkConnected
+import com.rwothoromo.developers.viewmodels.GithubUserViewModel
 import com.rwothoromo.devfinder.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 
 /**
  * MainActivity class with the Developer list.
  */
-class MainActivity : AppCompatActivity(), GithubUserView {
+class MainActivity : AppCompatActivity(), GithubUserViewInterface {
 
     private var githubUserListState: Parcelable? = null
     private var recyclerView: RecyclerView? = null
     private var layoutManager: RecyclerView.LayoutManager? = null
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
-    private val githubPresenter = GithubPresenter(this)
     private var networkConnectivity: NetworkConnectivity? = null
+    private var userType: String = "user"
+    private var city: String = "Kampala"
+    private var techStack: String = "All"
+    private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private lateinit var githubUserViewModel: GithubUserViewModel
 
     @RequiresPermission(Manifest.permission.DISABLE_KEYGUARD)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,13 +58,15 @@ class MainActivity : AppCompatActivity(), GithubUserView {
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.apply { subtitle = getString(R.string.app_subtitle) }
+        supportActionBar?.apply { subtitle = getString(R.string.app_subtitle, city, techStack) }
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView!!.setHasFixedSize(true)
         swipeRefreshLayout = findViewById(R.id.swiperefresh)
 
         layoutManager = GridLayoutManager(this, 2)
+
+        githubUserViewModel = ViewModelProvider(this)[GithubUserViewModel::class.java]
 
         if (!isNetworkConnected(this)) {
             Snackbar.make(
@@ -65,7 +77,16 @@ class MainActivity : AppCompatActivity(), GithubUserView {
                 .setActionTextColor(resources.getColor(android.R.color.holo_red_light))
                 .show()
         } else {
-            githubPresenter.getGithubUsers()
+            githubUserViewModel.data.observe(this) { githubUsersResponse ->
+                // Update UI with fetchedData
+                githubUsersReady(githubUsersResponse)
+            }
+
+            githubUserViewModel.error.observe(this) { errorMessage ->
+                failedDataRetrieval(errorMessage)
+            }
+
+            githubUserViewModel.getGithubUsersData(userType, city, techStack) // Trigger data fetch
         }
     }
 
@@ -175,21 +196,30 @@ class MainActivity : AppCompatActivity(), GithubUserView {
     /**
      * Show the Developer list once the data is ready.
      *
-     * @param githubUsers a GitHub users list
+     * @param githubUsersResponse with a GitHub users list
      */
-    override fun githubUsersReady(githubUsers: List<GithubUser>) {
-        this.showGithubUsers(githubUsers)
+    override fun githubUsersReady(githubUsersResponse: GithubUsersResponse) {
+        this.showGithubUsers(githubUsersResponse.githubUserList)
+        Snackbar.make(
+            recyclerView!!,
+            getString(R.string.successful_data_retrieval, githubUsersResponse.count),
+            Snackbar.LENGTH_LONG
+        )
     }
 
     /**
      * Show the status for when GitHub API data can't be accessed.
      */
-    override fun failedDataRetrieval() {
+    override fun failedDataRetrieval(errorMessage: String) {
         val snackbar = Snackbar.make(
-            recyclerView!!, getString(R.string.failed_data_retrieval),
+            recyclerView!!, getString(R.string.failed_data_retrieval, errorMessage),
             Snackbar.LENGTH_LONG
         )
-        snackbar.setAction(R.string.settings, SettingsListener()).duration = 15000
+        if (errorMessage.contains("HTTP 422")) {
+            snackbar.duration = 30000
+        } else {
+            snackbar.setAction(R.string.settings, SettingsListener()).duration = 15000
+        }
         snackbar.show()
     }
 
@@ -214,7 +244,9 @@ class MainActivity : AppCompatActivity(), GithubUserView {
             getString(R.string.refreshing)
         )
 
-        githubPresenter.getGithubUsers()
+        coroutineScope.launch {
+            githubUserViewModel.getGithubUsersData(userType, city, techStack)
+        }
 
         swipeRefreshLayout!!.isRefreshing = false // Disable the refresh icon
     }

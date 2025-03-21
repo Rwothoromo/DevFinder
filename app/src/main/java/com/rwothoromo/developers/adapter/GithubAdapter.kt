@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.rwothoromo.developers.adapter.GithubAdapter.ViewHolder
-import com.rwothoromo.developers.model.GithubUser
+import com.rwothoromo.developers.models.GithubUser
 import com.rwothoromo.developers.view.GithubUserProfile
 import com.rwothoromo.devfinder.R
 

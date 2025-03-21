@@ -11,6 +11,7 @@ buildscript {
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("kotlin-parcelize")
     id("jacoco")
     id("com.google.gms.google-services")
     alias(libs.plugins.compose.compiler)
@@ -156,6 +157,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation("androidx.compose.runtime:runtime:$composeVersion")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${rootProject.lifecycleViewmodel}")
+    implementation("com.squareup.okhttp3:logging-interceptor:${rootProject.okhttp3LoggingInterceptor}")
 
     // Testing
     testImplementation "junit:junit:${rootProject.jUnit}"
@@ -164,7 +167,7 @@ dependencies {
     testImplementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
     testImplementation "org.mockito:mockito-inline:${rootProject.mockitoInlineVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${rootProject.mockitoKotlinVersion}"
-//    testImplementation "org.robolectric:robolectric:${rootProject.robolectricVersion}"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${rootProject.ktxCoroutinesTest}"
 
     androidTestImplementation "androidx.test:core:${rootProject.androidXTestVersion}"
     androidTestImplementation "androidx.test:core-ktx:${rootProject.androidXTestVersion}"

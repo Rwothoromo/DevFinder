@@ -1,4 +1,4 @@
-package com.rwothoromo.developers.model
+package com.rwothoromo.developers.models
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -37,7 +37,7 @@ class GithubUser : Parcelable {
     var type: String = ""
     var user_view_type: String = ""
     var site_admin: Boolean = false
-    var score: Float = 0.0F
+    var score: Double = 0.0
 
     /**
      * Constructor for the GithubUser class.

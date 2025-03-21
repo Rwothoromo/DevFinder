@@ -1,39 +1,26 @@
 package com.rwothoromo.developers.view
 
-import com.rwothoromo.developers.model.GithubUser
-import com.rwothoromo.developers.presenter.GithubPresenter
-import org.junit.Assert
-import org.junit.Rule
+import com.rwothoromo.developers.api.GithubApiClient
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.junit.MockitoJUnit
 
 class GithubUserTest {
 
-    @Rule
-    @JvmField
-    var mockitoRule = MockitoJUnit.rule()!!
-
-    @Mock
-    internal var githubPresenter: GithubPresenter? = null
-
-    @Mock
-    private var githubUserView: GithubUserView? = null
-
-    @Mock
-    private val githubUsers: ArrayList<GithubUser>? = null
+    private var userType: String = "user"
+    private var techStack: String = "Kotlin"
+    private var city: String = "Kampala"
 
     @Test
-    fun fetchGithubUsers() {
-        githubUserView = object : GithubUserView {
-            override fun githubUsersReady(githubUsers: List<GithubUser>) {}
-
-            override fun failedDataRetrieval() {}
+    fun `GET Github Users check status`() {
+        runBlocking {
+            val response = GithubApiClient.githubService.getGithubUsersByLocation(
+                githubUserFilter = "type:${userType.lowercase()} language:${techStack.lowercase()} location:${city.lowercase()}"
+            )
+            assertFalse(response.isIncompleteResults)
+            assertTrue(response.count >= 0)
         }
-
-        githubPresenter = GithubPresenter(githubUserView as GithubUserView)
-        githubPresenter!!.getGithubUsers()
-
-        Assert.assertNotNull(githubUsers)
     }
+
 }

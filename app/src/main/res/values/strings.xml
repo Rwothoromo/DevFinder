@@ -8,8 +8,9 @@
     <string name="username">Username</string>
     <string name="action_refresh">Refresh</string>
     <string name="url" translatable="false">https://github.com/Username</string>
-    <string name="app_subtitle">Location: Kampala, Stack: Kotlin</string>
-    <string name="failed_data_retrieval">Failed to get data from GitHub! Check Internet Connectivity!</string>
+    <string name="app_subtitle">Location: %1$s, Stack: %2$s</string>
+    <string name="failed_data_retrieval">Failed to get data from GitHub! Error: %1$s</string>
+    <string name="successful_data_retrieval">Fetched %1$s users from GitHub!</string>
     <string name="feature_pending">Coming Soon! This is not yet available!</string>
     <string name="refreshing">Fetching data from the GitHub API…</string>
     <string name="settings">Go to SETTINGS</string>
