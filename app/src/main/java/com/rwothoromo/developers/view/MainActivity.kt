@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity(), GithubUserView {
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.apply { subtitle = "Location: Kampala, Stack: Java" }
+        supportActionBar?.apply { subtitle = getString(R.string.app_subtitle) }
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView!!.setHasFixedSize(true)

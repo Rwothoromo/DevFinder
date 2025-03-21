@@ -86,16 +86,16 @@ commands:
       - run:
           name: Android Instrumentation Test Locations
           command: |
-            ls -l app/build/outputs/androidTest-results/connected/debug/flavors/mock/
-            ls -l app/build/reports/androidTests/connected/debug/flavors/mock/
+            ls -l app/build/outputs/androidTest-results/connected/debug/flavors/prod/
+            ls -l app/build/reports/androidTests/connected/debug/flavors/prod/
       - store_test_results:
-          path: app/build/reports/androidTests/connected/debug/flavors/mock/
+          path: app/build/reports/androidTests/connected/debug/flavors/prod/
       - store_test_results:
-          path: app/build/outputs/androidTest-results/connected/debug/flavors/mock/
+          path: app/build/outputs/androidTest-results/connected/debug/flavors/prod/
       - store_artifacts:
-          path: app/build/reports/androidTests/connected/debug/flavors/mock/
+          path: app/build/reports/androidTests/connected/debug/flavors/prod/
       - store_artifacts:
-          path: app/build/outputs/androidTest-results/connected/debug/flavors/mock/
+          path: app/build/outputs/androidTest-results/connected/debug/flavors/prod/
 
   run_unit_tests:
     steps:
@@ -104,16 +104,16 @@ commands:
       - run:
           name: Unit Test Locations
           command: |
-            ls -l app/build/test-results/testMockDebugUnitTest/
-            ls -l app/build/reports/tests/testMockDebugUnitTest/
+            ls -l app/build/test-results/testProdDebugUnitTest/
+            ls -l app/build/reports/tests/testProdDebugUnitTest/
       - store_test_results:
-          path: app/build/reports/tests/testMockDebugUnitTest/
+          path: app/build/reports/tests/testProdDebugUnitTest/
       - store_test_results:
-          path: app/build/test-results/testMockDebugUnitTest/
+          path: app/build/test-results/testProdDebugUnitTest/
       - store_artifacts:
-          path: app/build/reports/tests/testMockDebugUnitTest/
+          path: app/build/reports/tests/testProdDebugUnitTest/
       - store_artifacts:
-          path: app/build/test-results/testMockDebugUnitTest/
+          path: app/build/test-results/testProdDebugUnitTest/
 
   jacoco_and_code_climate:
     steps:
@@ -122,12 +122,12 @@ commands:
           command: |
             ./gradlew unifiedCoverageReport --stacktrace --warning-mode all
       - run:
-          name: Jacoco and Code Coverage File Locations
+          name: JaCoCo and Code Coverage File Locations
           command: |
             ls -l app/build/reports/jacocoTestReport/
             ls -l app/build/jacocoHtml/
-            ls -l app/build/outputs/code_coverage/mockDebugAndroidTest/connected/
-            ls -l app/build/outputs/unit_test_code_coverage/mockDebugUnitTest/
+            ls -l app/build/outputs/code_coverage/prodDebugAndroidTest/connected/
+            ls -l app/build/outputs/unit_test_code_coverage/prodDebugUnitTest/
       - run:
           name: Code Climate Setup
           command: |
@@ -137,9 +137,9 @@ commands:
           name: Upload coverage to code climate
           command: |
             export JACOCO_SOURCE_PATH=app/src/main/java
-            ./cc-test-reporter format-coverage app/build/outputs/code_coverage/mockDebugAndroidTest/connected/'test(AVD) - 15'/coverage.ec --input-type jacoco
-            # ./cc-test-reporter format-coverage app/build/outputs/unit_test_code_coverage/mockDebugUnitTest/testMockDebugUnitTest.exec --input-type jacoco
-            # ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
+            # ./cc-test-reporter format-coverage app/build/outputs/code_coverage/prodDebugAndroidTest/connected/'test(AVD) - 15'/coverage.ec --input-type jacoco
+            # ./cc-test-reporter format-coverage app/build/outputs/unit_test_code_coverage/prodDebugUnitTest/testProdDebugUnitTest.exec --input-type jacoco
+            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
             ./cc-test-reporter sum-coverage
             ./cc-test-reporter upload-coverage
       - store_artifacts:
@@ -210,9 +210,9 @@ jobs:
             sudo find . -print | grep -i 'app/src/test/.*Test[.]kt'
       - run_unit_tests
 
-      # Code Climate and Jacoco
+      # Code Climate and JaCoCo
       - run:
-          name: Step 4 - Code Climate and Jacoco
+          name: Step 4 - Code Climate and JaCoCo
           command: ls -l app/build/reports/jacocoTestReport/
       - jacoco_and_code_climate
 

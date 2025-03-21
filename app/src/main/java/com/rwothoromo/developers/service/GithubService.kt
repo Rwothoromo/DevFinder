@@ -11,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 class GithubService {
 
-    private var retrofit: Retrofit? = null
+    private lateinit var retrofit: Retrofit
 
     /**
      * Returns a new instance of the GithubAPI interface.
@@ -20,16 +20,13 @@ class GithubService {
      */
     val api: GithubAPI
         get() {
+            val okHttpClient = OkHttpClient()
+            retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
+                .build()
 
-            if (retrofit == null) {
-                val okHttpClient = OkHttpClient()
-                retrofit = Retrofit.Builder()
-                        .baseUrl(BASE_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .client(okHttpClient)
-                        .build()
-            }
-
-            return retrofit!!.create(GithubAPI::class.java)
+            return retrofit.create(GithubAPI::class.java)
         }
 }

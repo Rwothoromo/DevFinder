@@ -10,37 +10,34 @@ import com.google.gson.annotations.SerializedName
  */
 class GithubUser : Parcelable {
 
-    /**
-     * Returns the GitHub user id.
-     *
-     * @return id
-     */
-    var id: Int = 0
-        private set
-    /**
-     * Returns the GitHub username.
-     *
-     * @return username
-     */
     @SerializedName("login")
     var username: String? = null
-        private set
-    /**
-     * Returns the GitHub user profile image URL.
-     *
-     * @return avatarUrl
-     */
+
+    var id: Int = 0
+    var node_id: String = ""
+
     @SerializedName("avatar_url")
     var avatarUrl: String? = null
-        private set
-    /**
-     * Returns the GitHub user profile URL.
-     *
-     * @return htmlUrl
-     */
+
+    var gravatar_id: String = ""
+    var url: String = ""
+
     @SerializedName("html_url")
     var htmlUrl: String? = null
-        private set
+
+    var followers_url: String = ""
+    var following_url: String = ""
+    var gists_url: String = ""
+    var starred_url: String = ""
+    var subscriptions_url: String = ""
+    var organizations_url: String = ""
+    var repos_url: String = ""
+    var events_url: String = ""
+    var received_events_url: String = ""
+    var type: String = ""
+    var user_view_type: String = ""
+    var site_admin: String = ""
+    var score: Float = 0.0F
 
     /**
      * Constructor for the GithubUser class.

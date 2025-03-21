@@ -1,7 +1,6 @@
 package com.rwothoromo.developers.view
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -59,9 +58,16 @@ class GithubUserProfile : AppCompatActivity() {
                 // User chose the "Share" action, launch the share intent
                 val shareIntent = Intent(Intent.ACTION_SEND)
                 shareIntent.type = "text/plain"
-                shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this awesome developer @"
-                        + githubUsername + ", " + githubUserURL)
-                startActivity(Intent.createChooser(shareIntent, "Share this developer"))
+                shareIntent.putExtra(
+                    Intent.EXTRA_TEXT,
+                    getString(R.string.profile_share_description, githubUsername, githubUserURL)
+                )
+                startActivity(
+                    Intent.createChooser(
+                        shareIntent,
+                        getString(R.string.profile_share_title)
+                    )
+                )
                 return true
             }
 

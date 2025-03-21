@@ -14,4 +14,6 @@
     <string name="refreshing">Fetching data from the GitHub API…</string>
     <string name="settings">Go to SETTINGS</string>
     <string name="close">CLOSE</string>
+    <string name="profile_share_description">Check out this awesome developer %1$s, %2$s"</string>
+    <string name="profile_share_title">Share this developer</string>
 </resources>
