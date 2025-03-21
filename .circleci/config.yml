@@ -140,7 +140,7 @@ commands:
             # ./cc-test-reporter format-coverage app/build/outputs/code_coverage/prodDebugAndroidTest/connected/'test(AVD) - 15'/coverage.ec --input-type jacoco
             # ./cc-test-reporter format-coverage app/build/outputs/unit_test_code_coverage/prodDebugUnitTest/testProdDebugUnitTest.exec --input-type jacoco
             ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
-            ./cc-test-reporter sum-coverage
+            # ./cc-test-reporter sum-coverage
             ./cc-test-reporter upload-coverage
       - store_artifacts:
           path: app/build/reports/jacocoTestReport/
