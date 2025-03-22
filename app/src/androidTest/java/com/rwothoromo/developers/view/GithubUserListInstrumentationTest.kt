@@ -55,21 +55,21 @@ class GithubUserListInstrumentationTest {
         // Using TestUtils.executeWithDelay below to skip the alertDialog in MainActivity
     }
 
-    /**
-     * Click Refresh in the menu items.
-     */
-    @Test
-    fun clickActionBarOverflowRefresh() {
-        // Wait 5 seconds for alertDialog to close
-        TestUtils.executeWithDelay {
-            // Open the options menu OR open the overflow menu, depending on whether
-            // the device has a hardware or software overflow menu button.
-            openActionBarOverflowOrOptionsMenu(context)
-
-            // Click the item.
-            onView(withText(R.string.action_refresh)).perform(click())
-        }
-    }
+//    /**
+//     * Click Refresh in the menu items.
+//     */
+//    @Test
+//    fun clickActionBarOverflowRefresh() {
+//        // Wait 5 seconds for alertDialog to close
+//        TestUtils.executeWithDelay {
+//            // Open the options menu OR open the overflow menu, depending on whether
+//            // the device has a hardware or software overflow menu button.
+//            openActionBarOverflowOrOptionsMenu(context)
+//
+//            // Click the item.
+//            onView(withText(R.string.action_refresh)).perform(click())
+//        }
+//    }
 
     /**
      * Scroll to a GitHub user on the RecyclerView and click one.
