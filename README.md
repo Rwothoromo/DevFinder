@@ -115,3 +115,11 @@ cat app/google-services.json | base64
 ```
 cat keystores/keystore.jks | base64
 ```
+
+### To generate APKs in Android Studio, pate the following into keystores/keystore.properties, then run `./gradlew assembleRelease`:
+```
+storeFile=../keystores/keystore.jks
+storePassword=my-pass
+keyAlias=my-alias
+keyPassword=my-pass
+```

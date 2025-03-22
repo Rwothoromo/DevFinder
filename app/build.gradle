@@ -60,10 +60,16 @@ android {
 
     signingConfigs {
         release {
-            storeFile = file(System.getenv("KEYSTORE") ?: "../keystores/keystore.jks")
-            storePassword = System.getenv("KEYSTORE_PASSWORD")
-            keyAlias = System.getenv("KEY_ALIAS")
-            keyPassword = System.getenv("KEY_PASSWORD")
+            // keystorePropertiesFile - Useful on local machine
+            def keystorePropertiesFile = rootProject.file("keystores/keystore.properties")
+            def keystoreProperties = new Properties()
+            keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+            // System.getenv - Useful on Circle CI
+            storeFile = file(System.getenv("KEYSTORE") ?: "../keystores/keystore.jks") ?: file(keystoreProperties['storeFile'])
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: keystoreProperties['storePassword']
+            keyAlias = System.getenv("KEY_ALIAS") ?: keystoreProperties['keyAlias']
+            keyPassword = System.getenv("KEY_PASSWORD") ?: keystoreProperties['keyPassword']
         }
     }
 
