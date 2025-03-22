@@ -3,8 +3,7 @@ package com.rwothoromo.developers.view
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.CountDownTimer
 import android.os.Parcelable
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -22,6 +21,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.rwothoromo.developers.adapter.GithubAdapter
+import com.rwothoromo.developers.constants.Constants.COUNT_DOWN_INTERVAL
+import com.rwothoromo.developers.constants.Constants.DIALOG_DELAY_TIME
 import com.rwothoromo.developers.constants.Constants.EXTRA_GITHUB_USER_LIST_STATE
 import com.rwothoromo.developers.models.GithubUser
 import com.rwothoromo.developers.models.GithubUsersResponse
@@ -90,7 +91,7 @@ class MainActivity : AppCompatActivity() {
 
             githubUserViewModel.isFetching.observe(this) { isFetching ->
                 if (isFetching) {
-//                    customAlertDialog(getString(R.string.refreshing))
+                    customAlertDialog(getString(R.string.refreshing))
                 }
             }
 
@@ -253,14 +254,15 @@ class MainActivity : AppCompatActivity() {
     /**
      * ProgressDialog with customizable message.
      *
-     * @param context a Context
      * @param message a message
      */
     private fun customAlertDialog(message: String) {
+        val millisInFuture = DIALOG_DELAY_TIME
+        val countDownInterval = COUNT_DOWN_INTERVAL
+
         val builder = AlertDialog.Builder(this)
         builder.setTitle(getString(R.string.status))
-//        builder.setMessage(message)
-//        builder.setPositiveButton("OK") { dialog, which -> dialog.dismiss() }
+        builder.setPositiveButton(R.string.ok) { dialog, which -> dialog.dismiss() }
 
         val loadingView = LayoutInflater.from(this).inflate(R.layout.loading, null, true)
         val messageView: TextView = loadingView.findViewById(R.id.message)
@@ -271,16 +273,19 @@ class MainActivity : AppCompatActivity() {
 
         // Create the AlertDialog
         alertDialog = builder.create()
-        alertDialog.show()
+        alertDialog.setOnShowListener { listener ->
+            object : CountDownTimer(millisInFuture, countDownInterval) {
+                override fun onTick(millisUntilFinished: Long) {
+                    messageView.text = getString(R.string.refreshing, millisUntilFinished / 1000)
+                }
 
-        // Schedule the dismissal after a certain delay
-        Looper.myLooper()?.let {
-            Handler(it).postDelayed({
-                if (alertDialog.isShowing) {
+                override fun onFinish() {
+                    messageView.text = getString(R.string.done)
                     alertDialog.dismiss()
                 }
-            }, 5000.toLong())  // 5 seconds
+            }.start()
         }
+        alertDialog.show()
     }
 
     /**

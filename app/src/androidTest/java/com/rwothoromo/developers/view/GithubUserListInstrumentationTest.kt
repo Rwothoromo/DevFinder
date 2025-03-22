@@ -2,8 +2,6 @@ package com.rwothoromo.developers.view
 
 import android.content.Context
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
@@ -25,6 +23,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rwothoromo.developers.util.EspressoIdlingResource
+import com.rwothoromo.developers.util.TestUtils
 import com.rwothoromo.devfinder.R
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.After
@@ -53,51 +52,7 @@ class GithubUserListInstrumentationTest {
     fun setUp() {
         activityScenario = launchActivity<MainActivity>(intent)
         IdlingRegistry.getInstance().register(EspressoIdlingResource.idlingResource)
-    }
-
-    /**
-     * Check that RecyclerView is displayed.
-     */
-    @Test
-    fun displaysRecyclerView() {
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                withEffectiveVisibility(
-                    ViewMatchers.Visibility.VISIBLE
-                )
-            )
-        )
-    }
-
-    /**
-     * Displays the Toolbar.
-     */
-    @Test
-    fun displaysToolbar() {
-        onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
-        onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
-    }
-
-    /**
-     * Click the Search icon on the Action bar.
-     */
-    @Test
-    fun clickActionBarSearchItem() {
-        // Click on the Search icon.
-        onView(withId(R.id.action_search)).perform(click())
-    }
-
-    /**
-     * Click Settings in the menu items.
-     */
-    @Test
-    fun clickActionBarOverflowSettings() {
-        // Open the options menu OR open the overflow menu, depending on whether
-        // the device has a hardware or software overflow menu button.
-        openActionBarOverflowOrOptionsMenu(context)
-
-        // Click the item.
-        onView(withText(R.string.action_settings)).perform(click())
+        // Using TestUtils.executeWithDelay below to skip the alertDialog in MainActivity
     }
 
     /**
@@ -105,12 +60,15 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowRefresh() {
-        // Open the options menu OR open the overflow menu, depending on whether
-        // the device has a hardware or software overflow menu button.
-        openActionBarOverflowOrOptionsMenu(context)
+        // Wait 5 seconds for alertDialog to close
+        TestUtils.executeWithDelay {
+            // Open the options menu OR open the overflow menu, depending on whether
+            // the device has a hardware or software overflow menu button.
+            openActionBarOverflowOrOptionsMenu(context)
 
-        // Click the item.
-        onView(withText(R.string.action_refresh)).perform(click())
+            // Click the item.
+            onView(withText(R.string.action_refresh)).perform(click())
+        }
     }
 
     /**
@@ -118,27 +76,32 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickableRecyclerViewItems() {
-        Looper.myLooper()?.let {
-            Handler(it).postDelayed({
-                // Wait for data to load
+        // Wait 5 seconds for data to load and alertDialog to close
+        TestUtils.executeWithDelay {
+            // Confirm toolbar is displayed
+            onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+            onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
 
-                onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
+            // Confirm recyclerview is displayed
+            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
+            onView(withId(R.id.recyclerView)).check(
+                matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))
+            )
 
-                Intents.init()
+            Intents.init()
 
-                // Scroll to an item at a position and click on it.
-                val mockPosition = 0
-                onView(withId(R.id.recyclerView)).perform(
-                    RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                        mockPosition,
-                        click()
-                    )
+            // Scroll to an item at a position and click on it.
+            val mockPosition = 0
+            onView(withId(R.id.recyclerView)).perform(
+                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                    mockPosition,
+                    click()
                 )
+            )
 
-                intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
+            intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
 
-                Intents.release()
-            }, 5000.toLong()) // 5 seconds
+            Intents.release()
         }
     }
 

@@ -10,4 +10,6 @@ object Constants {
     const val BASE_GITHUB_URL = "https://api.github.com"
     const val BASE_GITLAB_URL = "https://gitlab.com/api/v4"
     const val DUMMY_GITLAB_API_KEY = "DUMMY_GITLAB_API_KEY"
+    const val DIALOG_DELAY_TIME = 5000L // milliseconds
+    const val COUNT_DOWN_INTERVAL = 1000L // 1 second
 }
