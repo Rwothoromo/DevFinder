@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.os.Parcelable
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -89,7 +90,7 @@ class MainActivity : AppCompatActivity() {
 
             githubUserViewModel.isFetching.observe(this) { isFetching ->
                 if (isFetching) {
-                    customAlertDialog(getString(R.string.refreshing))
+//                    customAlertDialog(getString(R.string.refreshing))
                 }
             }
 
@@ -273,12 +274,13 @@ class MainActivity : AppCompatActivity() {
         alertDialog.show()
 
         // Schedule the dismissal after a certain delay
-        val handler = Handler()
-        handler.postDelayed({
-            if (alertDialog.isShowing) {
-                alertDialog.dismiss()
-            }
-        }, 5000.toLong())  // 5 seconds
+        Looper.myLooper()?.let {
+            Handler(it).postDelayed({
+                if (alertDialog.isShowing) {
+                    alertDialog.dismiss()
+                }
+            }, 5000.toLong())  // 5 seconds
+        }
     }
 
     /**

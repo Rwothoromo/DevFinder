@@ -2,7 +2,10 @@ package com.rwothoromo.developers.view
 
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
@@ -36,11 +39,19 @@ import org.junit.runner.RunWith
 class GithubUserListInstrumentationTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
 
+    val intent = Intent(context, MainActivity::class.java)
+
+    /**
+     * Very important for launching activity and passing tests
+     */
+    lateinit var activityScenario: ActivityScenario<MainActivity>
+
     /**
      * Register any resource that needs to be synchronized with Espresso before the test is run.
      */
     @Before
     fun setUp() {
+        activityScenario = launchActivity<MainActivity>(intent)
         IdlingRegistry.getInstance().register(EspressoIdlingResource.idlingResource)
     }
 
@@ -49,15 +60,13 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun displaysRecyclerView() {
-        launchActivity<MainActivity>().use {
-            onView(withId(R.id.recyclerView)).check(
-                matches(
-                    withEffectiveVisibility(
-                        ViewMatchers.Visibility.VISIBLE
-                    )
+        onView(withId(R.id.recyclerView)).check(
+            matches(
+                withEffectiveVisibility(
+                    ViewMatchers.Visibility.VISIBLE
                 )
             )
-        }
+        )
     }
 
     /**
@@ -65,10 +74,8 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun displaysToolbar() {
-        launchActivity<MainActivity>().use {
-            onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
-            onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
-        }
+        onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+        onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
     }
 
     /**
@@ -76,10 +83,8 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        launchActivity<MainActivity>().use {
-            // Click on the Search icon.
-            onView(withId(R.id.action_search)).perform(click())
-        }
+        // Click on the Search icon.
+        onView(withId(R.id.action_search)).perform(click())
     }
 
     /**
@@ -87,14 +92,12 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowSettings() {
-        launchActivity<MainActivity>().use {
-            // Open the options menu OR open the overflow menu, depending on whether
-            // the device has a hardware or software overflow menu button.
-            openActionBarOverflowOrOptionsMenu(context)
+        // Open the options menu OR open the overflow menu, depending on whether
+        // the device has a hardware or software overflow menu button.
+        openActionBarOverflowOrOptionsMenu(context)
 
-            // Click the item.
-            onView(withText(R.string.action_settings)).perform(click())
-        }
+        // Click the item.
+        onView(withText(R.string.action_settings)).perform(click())
     }
 
     /**
@@ -102,14 +105,12 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowRefresh() {
-        launchActivity<MainActivity>().use {
-            // Open the options menu OR open the overflow menu, depending on whether
-            // the device has a hardware or software overflow menu button.
-            openActionBarOverflowOrOptionsMenu(context)
+        // Open the options menu OR open the overflow menu, depending on whether
+        // the device has a hardware or software overflow menu button.
+        openActionBarOverflowOrOptionsMenu(context)
 
-            // Click the item.
-            onView(withText(R.string.action_refresh)).perform(click())
-        }
+        // Click the item.
+        onView(withText(R.string.action_refresh)).perform(click())
     }
 
     /**
@@ -117,23 +118,27 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickableRecyclerViewItems() {
-        launchActivity<MainActivity>().use {
-            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
+        Looper.myLooper()?.let {
+            Handler(it).postDelayed({
+                // Wait for data to load
 
-            Intents.init()
+                onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
 
-            // Scroll to an item at a position and click on it.
-            val mockPosition = 0
-            onView(withId(R.id.recyclerView)).perform(
-                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                    mockPosition,
-                    click()
+                Intents.init()
+
+                // Scroll to an item at a position and click on it.
+                val mockPosition = 0
+                onView(withId(R.id.recyclerView)).perform(
+                    RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                        mockPosition,
+                        click()
+                    )
                 )
-            )
 
-            intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
+                intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
 
-            Intents.release()
+                Intents.release()
+            }, 5000.toLong()) // 5 seconds
         }
     }
 
@@ -143,5 +148,6 @@ class GithubUserListInstrumentationTest {
     @After
     fun tearDown() {
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.idlingResource)
+        activityScenario.close()
     }
 }
