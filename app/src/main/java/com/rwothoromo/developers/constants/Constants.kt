@@ -5,7 +5,7 @@ package com.rwothoromo.developers.constants
  */
 object Constants {
 
-    const val EXTRA_DEVELOPER_LIST_STATE = "com.rwothoromo.githubUsers.EXTRA_DEVELOPER_LIST_STATE"
+    const val EXTRA_GITHUB_USER_LIST_STATE = "com.rwothoromo.githubUsers.EXTRA_DEVELOPER_LIST_STATE"
     const val RESOURCE = "GLOBAL"
     const val BASE_GITHUB_URL = "https://api.github.com"
     const val BASE_GITLAB_URL = "https://gitlab.com/api/v4"

@@ -65,6 +65,7 @@ fabric.properties
 .project
 .settings/
 .classpath
+.DS_Store
 
 # apk dir's
 app/mock

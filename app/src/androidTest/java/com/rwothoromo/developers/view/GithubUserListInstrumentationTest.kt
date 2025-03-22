@@ -20,15 +20,12 @@ import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.rwothoromo.developers.util.EspressoIdlingResource
 import com.rwothoromo.devfinder.R
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -38,10 +35,6 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class GithubUserListInstrumentationTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
-
-    @get:Rule
-    var activityScenarioRule: ActivityScenarioRule<MainActivity> =
-        activityScenarioRule<MainActivity>()
 
     /**
      * Register any resource that needs to be synchronized with Espresso before the test is run.
@@ -56,13 +49,15 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun displaysRecyclerView() {
-        onView(withId(R.id.recyclerView)).check(
-            matches(
-                withEffectiveVisibility(
-                    ViewMatchers.Visibility.VISIBLE
+        launchActivity<MainActivity>().use {
+            onView(withId(R.id.recyclerView)).check(
+                matches(
+                    withEffectiveVisibility(
+                        ViewMatchers.Visibility.VISIBLE
+                    )
                 )
             )
-        )
+        }
     }
 
     /**
@@ -70,15 +65,10 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun displaysToolbar() {
-        onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
-    }
-
-    /**
-     * View the MainActivity title.
-     */
-    @Test
-    fun displaysToolbarTitle() {
-        onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
+        launchActivity<MainActivity>().use {
+            onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+            onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
+        }
     }
 
     /**
@@ -86,8 +76,10 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        // Click on the Search icon.
-        onView(withId(R.id.action_search)).perform(click())
+        launchActivity<MainActivity>().use {
+            // Click on the Search icon.
+            onView(withId(R.id.action_search)).perform(click())
+        }
     }
 
     /**
@@ -95,12 +87,14 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowSettings() {
-        // Open the options menu OR open the overflow menu, depending on whether
-        // the device has a hardware or software overflow menu button.
-        openActionBarOverflowOrOptionsMenu(context)
+        launchActivity<MainActivity>().use {
+            // Open the options menu OR open the overflow menu, depending on whether
+            // the device has a hardware or software overflow menu button.
+            openActionBarOverflowOrOptionsMenu(context)
 
-        // Click the item.
-        onView(withText(R.string.action_settings)).perform(click())
+            // Click the item.
+            onView(withText(R.string.action_settings)).perform(click())
+        }
     }
 
     /**
@@ -108,12 +102,14 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowRefresh() {
-        // Open the options menu OR open the overflow menu, depending on whether
-        // the device has a hardware or software overflow menu button.
-        openActionBarOverflowOrOptionsMenu(context)
+        launchActivity<MainActivity>().use {
+            // Open the options menu OR open the overflow menu, depending on whether
+            // the device has a hardware or software overflow menu button.
+            openActionBarOverflowOrOptionsMenu(context)
 
-        // Click the item.
-        onView(withText(R.string.action_refresh)).perform(click())
+            // Click the item.
+            onView(withText(R.string.action_refresh)).perform(click())
+        }
     }
 
     /**

@@ -5,7 +5,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/78f03b429b83c9459a23/maintainability)](https://codeclimate.com/github/Rwothoromo/Android-Codelab/maintainability)
 
 This Android application retrieves a listing of Developers by Location using the [Github API](https://developer.github.com/v3/search/#search-users) and allows you to share their profiles.
-Download it on [Amazon](https://www.amazon.com/dp/B07JLLNC34/ref=cm_sw_r_tw_dp_U_x_UTb0BbR7GDDAZ) or [Google Play](TBD).
+Download it on [Amazon](https://www.amazon.com/dp/B07JLLNC34/ref=cm_sw_r_tw_dp_U_x_UTb0BbR7GDDAZ) or [Google Play](google.com).
 
 ## Design
 

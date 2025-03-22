@@ -30,7 +30,7 @@ tasks.register('jacocoTestReport', JacocoReport) {
     ]
 
     def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
-    def javaMainSrc = "${project.projectDir}/src/main/java"
+//    def javaMainSrc = "${project.projectDir}/src/main/java"
     def kotlinMainSrc = "${project.projectDir}/src/main/kotlin"
     def kotlinDebugTree = fileTree(dir: "${buildDir}/tmp/kotlin-classes/prodDebug", excludes: fileFilter)
 

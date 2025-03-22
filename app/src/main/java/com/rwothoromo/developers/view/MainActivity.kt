@@ -1,16 +1,18 @@
 package com.rwothoromo.developers.view
 
 import android.Manifest
-import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.os.Parcelable
 import android.provider.Settings
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import androidx.annotation.RequiresPermission
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
@@ -19,10 +21,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.rwothoromo.developers.adapter.GithubAdapter
-import com.rwothoromo.developers.constants.Constants.EXTRA_DEVELOPER_LIST_STATE
+import com.rwothoromo.developers.constants.Constants.EXTRA_GITHUB_USER_LIST_STATE
 import com.rwothoromo.developers.models.GithubUser
 import com.rwothoromo.developers.models.GithubUsersResponse
-import com.rwothoromo.developers.util.NetworkConnectivity
 import com.rwothoromo.developers.util.NetworkConnectivity.isNetworkConnected
 import com.rwothoromo.developers.viewmodels.GithubUserViewModel
 import com.rwothoromo.devfinder.R
@@ -35,18 +36,18 @@ import kotlinx.coroutines.launch
 /**
  * MainActivity class with the Developer list.
  */
-class MainActivity : AppCompatActivity(), GithubUserViewInterface {
+class MainActivity : AppCompatActivity() {
 
-    private var githubUserListState: Parcelable? = null
-    private var recyclerView: RecyclerView? = null
-    private var layoutManager: RecyclerView.LayoutManager? = null
-    private var swipeRefreshLayout: SwipeRefreshLayout? = null
-    private var networkConnectivity: NetworkConnectivity? = null
+    private var githubUserListParcelable: Parcelable? = null
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var layoutManager: RecyclerView.LayoutManager
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var githubUserViewModel: GithubUserViewModel
+    private lateinit var alertDialog: AlertDialog
     private var userType: String = "user"
     private var city: String = "Kampala"
     private var techStack: String = "All"
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private lateinit var githubUserViewModel: GithubUserViewModel
 
     @RequiresPermission(Manifest.permission.DISABLE_KEYGUARD)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,8 +62,8 @@ class MainActivity : AppCompatActivity(), GithubUserViewInterface {
         supportActionBar?.apply { subtitle = getString(R.string.app_subtitle, city, techStack) }
 
         recyclerView = findViewById(R.id.recyclerView)
-        recyclerView!!.setHasFixedSize(true)
-        swipeRefreshLayout = findViewById(R.id.swiperefresh)
+        recyclerView.setHasFixedSize(true)
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
 
         layoutManager = GridLayoutManager(this, 2)
 
@@ -70,7 +71,7 @@ class MainActivity : AppCompatActivity(), GithubUserViewInterface {
 
         if (!isNetworkConnected(this)) {
             Snackbar.make(
-                recyclerView!!, getString(R.string.failed_data_retrieval),
+                recyclerView, getString(R.string.failed_data_retrieval),
                 Snackbar.LENGTH_LONG
             )
                 .setAction(getString(R.string.close)) { }
@@ -83,7 +84,13 @@ class MainActivity : AppCompatActivity(), GithubUserViewInterface {
             }
 
             githubUserViewModel.error.observe(this) { errorMessage ->
-                failedDataRetrieval(errorMessage)
+                errorMessage?.let { failedDataRetrieval(it) }
+            }
+
+            githubUserViewModel.isFetching.observe(this) { isFetching ->
+                if (isFetching) {
+                    customAlertDialog(getString(R.string.refreshing))
+                }
             }
 
             githubUserViewModel.getGithubUsersData(userType, city, techStack) // Trigger data fetch
@@ -94,7 +101,7 @@ class MainActivity : AppCompatActivity(), GithubUserViewInterface {
         super.onStart()
 
         // Listen for a User's swipe-to-refresh action on the Developer list
-        swipeRefreshLayout!!.setOnRefreshListener { reloadGithubUsers() }
+        swipeRefreshLayout.setOnRefreshListener { reloadGithubUsers() }
     }
 
     /**
@@ -107,8 +114,10 @@ class MainActivity : AppCompatActivity(), GithubUserViewInterface {
         super.onSaveInstanceState(outState)
 
         // Save the list state to the bundle
-        githubUserListState = layoutManager!!.onSaveInstanceState()
-        outState.putParcelable(EXTRA_DEVELOPER_LIST_STATE, githubUserListState)
+        layoutManager.onSaveInstanceState()?.let { userListState ->
+            githubUserListParcelable = userListState
+            outState.putParcelable(EXTRA_GITHUB_USER_LIST_STATE, githubUserListParcelable)
+        }
     }
 
     /**
@@ -120,7 +129,7 @@ class MainActivity : AppCompatActivity(), GithubUserViewInterface {
         super.onRestoreInstanceState(savedInstanceState)
 
         // Restore the list state and list-item positions from the bundle
-        githubUserListState = savedInstanceState.getParcelable(EXTRA_DEVELOPER_LIST_STATE)
+        githubUserListParcelable = savedInstanceState.getParcelable(EXTRA_GITHUB_USER_LIST_STATE)
     }
 
     /**
@@ -129,9 +138,7 @@ class MainActivity : AppCompatActivity(), GithubUserViewInterface {
     override fun onResume() {
         super.onResume()
 
-        if (githubUserListState != null) {
-            layoutManager!!.onRestoreInstanceState(githubUserListState)
-        }
+        layoutManager.onRestoreInstanceState(githubUserListParcelable)
     }
 
     /**
@@ -158,7 +165,7 @@ class MainActivity : AppCompatActivity(), GithubUserViewInterface {
             R.id.action_settings -> {
                 // User chose the "Settings" item, show the app settings UI...
                 Snackbar.make(
-                    recyclerView!!, getString(R.string.feature_pending),
+                    recyclerView, getString(R.string.feature_pending),
                     Snackbar.LENGTH_LONG
                 )
                     .setAction(getString(R.string.close)) { }
@@ -170,7 +177,7 @@ class MainActivity : AppCompatActivity(), GithubUserViewInterface {
             R.id.action_search -> {
                 // User chose the "Search" action, set the toolbar to a search field
                 Snackbar.make(
-                    recyclerView!!, getString(R.string.feature_pending),
+                    recyclerView, getString(R.string.feature_pending),
                     Snackbar.LENGTH_LONG
                 )
                     .setAction(getString(R.string.close)) { }
@@ -181,7 +188,6 @@ class MainActivity : AppCompatActivity(), GithubUserViewInterface {
 
             R.id.action_refresh -> {
                 // User chose the "Refresh" action, refresh the Developer list
-                swipeRefreshLayout!!.isRefreshing = true // Enable the refresh icon
                 reloadGithubUsers()
                 return true
             }
@@ -198,10 +204,10 @@ class MainActivity : AppCompatActivity(), GithubUserViewInterface {
      *
      * @param githubUsersResponse with a GitHub users list
      */
-    override fun githubUsersReady(githubUsersResponse: GithubUsersResponse) {
+    private fun githubUsersReady(githubUsersResponse: GithubUsersResponse) {
         this.showGithubUsers(githubUsersResponse.githubUserList)
         Snackbar.make(
-            recyclerView!!,
+            recyclerView,
             getString(R.string.successful_data_retrieval, githubUsersResponse.count),
             Snackbar.LENGTH_LONG
         )
@@ -210,9 +216,9 @@ class MainActivity : AppCompatActivity(), GithubUserViewInterface {
     /**
      * Show the status for when GitHub API data can't be accessed.
      */
-    override fun failedDataRetrieval(errorMessage: String) {
+    private fun failedDataRetrieval(errorMessage: String) {
         val snackbar = Snackbar.make(
-            recyclerView!!, getString(R.string.failed_data_retrieval, errorMessage),
+            recyclerView, getString(R.string.failed_data_retrieval, errorMessage),
             Snackbar.LENGTH_LONG
         )
         if (errorMessage.contains("HTTP 422")) {
@@ -229,26 +235,18 @@ class MainActivity : AppCompatActivity(), GithubUserViewInterface {
      * @param githubUsers a GitHub user list
      */
     private fun showGithubUsers(githubUsers: List<GithubUser>) {
-        recyclerView!!.layoutManager = layoutManager
+        recyclerView.layoutManager = layoutManager
         val adapter = GithubAdapter(githubUsers, this)
-        recyclerView!!.adapter = adapter
+        recyclerView.adapter = adapter
     }
 
     /**
      * Update Developer list with GitHub API data.
      */
     private fun reloadGithubUsers() {
-
-        customProgressDialog(
-            this@MainActivity,
-            getString(R.string.refreshing)
-        )
-
         coroutineScope.launch {
             githubUserViewModel.getGithubUsersData(userType, city, techStack)
         }
-
-        swipeRefreshLayout!!.isRefreshing = false // Disable the refresh icon
     }
 
     /**
@@ -257,12 +255,30 @@ class MainActivity : AppCompatActivity(), GithubUserViewInterface {
      * @param context a Context
      * @param message a message
      */
-    private fun customProgressDialog(context: Context, message: String) {
-        // Add a progress dialogue
-        val progressDialog = ProgressDialog(context)
-        progressDialog.setTitle("Status")
-        progressDialog.setMessage(message)
-        progressDialog.show()
+    private fun customAlertDialog(message: String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(getString(R.string.status))
+//        builder.setMessage(message)
+//        builder.setPositiveButton("OK") { dialog, which -> dialog.dismiss() }
+
+        val loadingView = LayoutInflater.from(this).inflate(R.layout.loading, null, true)
+        val messageView: TextView = loadingView.findViewById(R.id.message)
+        messageView.text = message
+
+        builder.setView(loadingView)
+        builder.setCancelable(true)
+
+        // Create the AlertDialog
+        alertDialog = builder.create()
+        alertDialog.show()
+
+        // Schedule the dismissal after a certain delay
+        val handler = Handler()
+        handler.postDelayed({
+            if (alertDialog.isShowing) {
+                alertDialog.dismiss()
+            }
+        }, 5000.toLong())  // 5 seconds
     }
 
     /**

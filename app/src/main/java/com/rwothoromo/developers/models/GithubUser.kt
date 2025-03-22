@@ -11,32 +11,59 @@ import com.google.gson.annotations.SerializedName
 class GithubUser : Parcelable {
 
     @SerializedName("login")
-    var username: String = ""
+    var username: String
 
     var id: Int = 0
-    var node_id: String = ""
+
+    @SerializedName("node_id")
+    var nodeId: String = ""
 
     @SerializedName("avatar_url")
     var avatarUrl: String = ""
 
-    var gravatar_id: String = ""
+    @SerializedName("gravatar_id")
+    var gravatarId: String = ""
+
     var url: String = ""
 
     @SerializedName("html_url")
     var htmlUrl: String = ""
 
-    var followers_url: String = ""
-    var following_url: String = ""
-    var gists_url: String = ""
-    var starred_url: String = ""
-    var subscriptions_url: String = ""
-    var organizations_url: String = ""
-    var repos_url: String = ""
-    var events_url: String = ""
-    var received_events_url: String = ""
+    @SerializedName("followers_url")
+    var followersUrl: String = ""
+
+    @SerializedName("following_url")
+    var followingUrl: String = ""
+
+    @SerializedName("gists_url")
+    var gistsUrl: String = ""
+
+    @SerializedName("starred_url")
+    var starredUrl: String = ""
+
+    @SerializedName("subscriptions_url")
+    var subscriptionsUrl: String = ""
+
+    @SerializedName("organizations_url")
+    var organizationsUrl: String = ""
+
+    @SerializedName("repos_url")
+    var reposUrl: String = ""
+
+    @SerializedName("events_url")
+    var eventsUrl: String = ""
+
+    @SerializedName("received_events_url")
+    var receivedEventsUrl: String = ""
+
     var type: String = ""
-    var user_view_type: String = ""
-    var site_admin: Boolean = false
+
+    @SerializedName("user_view_type")
+    var userViewType: String = ""
+
+    @SerializedName("site_admin")
+    var isSiteAdmin: Boolean = false
+
     var score: Double = 0.0
 
     /**

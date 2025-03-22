@@ -168,6 +168,7 @@ dependencies {
     testImplementation "org.mockito:mockito-inline:${rootProject.mockitoInlineVersion}"
     testImplementation "org.mockito.kotlin:mockito-kotlin:${rootProject.mockitoKotlinVersion}"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${rootProject.ktxCoroutinesTest}"
+    testImplementation("com.squareup.okhttp3:mockwebserver:${rootProject.okhttp3Mockwebserver}")
 
     androidTestImplementation "androidx.test:core:${rootProject.androidXTestVersion}"
     androidTestImplementation "androidx.test:core-ktx:${rootProject.androidXTestVersion}"
@@ -187,7 +188,4 @@ dependencies {
     androidTestImplementation "com.android.support.test.espresso:espresso-contrib:${rootProject.espressoVersion}"
     androidTestImplementation "com.android.support.test.espresso:espresso-intents:${rootProject.espressoVersion}"
     androidTestImplementation "com.android.support.test.espresso:espresso-idling-resource:${rootProject.espressoVersion}"
-
-    // To use android test orchestrator
-//    androidTestUtil "androidx.test:orchestrator:${rootProject.orchestratorVersion}"
 }

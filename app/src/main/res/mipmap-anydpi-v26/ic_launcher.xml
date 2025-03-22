@@ -3,5 +3,6 @@
     mono
     <background android:drawable="@drawable/ic_launcher_background" />
     <foreground android:drawable="@drawable/ic_launcher_foreground" />
-    <monochrome android:drawable="@drawable/ic_launcher_monochrome"/>
+    <monochrome android:drawable="@color/colorAccent"/>
+<!--    <monochrome android:drawable="@drawable/ic_launcher_monochrome"/>-->
 </adaptive-icon>

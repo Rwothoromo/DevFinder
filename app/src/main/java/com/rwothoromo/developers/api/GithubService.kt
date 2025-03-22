@@ -32,10 +32,10 @@ interface GithubService {
      *     Example: followers:>100 finds users with more than 100 followers.
      *
      * Examples of Combined Queries:
-     * 1. Search for users with "siddhant" in their name, limiting to users only:
-     *   - https://api.github.com/search/users?q=siddhant in:name type:user
-     * 2. Search for users with "siddhant" in their name, limiting to users only, with more than 30 repositories and 10 followers:
-     *   - https://api.github.com/search/users?q=siddhant in:name type:user repos:>30 followers:>10
+     * 1. Search for users with "john" in their name, limiting to users only:
+     *   - https://api.github.com/search/users?q=john in:name type:user
+     * 2. Search for users with "john" in their name, limiting to users only, with more than 30 repositories and 10 followers:
+     *   - https://api.github.com/search/users?q=john in:name type:user repos:>30 followers:>10
      * 3. Search for users with Kampala as their location:
      *   - https://api.github.com/search/users?q=location:Kampala
      * 4. Search for users who have repositories that use Python:

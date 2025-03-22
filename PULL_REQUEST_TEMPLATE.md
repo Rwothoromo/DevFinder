@@ -11,10 +11,10 @@
 
 #### Can you provide any background context?
 <Context if any>
-fixes #<issue_number>
+fixes #<issue number>
 
 #### What are the relevant pivotal tracker stories?
-[#id](url)
+[#id](google.com)
 
 #### Screenshots (if appropriate)
 
