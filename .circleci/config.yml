@@ -154,7 +154,7 @@ commands:
       - run: ls -l app/
       - store_artifacts:
           path: app/build/outputs/apk/prod/release/app-prod-release.apk
-      - save_gradle_cache
+      # - save_gradle_cache
 
 
 jobs:
@@ -184,7 +184,7 @@ jobs:
       - decode_google_services_key
       - decode_keystore_key
       - export_keystore_key
-      - restore_gradle_cache
+      # - restore_gradle_cache
 
       # Checkstyle, pmd and lint
       - run: ./gradlew dependencies --status --warning-mode all
