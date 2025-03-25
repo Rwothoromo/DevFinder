@@ -40,6 +40,7 @@ import org.junit.runner.RunWith
 class GithubUserListInstrumentationTest {
 
     @Rule
+    @JvmField
     var rule: ActivityScenarioRule<MainActivity> =
         ActivityScenarioRule<MainActivity>(MainActivity::class.java)
 
