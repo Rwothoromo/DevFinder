@@ -1,7 +1,10 @@
-import com.android.ddmlib.DdmPreferences
 
 buildscript {
     repositories {
+        mavenCentral()
+        maven { url = "https://plugins.gradle.org/m2/" }
+        maven { url = 'https://maven.google.com/' }
+        google()
     }
 
     dependencies {
@@ -19,8 +22,12 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven { url = "https://plugins.gradle.org/m2/" }
+    maven { url = 'https://maven.google.com/' }
+    google()
 }
 
+apply plugin: 'jacoco'
 apply from: rootProject.file('quality/quality.gradle')
 apply from: rootProject.file('app/jacoco.gradle')
 
@@ -52,7 +59,6 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        DdmPreferences.setTimeOut(60000)
         // The app's state will be completely cleared between tests.
         testInstrumentationRunnerArguments clearPackageData: 'true'
         multiDexEnabled = true
@@ -205,3 +211,5 @@ dependencies {
     androidTestImplementation "com.android.support.test.espresso:espresso-intents:${rootProject.espressoVersion}"
     androidTestImplementation "com.android.support.test.espresso:espresso-idling-resource:${rootProject.espressoVersion}"
 }
+
+apply plugin: 'com.google.gms.google-services'
