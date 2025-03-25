@@ -19,6 +19,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.rwothoromo.developers.util.EspressoIdlingResource
@@ -27,14 +28,20 @@ import com.rwothoromo.devfinder.R
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+
 
 /**
  * MainActivity test.
  */
 @RunWith(AndroidJUnit4::class)
 class GithubUserListInstrumentationTest {
+
+    @Rule
+    var rule: ActivityScenarioRule<MainActivity> =
+        ActivityScenarioRule<MainActivity>(MainActivity::class.java)
 
     /**
      * Very important for launching activity and passing tests
@@ -57,16 +64,15 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        activityScenario.onActivity {
-            // Wait 6 seconds for alertDialog to close
-            TestUtils.executeWithDelay(6000L) {
-                // Open the options menu OR open the overflow menu, depending on whether
-                // the device has a hardware or software overflow menu button.
-                openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+        ActivityScenario.launch(MainActivity::class.java)
+        // Wait 6 seconds for alertDialog to close
+        TestUtils.executeWithDelay(6000L) {
+            // Open the options menu OR open the overflow menu, depending on whether
+            // the device has a hardware or software overflow menu button.
+            openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
 
-                // Click on the Search icon.
-                onView(withId(R.id.action_search)).perform(click())
-            }
+            // Click on the Search icon.
+            onView(withId(R.id.action_search)).perform(click())
         }
     }
 
