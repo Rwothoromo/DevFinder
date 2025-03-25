@@ -1,10 +1,8 @@
 package com.rwothoromo.developers.view
 
-import android.content.Context
 import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
@@ -22,6 +20,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.rwothoromo.developers.util.EspressoIdlingResource
 import com.rwothoromo.developers.util.TestUtils
 import com.rwothoromo.devfinder.R
@@ -36,9 +35,6 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class GithubUserListInstrumentationTest {
-    private val context: Context = ApplicationProvider.getApplicationContext()
-
-    private lateinit var intent: Intent
 
     /**
      * Very important for launching activity and passing tests
@@ -50,7 +46,7 @@ class GithubUserListInstrumentationTest {
      */
     @Before
     fun setUp() {
-        intent = Intent(context, MainActivity::class.java)
+        val intent = Intent(getInstrumentation().targetContext, MainActivity::class.java)
         activityScenario = launchActivity<MainActivity>(intent)
         IdlingRegistry.getInstance().register(EspressoIdlingResource.idlingResource)
         // Using TestUtils.executeWithDelay below to skip the alertDialog in MainActivity
@@ -66,7 +62,7 @@ class GithubUserListInstrumentationTest {
             TestUtils.executeWithDelay(6000L) {
                 // Open the options menu OR open the overflow menu, depending on whether
                 // the device has a hardware or software overflow menu button.
-                openActionBarOverflowOrOptionsMenu(context)
+                openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
 
                 // Click on the Search icon.
                 onView(withId(R.id.action_search)).perform(click())
@@ -83,7 +79,7 @@ class GithubUserListInstrumentationTest {
         TestUtils.executeWithDelay(7000L) {
             // Open the options menu OR open the overflow menu, depending on whether
             // the device has a hardware or software overflow menu button.
-            openActionBarOverflowOrOptionsMenu(context)
+            openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
 
             // Click the item.
             onView(withText(R.string.action_settings)).perform(click())
@@ -99,7 +95,7 @@ class GithubUserListInstrumentationTest {
         TestUtils.executeWithDelay(8000L) {
             // Open the options menu OR open the overflow menu, depending on whether
             // the device has a hardware or software overflow menu button.
-            openActionBarOverflowOrOptionsMenu(context)
+            openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
 
             // Click the item.
             onView(withText(R.string.action_refresh)).perform(click())
