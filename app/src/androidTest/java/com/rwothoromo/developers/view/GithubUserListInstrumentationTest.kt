@@ -22,7 +22,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.rwothoromo.developers.constants.Constants.DIALOG_DELAY_TIME
 import com.rwothoromo.developers.util.EspressoIdlingResource
 import com.rwothoromo.developers.util.TestUtils
 import com.rwothoromo.devfinder.R
@@ -62,15 +61,16 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        // Wait 6 seconds for alertDialog to close
-        TestUtils.executeWithDelay(6000L) {
-            Thread.sleep(2000L)
-            // Open the options menu OR open the overflow menu, depending on whether
-            // the device has a hardware or software overflow menu button.
-            openActionBarOverflowOrOptionsMenu(context)
+        activityScenario.onActivity {
+            // Wait 6 seconds for alertDialog to close
+            TestUtils.executeWithDelay(6000L) {
+                // Open the options menu OR open the overflow menu, depending on whether
+                // the device has a hardware or software overflow menu button.
+                openActionBarOverflowOrOptionsMenu(context)
 
-            // Click on the Search icon.
-            onView(withId(R.id.action_search)).perform(click())
+                // Click on the Search icon.
+                onView(withId(R.id.action_search)).perform(click())
+            }
         }
     }
 
