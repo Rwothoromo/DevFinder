@@ -1,9 +1,7 @@
 package com.rwothoromo.developers.view
 
 import android.content.Intent
-import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
@@ -20,7 +18,9 @@ import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.rwothoromo.developers.util.EspressoIdlingResource
 import com.rwothoromo.developers.util.TestUtils
 import com.rwothoromo.devfinder.R
@@ -37,21 +37,19 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class GithubUserListInstrumentationTest {
+    /**
+     * Very important for launching activity and passing tests
+     */
     @get:Rule
-    private lateinit var activity: ActivityScenario<MainActivity>
-
-//    @get:Rule
-//    lateinit var activity: ActivityScenarioRule<MainActivity>
+    lateinit var activityScenarioRule: ActivityScenarioRule<MainActivity>
 
     /**
      * Register any resource that needs to be synchronized with Espresso before the test is run.
      */
     @Before
     fun setUp() {
-        activity = ActivityScenario.launch(MainActivity::class.java)
-        activity.moveToState(Lifecycle.State.RESUMED)
-//        val intent = Intent(getInstrumentation().targetContext, MainActivity::class.java)
-//        activity = ActivityScenarioRule<MainActivity>(intent)
+        val intent = Intent(getInstrumentation().targetContext, MainActivity::class.java)
+        activityScenarioRule = ActivityScenarioRule<MainActivity>(intent)
         IdlingRegistry.getInstance().register(EspressoIdlingResource.idlingResource)
         // Using TestUtils.executeWithDelay below to skip the alertDialog in MainActivity
     }
@@ -61,13 +59,15 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        // Wait 6 seconds for alertDialog to close
-        TestUtils.executeWithDelay(6000L) {
-            // Open the options menu OR open the overflow menu
-            onView(isRoot()).perform(pressMenuKey())
+        activityScenarioRule.scenario.onActivity {
+            // Wait 6 seconds for alertDialog to close
+            TestUtils.executeWithDelay(6000L) {
+                // Open the options menu OR open the overflow menu
+                onView(isRoot()).perform(pressMenuKey())
 
-            // Click on the Search icon.
-            onView(withId(R.id.action_search)).perform(click())
+                // Click on the Search icon.
+                onView(withId(R.id.action_search)).perform(click())
+            }
         }
     }
 
@@ -142,6 +142,6 @@ class GithubUserListInstrumentationTest {
     @After
     fun tearDown() {
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.idlingResource)
-        activity.close()
+        activityScenarioRule.scenario.close()
     }
 }
