@@ -5,9 +5,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.pressMenuKey
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.intent.Intents
@@ -15,6 +15,7 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
@@ -39,8 +40,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class GithubUserListInstrumentationTest {
 
-    @Rule
-    @JvmField
+    @get:Rule
     var rule: ActivityScenarioRule<MainActivity> =
         ActivityScenarioRule<MainActivity>(MainActivity::class.java)
 
@@ -65,12 +65,10 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        ActivityScenario.launch(MainActivity::class.java)
         // Wait 6 seconds for alertDialog to close
         TestUtils.executeWithDelay(6000L) {
-            // Open the options menu OR open the overflow menu, depending on whether
-            // the device has a hardware or software overflow menu button.
-            openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+            // Open the options menu OR open the overflow menu
+            onView(isRoot()).perform(pressMenuKey())
 
             // Click on the Search icon.
             onView(withId(R.id.action_search)).perform(click())
@@ -84,9 +82,8 @@ class GithubUserListInstrumentationTest {
     fun clickActionBarOverflowSettings() {
         // Wait 7 seconds for alertDialog to close
         TestUtils.executeWithDelay(7000L) {
-            // Open the options menu OR open the overflow menu, depending on whether
-            // the device has a hardware or software overflow menu button.
-            openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+            // Open the options menu OR open the overflow menu
+            onView(isRoot()).perform(pressMenuKey())
 
             // Click the item.
             onView(withText(R.string.action_settings)).perform(click())
@@ -100,9 +97,8 @@ class GithubUserListInstrumentationTest {
     fun clickActionBarOverflowRefresh() {
         // Wait 8 seconds for alertDialog to close
         TestUtils.executeWithDelay(8000L) {
-            // Open the options menu OR open the overflow menu, depending on whether
-            // the device has a hardware or software overflow menu button.
-            openActionBarOverflowOrOptionsMenu(getInstrumentation().targetContext)
+            // Open the options menu OR open the overflow menu
+            onView(isRoot()).perform(pressMenuKey())
 
             // Click the item.
             onView(withText(R.string.action_refresh)).perform(click())
