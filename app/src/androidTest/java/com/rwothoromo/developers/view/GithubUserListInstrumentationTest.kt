@@ -65,6 +65,7 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
+        ActivityScenario.launch(MainActivity::class.java)
         // Wait 6 seconds for alertDialog to close
         TestUtils.executeWithDelay(6000L) {
             // Open the options menu OR open the overflow menu
