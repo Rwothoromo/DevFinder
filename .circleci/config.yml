@@ -48,22 +48,6 @@ commands:
             echo $ENCODED_KEYSTORE | base64 --decode >> ~/project/keystores/keystore.jks
       - run: ls -l ~/project/keystores/keystore.jks
 
-  save_gradle_cache:
-    steps:
-      - save_cache:
-          paths:
-            - ./settings.gradle
-            - ./build.gradle
-            - ./build.gradle.kts
-            - ./app/build.gradle
-          key: v1-gradle-{{ checksum "build.gradle" }}
-
-  restore_gradle_cache:
-    steps:
-      - restore_cache:
-          keys:
-            - v1-gradle-{{ checksum "build.gradle" }}
-
   run_android_tests:
     steps:
       - android/start_emulator_and_run_tests:
@@ -154,7 +138,6 @@ commands:
       - run: ls -l app/
       - store_artifacts:
           path: app/build/outputs/apk/prod/release/app-prod-release.apk
-      # - save_gradle_cache
 
 
 jobs:
@@ -184,10 +167,9 @@ jobs:
       - decode_google_services_key
       - decode_keystore_key
       - export_keystore_key
-      # - restore_gradle_cache
 
       # Checkstyle, pmd and lint
-      - run: ./gradlew dependencies --status --warning-mode all
+      - run: ./gradlew clean --refresh-dependencies --status --warning-mode all
       - run:
           name: Step 1 - Checkstyle, pmd and lint
           command: ./gradlew checkstyle pmd lint --warning-mode all
