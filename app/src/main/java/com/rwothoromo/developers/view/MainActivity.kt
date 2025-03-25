@@ -80,19 +80,23 @@ class MainActivity : AppCompatActivity() {
                 .setActionTextColor(resources.getColor(android.R.color.holo_red_light))
                 .show()
         } else {
-            githubUserViewModel.data.observe(this) { githubUsersResponse ->
+            githubUserViewModel.data.observe(this) { githubUsersResponse: GithubUsersResponse ->
                 // Update UI with fetchedData
                 githubUsersReady(githubUsersResponse)
             }
 
-            githubUserViewModel.error.observe(this) { errorMessage ->
+            githubUserViewModel.error.observe(this) { errorMessage: String? ->
                 errorMessage?.let { failedDataRetrieval(it) }
             }
 
-            githubUserViewModel.isFetching.observe(this) { isFetching ->
+            githubUserViewModel.isFetching.observe(this) { isFetching: Boolean ->
                 if (isFetching) {
                     customAlertDialog(getString(R.string.refreshing))
                 }
+            }
+
+            githubUserViewModel.alertDialogDismissTimer.observe(this) { timeLeft: Long ->
+                if (timeLeft <= 0) alertDialog.dismiss()
             }
 
             githubUserViewModel.getGithubUsersData(userType, city, techStack) // Trigger data fetch
@@ -276,12 +280,13 @@ class MainActivity : AppCompatActivity() {
         alertDialog.setOnShowListener { listener ->
             object : CountDownTimer(millisInFuture, countDownInterval) {
                 override fun onTick(millisUntilFinished: Long) {
+                    githubUserViewModel.setAlertDialogDismissTimer(millisUntilFinished / 1000)
+                    println("Time left: ${githubUserViewModel.alertDialogDismissTimer}")
                     messageView.text = getString(R.string.refreshing, millisUntilFinished / 1000)
                 }
 
                 override fun onFinish() {
                     messageView.text = getString(R.string.done)
-                    alertDialog.dismiss()
                 }
             }.start()
         }

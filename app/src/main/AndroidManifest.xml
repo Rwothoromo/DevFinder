@@ -7,12 +7,6 @@
     <!-- Allow checking for network connection states -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- Allow Glide to load images from local folders like DCIM or Pictures -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
-    <!-- Allow Glide to store it’s cache on the public sdcard -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/launcher_512_icon"

@@ -20,6 +20,9 @@ class GithubUserViewModel : ViewModel() {
     private val _isFetching = MutableLiveData<Boolean>()
     val isFetching: LiveData<Boolean> = _isFetching
 
+    private val _alertDialogDismissTimer = MutableLiveData<Long>()
+    val alertDialogDismissTimer: LiveData<Long> = _alertDialogDismissTimer
+
     init {
         getGithubUsersData(userType = "user", city = "Kampala", techStack = "All")
     }
@@ -44,5 +47,9 @@ class GithubUserViewModel : ViewModel() {
                 _error.value = e.message
             }
         }
+    }
+
+    fun setAlertDialogDismissTimer(timeLeft: Long) {
+        _alertDialogDismissTimer.value = timeLeft
     }
 }
