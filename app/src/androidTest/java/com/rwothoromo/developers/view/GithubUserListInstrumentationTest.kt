@@ -59,13 +59,9 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        activityScenarioRule.scenario.onActivity { activity ->
-            TestUtils.executeWithDelay {
-                activity.runOnUiThread {
-                    // Click on the Search icon.
-                    onView(withId(R.id.action_search)).perform(click())
-                }
-            }
+        TestUtils.executeWithDelay {
+            // Click on the Search icon.
+            onView(withId(R.id.action_search)).perform(click())
         }
     }
 
@@ -74,16 +70,12 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowSettings() {
-        activityScenarioRule.scenario.onActivity { activity ->
-            TestUtils.executeWithDelay {
-                activity.runOnUiThread {
-                    // Open the options menu OR open the overflow menu
-                    onView(isRoot()).perform(pressMenuKey())
+        TestUtils.executeWithDelay {
+            // Open the options menu OR open the overflow menu
+            onView(isRoot()).perform(pressMenuKey())
 
-                    // Click the item.
-                    onView(withText(R.string.action_settings)).perform(click())
-                }
-            }
+            // Click the item.
+            onView(withText(R.string.action_settings)).perform(click())
         }
     }
 
@@ -92,54 +84,47 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowRefresh() {
-        activityScenarioRule.scenario.onActivity { activity ->
-            TestUtils.executeWithDelay {
-                activity.runOnUiThread {
-                    // Open the options menu OR open the overflow menu
-                    onView(isRoot()).perform(pressMenuKey())
+        TestUtils.executeWithDelay {
+            // Open the options menu OR open the overflow menu
+            onView(isRoot()).perform(pressMenuKey())
 
-                    // Click the item.
-                    onView(withText(R.string.action_refresh)).perform(click())
-                }
-            }
+            // Click the item.
+            onView(withText(R.string.action_refresh)).perform(click())
         }
     }
+
 
     /**
      * Scroll to a GitHub user on the RecyclerView and click one.
      */
     @Test
     fun clickableRecyclerViewItems() {
-        activityScenarioRule.scenario.onActivity { activity ->
-            TestUtils.executeWithDelay {
-                activity.runOnUiThread {
-                    // Confirm toolbar is displayed
-                    onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
-                    onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
-                    onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
+        TestUtils.executeWithDelay {
+            // Confirm toolbar is displayed
+            onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+            onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
+            onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
 
-                    // Confirm recyclerview is displayed
-                    onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
-                    onView(withId(R.id.recyclerView)).check(
-                        matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))
-                    )
+            // Confirm recyclerview is displayed
+            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
+            onView(withId(R.id.recyclerView)).check(
+                matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))
+            )
 
-                    Intents.init()
+            Intents.init()
 
-                    // Scroll to an item at a position and click on it.
-                    val mockPosition = 0
-                    onView(withId(R.id.recyclerView)).perform(
-                        RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                            mockPosition,
-                            click()
-                        )
-                    )
+            // Scroll to an item at a position and click on it.
+            val mockPosition = 0
+            onView(withId(R.id.recyclerView)).perform(
+                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                    mockPosition,
+                    click()
+                )
+            )
 
-                    intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
+            intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
 
-                    Intents.release()
-                }
-            }
+            Intents.release()
         }
     }
 
