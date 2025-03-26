@@ -3,6 +3,7 @@ package com.rwothoromo.developers.view
 import android.content.Context
 import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.annotation.UiThreadTest
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.launchActivity
@@ -63,6 +64,7 @@ class GithubUserListInstrumentationTest {
      * Click the Search icon on the Action bar.
      */
     @Test
+    @UiThreadTest
     fun clickActionBarSearchItem() {
         delayIdlingResource.delay {
             onView(withId(R.id.action_search)).check(matches(isDisplayed())).perform(click())
