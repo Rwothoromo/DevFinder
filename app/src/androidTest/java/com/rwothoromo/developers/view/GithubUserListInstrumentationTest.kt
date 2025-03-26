@@ -60,14 +60,16 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        activityScenarioRule.scenario.onActivity {
-            // Wait 6 seconds for alertDialog to close
-            TestUtils.executeWithDelay(6000L) {
-                // Open the options menu OR open the overflow menu
-                onView(isRoot()).perform(pressMenuKey())
+        activityScenarioRule.scenario.onActivity { activity: MainActivity ->
+            activity.runOnUiThread {
+                // Wait 6 seconds for alertDialog to close
+                TestUtils.executeWithDelay(6000L) {
+                    // Open the options menu OR open the overflow menu
+                    onView(isRoot()).perform(pressMenuKey())
 
-                // Click on the Search icon.
-                onView(withId(R.id.action_search)).perform(click())
+                    // Click on the Search icon.
+                    onView(withId(R.id.action_search)).perform(click())
+                }
             }
         }
     }
