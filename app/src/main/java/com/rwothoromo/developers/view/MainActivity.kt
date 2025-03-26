@@ -26,6 +26,7 @@ import com.rwothoromo.developers.constants.Constants.DIALOG_DELAY_TIME
 import com.rwothoromo.developers.constants.Constants.EXTRA_GITHUB_USER_LIST_STATE
 import com.rwothoromo.developers.models.GithubUser
 import com.rwothoromo.developers.models.GithubUsersResponse
+import com.rwothoromo.developers.util.EspressoIdlingResource
 import com.rwothoromo.developers.util.NetworkConnectivity.isNetworkConnected
 import com.rwothoromo.developers.viewmodels.GithubUserViewModel
 import com.rwothoromo.devfinder.R
@@ -181,14 +182,21 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.action_search -> {
-                // User chose the "Search" action, set the toolbar to a search field
-                Snackbar.make(
-                    recyclerView, getString(R.string.feature_pending),
-                    Snackbar.LENGTH_LONG
-                )
-                    .setAction(getString(R.string.close)) { }
-                    .setActionTextColor(resources.getColor(android.R.color.holo_red_light))
-                    .show()
+                EspressoIdlingResource.increment()
+                val job = coroutineScope.launch {
+                    // User chose the "Search" action, set the toolbar to a search field
+                    Snackbar.make(
+                        recyclerView, getString(R.string.feature_pending),
+                        Snackbar.LENGTH_LONG
+                    )
+                        .setAction(getString(R.string.close)) { }
+                        .setActionTextColor(resources.getColor(android.R.color.holo_red_light))
+                        .show()
+                }
+                job.invokeOnCompletion {
+                    // our network call ended!
+                    EspressoIdlingResource.decrement()
+                }
                 return true
             }
 

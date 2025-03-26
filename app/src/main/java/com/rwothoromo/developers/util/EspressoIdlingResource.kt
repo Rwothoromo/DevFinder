@@ -25,7 +25,8 @@ import com.rwothoromo.developers.constants.Constants.RESOURCE
  */
 object EspressoIdlingResource {
 
-    private val mCountingIdlingResource = CountingIdlingResource(RESOURCE)
+    @JvmField
+    val mCountingIdlingResource = CountingIdlingResource(RESOURCE)
 
     /**
      * Returns instance of IdlingResource.
@@ -46,6 +47,8 @@ object EspressoIdlingResource {
      * Decrement counter.
      */
     fun decrement() {
-        mCountingIdlingResource.decrement()
+        if (!mCountingIdlingResource.isIdleNow) {
+            mCountingIdlingResource.decrement()
+        }
     }
 }

@@ -52,7 +52,6 @@ class GithubUserListInstrumentationTest {
     @Before
     fun setUp() {
         IdlingRegistry.getInstance().register(EspressoIdlingResource.idlingResource)
-        // Using TestUtils.executeWithDelay below to skip the alertDialog in MainActivity
     }
 
     /**
@@ -60,6 +59,7 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
+        EspressoIdlingResource.increment()
         TestUtils.executeWithDelay {
             // Click on the Search icon.
             onView(withId(R.id.action_search)).perform(click())
