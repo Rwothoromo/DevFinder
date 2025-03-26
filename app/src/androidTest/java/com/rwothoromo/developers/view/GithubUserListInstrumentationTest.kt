@@ -66,9 +66,6 @@ class GithubUserListInstrumentationTest {
         getInstrumentation().runOnMainSync {
             // Wait 6 seconds for alertDialog to close
             TestUtils.executeWithDelay(6000L) {
-                // Open the options menu OR open the overflow menu
-                onView(isRoot()).perform(pressMenuKey())
-
                 // Click on the Search icon.
                 onView(withId(R.id.action_search)).perform(click())
             }
@@ -80,7 +77,7 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowSettings() {
-        activityScenarioRule.scenario.onActivity {
+        getInstrumentation().runOnMainSync {
             // Wait 7 seconds for alertDialog to close
             TestUtils.executeWithDelay(7000L) {
                 // Open the options menu OR open the overflow menu
