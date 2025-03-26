@@ -1,7 +1,11 @@
 package com.rwothoromo.developers.view
 
+import android.content.Context
 import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
@@ -18,16 +22,13 @@ import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.rwothoromo.developers.util.EspressoIdlingResource
 import com.rwothoromo.developers.util.TestUtils
 import com.rwothoromo.devfinder.R
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -37,20 +38,21 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class GithubUserListInstrumentationTest {
-    val intent = Intent(getInstrumentation().targetContext, MainActivity::class.java)
+    private val context: Context = ApplicationProvider.getApplicationContext()
+
+    val intent = Intent(context, MainActivity::class.java)
 
     /**
      * Very important for launching activity and passing tests
      */
-    @get:Rule
-    val activityScenarioRule: ActivityScenarioRule<MainActivity> =
-        ActivityScenarioRule<MainActivity>(intent)
+    lateinit var activityScenario: ActivityScenario<MainActivity>
 
     /**
      * Register any resource that needs to be synchronized with Espresso before the test is run.
      */
     @Before
     fun setUp() {
+        activityScenario = launchActivity<MainActivity>(intent)
         IdlingRegistry.getInstance().register(EspressoIdlingResource.idlingResource)
     }
 
@@ -134,6 +136,6 @@ class GithubUserListInstrumentationTest {
     @After
     fun tearDown() {
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.idlingResource)
-        activityScenarioRule.scenario.close()
+        activityScenario.close()
     }
 }
