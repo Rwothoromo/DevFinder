@@ -64,10 +64,8 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        activityScenario.onActivity {
-            delayIdlingResource.delay {
-                onView(withId(R.id.action_search)).check(matches(isDisplayed())).perform(click())
-            }
+        delayIdlingResource.delay {
+            onView(withId(R.id.action_search)).check(matches(isDisplayed())).perform(click())
         }
     }
 
