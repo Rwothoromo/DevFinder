@@ -37,19 +37,20 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class GithubUserListInstrumentationTest {
+    val intent = Intent(getInstrumentation().targetContext, MainActivity::class.java)
+
     /**
      * Very important for launching activity and passing tests
      */
     @get:Rule
-    lateinit var activityScenarioRule: ActivityScenarioRule<MainActivity>
+    val activityScenarioRule: ActivityScenarioRule<MainActivity> =
+        ActivityScenarioRule<MainActivity>(intent)
 
     /**
      * Register any resource that needs to be synchronized with Espresso before the test is run.
      */
     @Before
     fun setUp() {
-        val intent = Intent(getInstrumentation().targetContext, MainActivity::class.java)
-        activityScenarioRule = ActivityScenarioRule<MainActivity>(intent)
         IdlingRegistry.getInstance().register(EspressoIdlingResource.idlingResource)
         // Using TestUtils.executeWithDelay below to skip the alertDialog in MainActivity
     }
