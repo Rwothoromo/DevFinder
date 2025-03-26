@@ -59,10 +59,13 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        EspressoIdlingResource.increment()
-        TestUtils.executeWithDelay {
-            // Click on the Search icon.
-            onView(withId(R.id.action_search)).perform(click())
+        activityScenarioRule.scenario.onActivity { activity ->
+            TestUtils.executeWithDelay {
+                activity.runOnUiThread {
+                    // Click on the Search icon.
+                    onView(withId(R.id.action_search)).perform(click())
+                }
+            }
         }
     }
 
