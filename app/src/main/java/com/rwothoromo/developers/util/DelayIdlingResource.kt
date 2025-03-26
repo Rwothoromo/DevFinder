@@ -5,7 +5,6 @@ import android.os.Looper
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.IdlingResource
 import androidx.test.espresso.IdlingResource.ResourceCallback
-import kotlinx.coroutines.android.asCoroutineDispatcher
 
 class DelayIdlingResource(private val delayMillis: Long) : IdlingResource {
     private var callback: ResourceCallback? = null
@@ -23,7 +22,6 @@ class DelayIdlingResource(private val delayMillis: Long) : IdlingResource {
     }
 
     fun delay(runnable: Runnable) {
-        handler.asCoroutineDispatcher()
         handler.postDelayed(runnable, delayMillis)
         IdlingRegistry.getInstance().register(this)
 

@@ -25,6 +25,7 @@ import com.rwothoromo.developers.constants.Constants.DIALOG_DELAY_TIME
 import com.rwothoromo.developers.util.DelayIdlingResource
 import com.rwothoromo.developers.util.EspressoIdlingResource
 import com.rwothoromo.devfinder.R
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -64,8 +65,10 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        delayIdlingResource.delay {
-            onView(withId(R.id.action_search)).check(matches(isDisplayed())).perform(click())
+        runBlocking {
+            delayIdlingResource.delay {
+                onView(withId(R.id.action_search)).check(matches(isDisplayed())).perform(click())
+            }
         }
     }
 
