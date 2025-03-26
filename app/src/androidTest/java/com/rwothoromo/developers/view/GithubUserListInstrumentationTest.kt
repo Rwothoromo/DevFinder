@@ -11,22 +11,20 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.pressMenuKey
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
-import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.rwothoromo.developers.constants.Constants.DIALOG_DELAY_TIME
+import com.rwothoromo.developers.util.DelayIdlingResource
 import com.rwothoromo.developers.util.EspressoIdlingResource
-import com.rwothoromo.developers.util.TestUtils
 import com.rwothoromo.devfinder.R
-import org.hamcrest.CoreMatchers.allOf
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -47,13 +45,18 @@ class GithubUserListInstrumentationTest {
      */
     lateinit var activityScenario: ActivityScenario<MainActivity>
 
+    private val delayIdlingResource = DelayIdlingResource(DIALOG_DELAY_TIME)
+
     /**
      * Register any resource that needs to be synchronized with Espresso before the test is run.
      */
     @Before
     fun setUp() {
+        // Register idling resource before any UI operations
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
+        IdlingRegistry.getInstance().register(delayIdlingResource)
+
         activityScenario = launchActivity<MainActivity>(intent)
-        IdlingRegistry.getInstance().register(EspressoIdlingResource.idlingResource)
     }
 
     /**
@@ -61,9 +64,8 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        TestUtils.executeWithDelay {
-            // Click on the Search icon.
-            onView(withId(R.id.action_search)).perform(click())
+        delayIdlingResource.delay {
+            onView(withId(R.id.action_search)).check(matches(isDisplayed())).perform(click())
         }
     }
 
@@ -72,11 +74,9 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowSettings() {
-        TestUtils.executeWithDelay {
-            // Open the options menu OR open the overflow menu
+        delayIdlingResource.delay {
             onView(isRoot()).perform(pressMenuKey())
-
-            // Click the item.
+            onView(withText(R.string.action_settings)).check(matches(isDisplayed()))
             onView(withText(R.string.action_settings)).perform(click())
         }
     }
@@ -86,12 +86,9 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowRefresh() {
-        TestUtils.executeWithDelay {
-            // Open the options menu OR open the overflow menu
+        delayIdlingResource.delay {
             onView(isRoot()).perform(pressMenuKey())
-
-            // Click the item.
-            onView(withText(R.string.action_refresh)).perform(click())
+            onView(withText(R.string.action_refresh)).check(matches(isDisplayed())).perform(click())
         }
     }
 
@@ -101,31 +98,21 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickableRecyclerViewItems() {
-        TestUtils.executeWithDelay {
-            // Confirm toolbar is displayed
+        delayIdlingResource.delay {
+            // Verify toolbar visibility
             onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
             onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
-            onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
 
-            // Confirm recyclerview is displayed
+            // Verify RecyclerView visibility
             onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
-            onView(withId(R.id.recyclerView)).check(
-                matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))
-            )
 
+            // Scroll to and click GithubUser item
+            onView(withId(R.id.recyclerView))
+                .perform(actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
+
+            // Verify intent
             Intents.init()
-
-            // Scroll to an item at a position and click on it.
-            val mockPosition = 0
-            onView(withId(R.id.recyclerView)).perform(
-                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                    mockPosition,
-                    click()
-                )
-            )
-
-            intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
-
+            intended(hasComponent(GithubUserProfile::class.java.name))
             Intents.release()
         }
     }
@@ -135,7 +122,10 @@ class GithubUserListInstrumentationTest {
      */
     @After
     fun tearDown() {
-        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.idlingResource)
         activityScenario.close()
+
+        // Clean up resources
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
+        IdlingRegistry.getInstance().unregister(delayIdlingResource)
     }
 }

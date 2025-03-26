@@ -33,7 +33,7 @@ object EspressoIdlingResource {
      *
      * @return resource instance
      */
-    val idlingResource: IdlingResource
+    val countingIdlingResource: IdlingResource
         get() = mCountingIdlingResource
 
     /**
