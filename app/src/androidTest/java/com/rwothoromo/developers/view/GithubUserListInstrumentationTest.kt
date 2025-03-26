@@ -46,9 +46,6 @@ class GithubUserListInstrumentationTest {
     val activityScenarioRule: ActivityScenarioRule<MainActivity> =
         ActivityScenarioRule<MainActivity>(intent)
 
-//    @get:Rule
-//    var uiThreadTest: UiThreadTest = UiThreadTest()
-
     /**
      * Register any resource that needs to be synchronized with Espresso before the test is run.
      */
@@ -63,12 +60,10 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        getInstrumentation().runOnMainSync {
-            // Wait 6 seconds for alertDialog to close
-            TestUtils.executeWithDelay(6000L) {
-                // Click on the Search icon.
-                onView(withId(R.id.action_search)).perform(click())
-            }
+        // Wait 6 seconds for alertDialog to close
+        TestUtils.executeWithDelay(6000L) {
+            // Click on the Search icon.
+            onView(withId(R.id.action_search)).perform(click())
         }
     }
 
@@ -77,15 +72,13 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowSettings() {
-        getInstrumentation().runOnMainSync {
-            // Wait 7 seconds for alertDialog to close
-            TestUtils.executeWithDelay(7000L) {
-                // Open the options menu OR open the overflow menu
-                onView(isRoot()).perform(pressMenuKey())
+        // Wait 7 seconds for alertDialog to close
+        TestUtils.executeWithDelay(7000L) {
+            // Open the options menu OR open the overflow menu
+            onView(isRoot()).perform(pressMenuKey())
 
-                // Click the item.
-                onView(withText(R.string.action_settings)).perform(click())
-            }
+            // Click the item.
+            onView(withText(R.string.action_settings)).perform(click())
         }
     }
 
@@ -94,15 +87,13 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowRefresh() {
-        activityScenarioRule.scenario.onActivity {
-            // Wait 8 seconds for alertDialog to close
-            TestUtils.executeWithDelay(8000L) {
-                // Open the options menu OR open the overflow menu
-                onView(isRoot()).perform(pressMenuKey())
+        // Wait 8 seconds for alertDialog to close
+        TestUtils.executeWithDelay(8000L) {
+            // Open the options menu OR open the overflow menu
+            onView(isRoot()).perform(pressMenuKey())
 
-                // Click the item.
-                onView(withText(R.string.action_refresh)).perform(click())
-            }
+            // Click the item.
+            onView(withText(R.string.action_refresh)).perform(click())
         }
     }
 
@@ -111,35 +102,33 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickableRecyclerViewItems() {
-        activityScenarioRule.scenario.onActivity {
-            // Wait 9 seconds for data to load and alertDialog to close
-            TestUtils.executeWithDelay(9000L) {
-                // Confirm toolbar is displayed
-                onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
-                onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
-                onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
+        // Wait 9 seconds for data to load and alertDialog to close
+        TestUtils.executeWithDelay(9000L) {
+            // Confirm toolbar is displayed
+            onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+            onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
+            onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
 
-                // Confirm recyclerview is displayed
-                onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
-                onView(withId(R.id.recyclerView)).check(
-                    matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))
+            // Confirm recyclerview is displayed
+            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
+            onView(withId(R.id.recyclerView)).check(
+                matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))
+            )
+
+            Intents.init()
+
+            // Scroll to an item at a position and click on it.
+            val mockPosition = 0
+            onView(withId(R.id.recyclerView)).perform(
+                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                    mockPosition,
+                    click()
                 )
+            )
 
-                Intents.init()
+            intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
 
-                // Scroll to an item at a position and click on it.
-                val mockPosition = 0
-                onView(withId(R.id.recyclerView)).perform(
-                    RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                        mockPosition,
-                        click()
-                    )
-                )
-
-                intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
-
-                Intents.release()
-            }
+            Intents.release()
         }
     }
 
