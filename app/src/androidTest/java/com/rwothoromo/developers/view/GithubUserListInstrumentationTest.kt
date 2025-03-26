@@ -46,6 +46,9 @@ class GithubUserListInstrumentationTest {
     val activityScenarioRule: ActivityScenarioRule<MainActivity> =
         ActivityScenarioRule<MainActivity>(intent)
 
+//    @get:Rule
+//    var uiThreadTest: UiThreadTest = UiThreadTest()
+
     /**
      * Register any resource that needs to be synchronized with Espresso before the test is run.
      */
@@ -60,16 +63,14 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        activityScenarioRule.scenario.onActivity { activity: MainActivity ->
-            activity.runOnUiThread {
-                // Wait 6 seconds for alertDialog to close
-                TestUtils.executeWithDelay(6000L) {
-                    // Open the options menu OR open the overflow menu
-                    onView(isRoot()).perform(pressMenuKey())
+        getInstrumentation().runOnMainSync {
+            // Wait 6 seconds for alertDialog to close
+            TestUtils.executeWithDelay(6000L) {
+                // Open the options menu OR open the overflow menu
+                onView(isRoot()).perform(pressMenuKey())
 
-                    // Click on the Search icon.
-                    onView(withId(R.id.action_search)).perform(click())
-                }
+                // Click on the Search icon.
+                onView(withId(R.id.action_search)).perform(click())
             }
         }
     }
