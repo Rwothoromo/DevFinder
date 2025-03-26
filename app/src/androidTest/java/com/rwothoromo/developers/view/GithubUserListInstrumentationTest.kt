@@ -74,12 +74,16 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowSettings() {
-        TestUtils.executeWithDelay {
-            // Open the options menu OR open the overflow menu
-            onView(isRoot()).perform(pressMenuKey())
+        activityScenarioRule.scenario.onActivity { activity ->
+            TestUtils.executeWithDelay {
+                activity.runOnUiThread {
+                    // Open the options menu OR open the overflow menu
+                    onView(isRoot()).perform(pressMenuKey())
 
-            // Click the item.
-            onView(withText(R.string.action_settings)).perform(click())
+                    // Click the item.
+                    onView(withText(R.string.action_settings)).perform(click())
+                }
+            }
         }
     }
 
@@ -88,12 +92,16 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowRefresh() {
-        TestUtils.executeWithDelay {
-            // Open the options menu OR open the overflow menu
-            onView(isRoot()).perform(pressMenuKey())
+        activityScenarioRule.scenario.onActivity { activity ->
+            TestUtils.executeWithDelay {
+                activity.runOnUiThread {
+                    // Open the options menu OR open the overflow menu
+                    onView(isRoot()).perform(pressMenuKey())
 
-            // Click the item.
-            onView(withText(R.string.action_refresh)).perform(click())
+                    // Click the item.
+                    onView(withText(R.string.action_refresh)).perform(click())
+                }
+            }
         }
     }
 
@@ -102,32 +110,36 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickableRecyclerViewItems() {
-        TestUtils.executeWithDelay {
-            // Confirm toolbar is displayed
-            onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
-            onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
-            onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
+        activityScenarioRule.scenario.onActivity { activity ->
+            TestUtils.executeWithDelay {
+                activity.runOnUiThread {
+                    // Confirm toolbar is displayed
+                    onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+                    onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
+                    onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
 
-            // Confirm recyclerview is displayed
-            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
-            onView(withId(R.id.recyclerView)).check(
-                matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))
-            )
+                    // Confirm recyclerview is displayed
+                    onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
+                    onView(withId(R.id.recyclerView)).check(
+                        matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))
+                    )
 
-            Intents.init()
+                    Intents.init()
 
-            // Scroll to an item at a position and click on it.
-            val mockPosition = 0
-            onView(withId(R.id.recyclerView)).perform(
-                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                    mockPosition,
-                    click()
-                )
-            )
+                    // Scroll to an item at a position and click on it.
+                    val mockPosition = 0
+                    onView(withId(R.id.recyclerView)).perform(
+                        RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                            mockPosition,
+                            click()
+                        )
+                    )
 
-            intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
+                    intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
 
-            Intents.release()
+                    Intents.release()
+                }
+            }
         }
     }
 
