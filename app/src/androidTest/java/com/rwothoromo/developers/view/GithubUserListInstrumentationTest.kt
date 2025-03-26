@@ -77,13 +77,15 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowSettings() {
-        // Wait 7 seconds for alertDialog to close
-        TestUtils.executeWithDelay(7000L) {
-            // Open the options menu OR open the overflow menu
-            onView(isRoot()).perform(pressMenuKey())
+        activityScenarioRule.scenario.onActivity {
+            // Wait 7 seconds for alertDialog to close
+            TestUtils.executeWithDelay(7000L) {
+                // Open the options menu OR open the overflow menu
+                onView(isRoot()).perform(pressMenuKey())
 
-            // Click the item.
-            onView(withText(R.string.action_settings)).perform(click())
+                // Click the item.
+                onView(withText(R.string.action_settings)).perform(click())
+            }
         }
     }
 
@@ -92,13 +94,15 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowRefresh() {
-        // Wait 8 seconds for alertDialog to close
-        TestUtils.executeWithDelay(8000L) {
-            // Open the options menu OR open the overflow menu
-            onView(isRoot()).perform(pressMenuKey())
+        activityScenarioRule.scenario.onActivity {
+            // Wait 8 seconds for alertDialog to close
+            TestUtils.executeWithDelay(8000L) {
+                // Open the options menu OR open the overflow menu
+                onView(isRoot()).perform(pressMenuKey())
 
-            // Click the item.
-            onView(withText(R.string.action_refresh)).perform(click())
+                // Click the item.
+                onView(withText(R.string.action_refresh)).perform(click())
+            }
         }
     }
 
@@ -107,33 +111,35 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickableRecyclerViewItems() {
-        // Wait 9 seconds for data to load and alertDialog to close
-        TestUtils.executeWithDelay(9000L) {
-            // Confirm toolbar is displayed
-            onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
-            onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
-            onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
+        activityScenarioRule.scenario.onActivity {
+            // Wait 9 seconds for data to load and alertDialog to close
+            TestUtils.executeWithDelay(9000L) {
+                // Confirm toolbar is displayed
+                onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
+                onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
+                onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
 
-            // Confirm recyclerview is displayed
-            onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
-            onView(withId(R.id.recyclerView)).check(
-                matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))
-            )
-
-            Intents.init()
-
-            // Scroll to an item at a position and click on it.
-            val mockPosition = 0
-            onView(withId(R.id.recyclerView)).perform(
-                RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
-                    mockPosition,
-                    click()
+                // Confirm recyclerview is displayed
+                onView(withId(R.id.recyclerView)).check(matches(isDisplayed()))
+                onView(withId(R.id.recyclerView)).check(
+                    matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))
                 )
-            )
 
-            intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
+                Intents.init()
 
-            Intents.release()
+                // Scroll to an item at a position and click on it.
+                val mockPosition = 0
+                onView(withId(R.id.recyclerView)).perform(
+                    RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                        mockPosition,
+                        click()
+                    )
+                )
+
+                intended(allOf<Intent>(hasComponent(GithubUserProfile::class.java.name)))
+
+                Intents.release()
+            }
         }
     }
 
