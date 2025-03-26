@@ -60,8 +60,7 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarSearchItem() {
-        // Wait 6 seconds for alertDialog to close
-        TestUtils.executeWithDelay(6000L) {
+        TestUtils.executeWithDelay {
             // Click on the Search icon.
             onView(withId(R.id.action_search)).perform(click())
         }
@@ -72,8 +71,7 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowSettings() {
-        // Wait 7 seconds for alertDialog to close
-        TestUtils.executeWithDelay(7000L) {
+        TestUtils.executeWithDelay {
             // Open the options menu OR open the overflow menu
             onView(isRoot()).perform(pressMenuKey())
 
@@ -87,8 +85,7 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickActionBarOverflowRefresh() {
-        // Wait 8 seconds for alertDialog to close
-        TestUtils.executeWithDelay(8000L) {
+        TestUtils.executeWithDelay {
             // Open the options menu OR open the overflow menu
             onView(isRoot()).perform(pressMenuKey())
 
@@ -102,8 +99,7 @@ class GithubUserListInstrumentationTest {
      */
     @Test
     fun clickableRecyclerViewItems() {
-        // Wait 9 seconds for data to load and alertDialog to close
-        TestUtils.executeWithDelay(9000L) {
+        TestUtils.executeWithDelay {
             // Confirm toolbar is displayed
             onView(withId(R.id.toolbar)).check(matches(isDisplayed()))
             onView(withText(R.string.app_name)).check(matches(withParent(withId(R.id.toolbar))))
