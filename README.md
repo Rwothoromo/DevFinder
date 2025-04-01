@@ -1,11 +1,11 @@
-# Developers
+# DevFinder
 
-[![CircleCI](https://circleci.com/gh/Rwothoromo/Android-Codelab.svg?style=svg)](https://circleci.com/gh/Rwothoromo/Android-Codelab)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/Rwothoromo/DevFinder/tree/develop.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/Rwothoromo/DevFinder/tree/develop)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/78f03b429b83c9459a23/test_coverage)](https://codeclimate.com/github/Rwothoromo/Android-Codelab/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/78f03b429b83c9459a23/maintainability)](https://codeclimate.com/github/Rwothoromo/Android-Codelab/maintainability)
 
-This Android application retrieves a listing of Java Developers in Nairobi using the [Github API](https://developer.github.com/v3/search/#search-users) and allows you to share their profiles.
-Download it on [Amazon](https://www.amazon.com/dp/B07JLLNC34/ref=cm_sw_r_tw_dp_U_x_UTb0BbR7GDDAZ).
+This Android application retrieves a listing of Developers by Location using the [Github API](https://developer.github.com/v3/search/#search-users) and allows you to share their profiles.
+Download it on [Amazon](https://www.amazon.com/dp/B07JLLNC34/ref=cm_sw_r_tw_dp_U_x_UTb0BbR7GDDAZ) or [Google Play](google.com).
 
 ## Design
 
@@ -25,8 +25,8 @@ These instructions will guide you on how to set up this Android project on your 
 
 ### Prerequisites
 
-- [Android Studio 3.1.3](https://developer.android.com/studio/)
-- [Java (JDK 10)](http://www.oracle.com/technetwork/java/javase/downloads/jdk10-downloads-4416644.html)
+- [Android Studio 2014.3.1+](https://developer.android.com/studio/)
+- [Java (JDK 17)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 
 ### Installation
 
@@ -42,6 +42,10 @@ $ git clone https://github.com/Rwothoromo/Android-Codelab.git
 - Send in a request for `keystore.jks`, alias and passwords, and add the file received to `keystores/keystore.jks`.
 - Wait for the project to complete building and indexing.
 - Go to `Run` in the menu and select `Run` to run the project on an emulator or your connected Android device.
+- For Circle CI, refer to [Android Config Blog](https://circleci.com/blog/building-android-on-circleci/).
+- When running Instrumented Tests, ensure that in the developer options of the device/emulator,
+  - that you have Animations off (instead of 1x) selected in all 3 animations scale - Window/Transition/Animator
+  - Also look at Circle CI's recommended [test example](https://github.com/circleci/EspressoSample?tab=readme-ov-file).
 
 ### Run tests
 
@@ -69,7 +73,53 @@ $ ./gradlew test
 
 Before running any of these commands, run `./gradlew clean` to clear any previous reports.
  
-To Generate a JaCoCo coverage report:
+To Generate a JaCoCo coverage report (Use unifiedCoverageReport for Circle CI):
 ```
 $ ./gradlew jacocoTestReport
+```
+
+### Checking Build
+```
+./gradlew build --warning-mode=all --stacktrace
+```
+
+### Checking Deprecations
+```
+./gradlew help --scan
+```
+
+### Get SHA-1 sample (the default password is "android")
+```
+keytool -list -v -alias androiddebugkey -keystore ~/.android/debug.keystore
+```
+
+### Create Keystore
+```
+keytool -genkey -v -keystore keystores/keystore.jks -alias my-alias -keyalg RSA -keysize 2048
+```
+
+### Export Environment Variables
+```
+export KEYSTORE="../keystores/keystore.jks"
+export KEYSTORE_PASSWORD="my-pass"
+export KEY_ALIAS="my-alias"
+export KEY_PASSWORD="my-pass"
+```
+
+### Base64 encode Google Services (Remove EOL characters when copying)
+```
+cat app/google-services.json | base64
+```
+
+### Base64 encode Keystore
+```
+cat keystores/keystore.jks | base64
+```
+
+### To generate APKs in Android Studio, pate the following into keystores/keystore.properties, then run `./gradlew assembleRelease`:
+```
+storeFile=../keystores/keystore.jks
+storePassword=my-pass
+keyAlias=my-alias
+keyPassword=my-pass
 ```

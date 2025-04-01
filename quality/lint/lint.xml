@@ -43,7 +43,6 @@
     <issue id="ExportedService" severity="ignore" />
     <issue id="ExtraText" severity="ignore" />
     <issue id="ExtraTranslation" severity="ignore" />
-    <issue id="FloatMath" severity="ignore" />
     <issue id="GifUsage" severity="ignore" />
     <issue id="GradleOverrides" severity="ignore" />
     <issue id="GrantAllUris" severity="ignore" />
@@ -129,7 +128,6 @@
     <issue id="StringFormatCount" severity="ignore" />
     <issue id="StringFormatInvalid" severity="ignore" />
     <issue id="StringFormatMatches" severity="ignore" />
-    <issue id="StyleCycle" severity="ignore" />
     <issue id="Suspicious0dp" severity="ignore" />
     <issue id="SuspiciousImport" severity="ignore" />
     <issue id="TextFields" severity="ignore" />
