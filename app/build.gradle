@@ -1,20 +1,30 @@
+
 buildscript {
     repositories {
-        maven { url 'https://maven.fabric.io/public' }
+        mavenCentral()
+        maven { url = "https://plugins.gradle.org/m2/" }
+        maven { url = 'https://maven.google.com/' }
+        google()
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.26.1'
     }
 }
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'com.google.firebase.firebase-perf'
-apply plugin: 'io.fabric'
+
+plugins {
+    id("com.android.application")
+    id("kotlin-android")
+    id("kotlin-parcelize")
+    id("jacoco")
+    id("com.google.gms.google-services")
+    alias(libs.plugins.compose.compiler)
+}
 
 repositories {
-    maven { url 'https://maven.fabric.io/public' }
     mavenCentral()
+    maven { url = "https://plugins.gradle.org/m2/" }
+    maven { url = 'https://maven.google.com/' }
+    google()
 }
 
 apply plugin: 'jacoco'
@@ -23,59 +33,79 @@ apply from: rootProject.file('app/jacoco.gradle')
 
 jacoco {
     toolVersion = "${rootProject.jacocoVersion}"
-    reportsDir = file("$buildDir/reports")
+    reportsDirectory = file("${buildDir}/reports")
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
+    testLogging {
+        exceptionFormat = 'full'
+        events("passed", "skipped", "failed")
+        showStackTraces = true
+    }
     jacoco.includeNoLocationClasses = true
     jacoco.excludes = ['jdk.internal.*']
+    finalizedBy jacocoTestReport
 }
 
 android {
-    compileSdkVersion 28
+    namespace = "com.rwothoromo.devfinder"
+    compileSdk = 35
     flavorDimensions "default"
 
     defaultConfig {
-        applicationId "com.example.rwothoromo.developers"
-        minSdkVersion 21
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        applicationId = "com.rwothoromo.devfinder"
+        minSdk = 21
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // The app's state will be completely cleared between tests.
         testInstrumentationRunnerArguments clearPackageData: 'true'
-        multiDexEnabled true
+        multiDexEnabled = true
     }
 
     signingConfigs {
         release {
-            storeFile file(System.getenv("KEYSTORE") ?: "../keystores/keystore.jks")
-            storePassword System.getenv("KEYSTORE_PASSWORD")
-            keyAlias System.getenv("KEY_ALIAS")
-            keyPassword System.getenv("KEY_PASSWORD")
-        }
-    }
+            try {
+                // keystorePropertiesFile - Useful on local machine
+                def keystorePropertiesFile = rootProject.file("keystores/keystore.properties")
+                def keystoreProperties = new Properties()
+                keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
-    lintOptions {
-        abortOnError false
+                // System.getenv - Useful on Circle CI
+                storeFile = file(keystoreProperties['storeFile'])
+                storePassword = keystoreProperties['storePassword']
+                keyAlias = keystoreProperties['keyAlias']
+                keyPassword = keystoreProperties['keyPassword']
+            } catch (Exception e) {
+                println("keystorePropertiesFile Error: $e")
+
+                // System.getenv - Useful on Circle CI
+                storeFile = file(System.getenv("KEYSTORE") ?: "../keystores/keystore.jks")
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
-        debug {
-            testCoverageEnabled = true
-        }
         release {
-            testCoverageEnabled true
-            minifyEnabled false
-            zipAlignEnabled true
-            signingConfig signingConfigs.release
+            minifyEnabled = false
+            signingConfig = signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
+        }
+        debug {
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
         }
     }
 
     productFlavors {
         mock {
-            applicationIdSuffix = ".mock"
-            dimension "default"
+            dimension = "default"
         }
         prod {
 
@@ -92,36 +122,51 @@ android {
     }
 
     testOptions {
-        execution 'ANDROID_TEST_ORCHESTRATOR'
-        animationsDisabled true
+        animationsDisabled = true
+        unitTests.includeAndroidResources = true
         unitTests.returnDefaultValues = true
-
-        unitTests {
-            includeAndroidResources = true
+        unitTests.all {
+            jacoco {
+                includeNoLocationClasses = true
+                // Include all classes for coverage, unit tests are optimized for coverage reporting
+            }
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.2"
+    }
+
+    lint {
+        abortOnError = false
+    }
+
+}
+
+// For toolchain setup (Gradle 7.6+)
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "com.android.support:appcompat-v7:${rootProject.supportVersion}"
     implementation "com.android.support.constraint:constraint-layout:${rootProject.constraintLayout}"
     implementation "com.android.support:design:${rootProject.supportVersion}"
-    implementation "com.android.support:support-v4:${rootProject.supportVersion}"
-    implementation "com.android.support:recyclerview-v7:${rootProject.supportVersion}"
-    implementation "com.android.support:cardview-v7:${rootProject.supportVersion}"
-    testImplementation "junit:junit:${rootProject.jUnit}"
-    androidTestImplementation "com.android.support.test:runner:${rootProject.testRunner}"
-    androidTestImplementation "com.android.support.test:rules:${rootProject.testRunner}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:${rootProject.espressoVersion}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-contrib:${rootProject.espressoVersion}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-intents:${rootProject.espressoVersion}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-idling-resource:${rootProject.espressoVersion}"
     implementation "com.squareup.retrofit2:retrofit:${rootProject.retrofitVersion}"
     implementation "com.google.code.gson:gson:${rootProject.gsonVersion}"
     implementation "com.squareup.retrofit2:converter-gson:${rootProject.retrofitVersion}"
@@ -129,13 +174,42 @@ dependencies {
     implementation "com.android.support.test.espresso.idling:idling-concurrent:${rootProject.espressoVersion}"
     implementation "com.squareup.okhttp3:mockwebserver:${rootProject.mockWebServer}"
     implementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
-    testImplementation "org.mockito:mockito-inline:${rootProject.mockitoVersion}"
-    implementation "com.crashlytics.sdk.android:crashlytics:${rootProject.crashlyticsVersion}"
-    implementation "com.crashlytics.sdk.android:answers:${rootProject.crashlyticsAnswersVersion}"
-    implementation "com.google.firebase:firebase-core:${rootProject.firebaseCore}"
-    implementation "com.google.firebase:firebase-perf:${rootProject.firebasePerf}"
-    compileOnly "com.google.code.findbugs:annotations:${rootProject.findbugsAnnotations}"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation(platform("com.google.firebase:firebase-bom:$firebaseBom"))
+    implementation("com.google.firebase:firebase-perf")
+    implementation("com.google.firebase:firebase-analytics")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+    implementation("androidx.compose.runtime:runtime:$composeVersion")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${rootProject.lifecycleViewmodel}")
+    implementation("com.squareup.okhttp3:logging-interceptor:${rootProject.okhttp3LoggingInterceptor}")
+
+    // Testing
+    testImplementation "junit:junit:${rootProject.jUnit}"
+    testImplementation "androidx.test:core:${rootProject.androidXTestVersion}"
+    testImplementation "io.mockk:mockk:${rootProject.mockkVersion}" // Mocking lib for Kotlin
+    testImplementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
+    testImplementation "org.mockito:mockito-inline:${rootProject.mockitoInlineVersion}"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:${rootProject.mockitoKotlinVersion}"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${rootProject.ktxCoroutinesTest}"
+    testImplementation("com.squareup.okhttp3:mockwebserver:${rootProject.okhttp3Mockwebserver}")
+
+    androidTestImplementation "androidx.test:core:${rootProject.androidXTestVersion}"
+    androidTestImplementation "androidx.test:core-ktx:${rootProject.androidXTestVersion}"
+    androidTestImplementation "androidx.test.espresso:espresso-core:${rootProject.espressoVersion}"
+    androidTestImplementation("androidx.test.ext:junit:${rootProject.jUnitExt}") { // JUnit Ext APIs
+        // AndroidX Test Orchestrator dependency
+        exclude group: 'androidx.test', module: 'orchestrator'
+    }
+    androidTestImplementation "androidx.test.ext:junit-ktx:${rootProject.jUnitExt}"
+    androidTestImplementation "androidx.test.ext:truth:${rootProject.truthVersion}"// Truth Ext APIs
+    androidTestImplementation "androidx.test:runner:${rootProject.testRunner}"
+    androidTestImplementation "androidx.test:rules:${rootProject.testRules}"
+
+    androidTestImplementation "com.android.support.test:runner:${rootProject.testRunner}"
+    androidTestImplementation "com.android.support.test:rules:${rootProject.testRunner}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:${rootProject.espressoVersion}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-contrib:${rootProject.espressoVersion}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-intents:${rootProject.espressoVersion}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-idling-resource:${rootProject.espressoVersion}"
 }
 
 apply plugin: 'com.google.gms.google-services'
