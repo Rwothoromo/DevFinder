@@ -3,6 +3,7 @@ package com.rwothoromo.developers.view
 import android.content.Context
 import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.annotation.UiThreadTest
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.core.app.launchActivity
@@ -25,7 +26,6 @@ import com.rwothoromo.developers.constants.Constants.DIALOG_DELAY_TIME
 import com.rwothoromo.developers.util.DelayIdlingResource
 import com.rwothoromo.developers.util.EspressoIdlingResource
 import com.rwothoromo.devfinder.R
-import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -63,19 +63,17 @@ class GithubUserListInstrumentationTest {
     /**
      * Click the Search icon on the Action bar.
      */
-    @Test
+    @UiThreadTest
     fun clickActionBarSearchItem() {
-        runBlocking {
-            delayIdlingResource.delay {
-                onView(withId(R.id.action_search)).check(matches(isDisplayed())).perform(click())
-            }
+        delayIdlingResource.delay {
+            onView(withId(R.id.action_search)).check(matches(isDisplayed())).perform(click())
         }
     }
 
     /**
      * Click Settings in the menu items.
      */
-    @Test
+    @UiThreadTest
     fun clickActionBarOverflowSettings() {
         delayIdlingResource.delay {
             onView(isRoot()).perform(pressMenuKey())
@@ -87,7 +85,7 @@ class GithubUserListInstrumentationTest {
     /**
      * Click Refresh in the menu items.
      */
-    @Test
+    @UiThreadTest
     fun clickActionBarOverflowRefresh() {
         delayIdlingResource.delay {
             onView(isRoot()).perform(pressMenuKey())
