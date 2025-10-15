@@ -98,6 +98,11 @@ keytool -list -v -alias androiddebugkey -keystore ~/.android/debug.keystore
 keytool -genkey -v -keystore keystores/keystore.jks -alias my-alias -keyalg RSA -keysize 2048
 ```
 
+### Recover keystore
+```
+ keytool -export -rfc -keystore keystores/keystore.jks -alias my-alias -file keystores/upload_certificate.pem
+```
+
 ### Export Environment Variables
 ```
 export KEYSTORE="../keystores/keystore.jks"

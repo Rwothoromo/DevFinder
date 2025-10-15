@@ -20,19 +20,6 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-parcelize'
-apply plugin: 'jacoco'
-apply plugin: 'com.google.gms.google-services'
-
-repositories {
-    mavenCentral()
-    maven { url = "https://plugins.gradle.org/m2/" }
-    maven { url = 'https://maven.google.com/' }
-    google()
-}
-
 apply from: rootProject.file('quality/quality.gradle')
 apply from: rootProject.file('app/jacoco.gradle')
 
@@ -104,6 +91,8 @@ android {
             enableAndroidTestCoverage = false
         }
         debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
             // Setting `minifyEnabled = false` is the default for debug
             // Set coverage to true for debug builds (which is standard)
             enableUnitTestCoverage = true
@@ -114,6 +103,9 @@ android {
     productFlavors {
         mock {
             dimension = "default"
+            applicationIdSuffix ".mock"
+            versionNameSuffix "-mock"
+            signingConfig = signingConfigs.debug
         }
         prod {
             dimension = "default"
