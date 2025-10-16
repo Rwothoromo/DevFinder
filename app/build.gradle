@@ -145,6 +145,23 @@ android {
         abortOnError = false
     }
 
+    packaging {
+        resources {
+            // Exclude *.file_extension pattern
+            excludes.add("*.md")
+            excludes.add("*.html")
+            excludes.add("*Test.kt")
+
+            // Exclude all files within a specific folder
+            excludes.add("docs/**")
+
+            // Exclude files matching a pattern within a folder
+            excludes.add("docs/*.md")
+            excludes.add("docs/*.html")
+            excludes.add("app/src/test/*.kt")
+        }
+    }
+
 }
 
 // For toolchain setup (Gradle 7.6+)
