@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   android: circleci/android@3.1.0
-#  gcp-cli: circleci/gcp-cli@3.3.1
 
 # Reusable commands / repeat tasks
 commands:
@@ -18,24 +17,22 @@ commands:
           name: Decode Google Services JSON key
           command: |
             sudo chmod 600 /root/.
-            sudo mkdir -m 0755 -p app/src/mock/
-            sudo mkdir -m 0755 -p app/src/prod/
             sudo touch -m 0755 app/google-services.json
-            sudo touch -m 0755 app/src/mock/google-services.json
-            sudo touch -m 0755 app/src/prod/google-services.json
             sudo chmod 777 app/google-services.json
-            sudo chmod 777 app/src/mock/google-services.json
-            sudo chmod 777 app/src/prod/google-services.json
-            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/google-services.json
-            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/mock/google-services.json
-            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/prod/google-services.json
+            echo $GOOGLE_SERVICES_JSON | base64 --decode > app/google-services.json
       - run: ls -l app/google-services.json
 
   export_keystore_key:
     steps:
       - run:
-          name: Set the KEYSTORE environment variable to it’s location.
+          name: Set the KEYSTORE environment variable to its location.
           command: echo 'export KEYSTORE=~/project/keystores/keystore.jks' >> $BASH_ENV
+      - run:
+          name: Export keystore credentials as environment variables
+          command: |
+            echo 'export KEYSTORE_PASSWORD="$KEYSTORE_PASSWORD"' >> $BASH_ENV
+            echo 'export KEY_ALIAS="$KEY_ALIAS"' >> $BASH_ENV
+            echo 'export KEY_PASSWORD="$KEY_PASSWORD"' >> $BASH_ENV
       - run: ls -l ~/project/keystores/keystore.jks
 
   decode_keystore_key:
@@ -53,7 +50,7 @@ commands:
       - android/start_emulator_and_run_tests:
           system_image: system-images;android-35;google_apis;x86_64
           # The command to be run, while waiting for emulator startup, can be overridden
-          post_emulator_launch_assemble_command: ./gradlew assembleProdDebugAndroidTest
+          post_emulator_launch_assemble_command: ./gradlew assembleDebugAndroidTest
           # The test command can be overridden
           test_command: |
             # Disable animations
@@ -66,66 +63,31 @@ commands:
             adb shell input keyevent 82
             
             # Run Android Instrumented Tests
-            ./gradlew connectedProdDebugAndroidTest -PdisablePreDex --stacktrace --warning-mode all
+            ./gradlew connectedDebugAndroidTest -PdisablePreDex --stacktrace --no-build-cache
       - run:
           name: Android Instrumentation Test Locations
           command: |
-            ls -l app/build/outputs/androidTest-results/connected/debug/flavors/prod/
-            ls -l app/build/reports/androidTests/connected/debug/flavors/prod/
+            ls -l app/build/outputs/androidTest-results/connected/
+            ls -l app/build/reports/androidTests/connected/
       - store_test_results:
-          path: app/build/reports/androidTests/connected/debug/flavors/prod/
-      - store_test_results:
-          path: app/build/outputs/androidTest-results/connected/debug/flavors/prod/
+          path: app/build/outputs/androidTest-results/connected/
       - store_artifacts:
-          path: app/build/reports/androidTests/connected/debug/flavors/prod/
-      - store_artifacts:
-          path: app/build/outputs/androidTest-results/connected/debug/flavors/prod/
+          path: app/build/reports/androidTests/connected/
 
   run_unit_tests:
     steps:
       - android/run_tests:
-          test_command: ./gradlew :app:testProdDebugUnitTest --warning-mode all | circleci tests glob "app/src/test/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
-      - run:
-          name: Unit Test Locations
-          command: |
-            ls -l app/build/test-results/testProdDebugUnitTest/
-            ls -l app/build/reports/tests/testProdDebugUnitTest/
+          test_command: ./gradlew :app:testDebugUnitTest | circleci tests glob "app/src/test/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
       - store_test_results:
-          path: app/build/reports/tests/testProdDebugUnitTest/
-      - store_test_results:
-          path: app/build/test-results/testProdDebugUnitTest/
+          path: app/build/test-results/testDebugUnitTest/
       - store_artifacts:
-          path: app/build/reports/tests/testProdDebugUnitTest/
-      - store_artifacts:
-          path: app/build/test-results/testProdDebugUnitTest/
+          path: app/build/reports/tests/testDebugUnitTest/
 
   jacoco_and_code_climate:
     steps:
       - run:
           name: Generate JaCoCo report
-          command: |
-            ./gradlew unifiedCoverageReport --stacktrace --warning-mode all
-      - run:
-          name: JaCoCo and Code Coverage File Locations
-          command: |
-            ls -l app/build/reports/jacocoTestReport/
-            ls -l app/build/jacocoHtml/
-            ls -l app/build/outputs/code_coverage/prodDebugAndroidTest/connected/
-            ls -l app/build/outputs/unit_test_code_coverage/prodDebugUnitTest/
-      - run:
-          name: Code Climate Setup
-          command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
-      - run:
-          name: Upload coverage to code climate
-          command: |
-            export JACOCO_SOURCE_PATH=app/src/main/java
-            # ./cc-test-reporter format-coverage app/build/outputs/code_coverage/prodDebugAndroidTest/connected/'test(AVD) - 15'/coverage.ec --input-type jacoco
-            # ./cc-test-reporter format-coverage app/build/outputs/unit_test_code_coverage/prodDebugUnitTest/testProdDebugUnitTest.exec --input-type jacoco
-            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
-            # ./cc-test-reporter sum-coverage
-            ./cc-test-reporter upload-coverage
+          command: ./gradlew unifiedCoverageReport
       - store_artifacts:
           path: app/build/reports/jacocoTestReport/
 
@@ -133,20 +95,11 @@ commands:
     steps:
       - run:
           name: Assemble release build
-          command: |
-            ./gradlew assembleRelease --stacktrace --warning-mode all
-      - run: ls -l app/
+          command: ./gradlew assembleRelease --no-build-cache -Dorg.gradle.cache.reserved.mb=100
       - store_artifacts:
-          path: app/build/outputs/apk/prod/release/app-prod-release.apk
-
+          path: app/build/outputs/apk/release/
 
 jobs:
-  #  use-gcp:
-  #    executor: gcp-cli/default
-  #    steps:
-  #      - gcp-cli/setup:
-  #          version: 404.0.0
-
   build:
     executor:
       name: android/android_machine
@@ -155,9 +108,18 @@ jobs:
     environment:
       TERM: "dumb"
       ADB_INSTALL_TIMEOUT: "10"
-      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError" -Dorg.gradle.parallel=true -Dorg.gradle.workers.max=4'
       ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 120
     steps:
+      # Clear Gradle cache and temp files to prevent StackOverflowError from corrupt cache files
+      - run:
+          name: Clear Gradle cache and temp files
+          command: |
+            rm -rf ~/.gradle/caches/ || true
+            rm -rf ~/.gradle/wrapper/ || true
+            rm -rf ~/.gradle/tmp/ || true
+            rm -rf ~/.gradle/notifications/ || true
+            rm -rf ~/.gradle/jdks/ || true
       - checkout
       - attach_workspace:
           at: ~/
@@ -167,9 +129,24 @@ jobs:
       - decode_google_services_key
       - decode_keystore_key
       - export_keystore_key
+      - run:
+          name: Create keystore.properties file for CI
+          command: |
+            mkdir -p ~/project/keystores/
+            cat > ~/project/keystores/keystore.properties \<< EOF
+            storeFile=keystores/keystore.jks
+            storePassword=${KEYSTORE_PASSWORD}
+            keyAlias=${KEY_ALIAS}
+            keyPassword=${KEY_PASSWORD}
+            EOF
+      - run:
+          name: Verify keystore files exist
+          command: |
+            ls -la ~/project/keystores/
+            file ~/project/keystores/keystore.jks
 
       # Checkstyle, pmd and lint
-      - run: ./gradlew clean --refresh-dependencies --status --warning-mode all
+      - run: ./gradlew clean --refresh-dependencies -Dorg.gradle.cache.reserved.mb=100 --no-build-cache --warning-mode all
       - run:
           name: Step 1 - Checkstyle, pmd and lint
           command: ./gradlew checkstyle pmd lint --warning-mode all
@@ -203,13 +180,7 @@ jobs:
           command: ls -l app/build/outputs/
       - release_build
 
-
 workflows:
   build_test_deploy:
     jobs:
       - build
-
-#  install_and_configure_cli:
-#    jobs:
-#      - use-gcp:
-#          context: myContext
