@@ -25,7 +25,7 @@ commands:
   export_keystore_key:
     steps:
       - run:
-          name: Set the KEYSTORE environment variable to it's location.
+          name: Set the KEYSTORE environment variable to its location.
           command: echo 'export KEYSTORE=~/project/keystores/keystore.jks' >> $BASH_ENV
       - run:
           name: Export keystore credentials as environment variables
@@ -131,7 +131,7 @@ jobs:
           name: Create keystore.properties file for CI
           command: |
             mkdir -p ~/project/keystores/
-            cat > ~/project/keystores/keystore.properties << EOF
+            cat > ~/project/keystores/keystore.properties \<< EOF
             storeFile=keystores/keystore.jks
             storePassword=${KEYSTORE_PASSWORD}
             keyAlias=${KEY_ALIAS}
