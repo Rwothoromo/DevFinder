@@ -30,6 +30,11 @@ allprojects {
         maven { url = 'https://maven.google.com/' }
         google()
     }
+
+    // Enforce protobuf version consistency
+    configurations.all {
+        resolutionStrategy.force 'com.google.protobuf:protobuf-javalite:3.27.0'
+    }
 }
 
 tasks.register('clean', Delete) {
@@ -57,7 +62,7 @@ ext {
     // Core Versions
     composeVersion = "1.7.8"
     constraintLayout = "2.2.1"
-    firebaseBom = "35.1.0"
+    firebaseBom = "33.1.0"
     gradleVersion = "8.13.0"
     kotlinVersion = "2.2.20"
     lifecycleViewmodel = "2.9.4"
