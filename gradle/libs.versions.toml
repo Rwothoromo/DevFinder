@@ -37,8 +37,8 @@ androidx-runner = { module = "androidx.test:runner", version.ref = "core" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 androidx-truth = { module = "androidx.test.ext:truth", version.ref = "core" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
-firebase-perf = { module = "com.google.firebase:firebase-perf" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics", version = "22.1.2" }
+firebase-perf = { module = "com.google.firebase:firebase-perf", version = "21.0.1" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { module = "junit:junit", version.ref = "junit" }

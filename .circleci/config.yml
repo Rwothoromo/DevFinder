@@ -108,13 +108,16 @@ jobs:
     environment:
       TERM: "dumb"
       ADB_INSTALL_TIMEOUT: "10"
-      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError" -Dorg.gradle.parallel=true -Dorg.gradle.workers.max=4'
       ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 120
     steps:
-      # Clear Gradle cache to prevent StackOverflowError from corrupt cache files
+      # Clear Gradle cache and temp files to prevent StackOverflowError from corrupt cache files
       - run:
-          name: Clear Gradle cache
-          command: rm -rf ~/.gradle/caches/ || true
+          name: Clear Gradle cache and temp files
+          command: |
+            rm -rf ~/.gradle/caches/ || true
+            rm -rf ~/.gradle/wrapper/ || true
+            rm -rf ~/.gradle/tmp/ || true
       - checkout
       - attach_workspace:
           at: ~/
@@ -124,9 +127,19 @@ jobs:
       - decode_google_services_key
       - decode_keystore_key
       - export_keystore_key
+      - run:
+          name: Create keystore.properties file for CI
+          command: |
+            mkdir -p ~/project/keystores/
+            cat > ~/project/keystores/keystore.properties << EOF
+            storeFile=keystores/keystore.jks
+            storePassword=${KEYSTORE_PASSWORD}
+            keyAlias=${KEY_ALIAS}
+            keyPassword=${KEY_PASSWORD}
+            EOF
 
       # Checkstyle, pmd and lint
-      - run: ./gradlew clean --refresh-dependencies --status --warning-mode all
+      - run: ./gradlew clean --refresh-dependencies --warning-mode all
       - run:
           name: Step 1 - Checkstyle, pmd and lint
           command: ./gradlew checkstyle pmd lint --warning-mode all
