@@ -33,7 +33,7 @@ allprojects {
 
     // Enforce protobuf version consistency
     configurations.all {
-        resolutionStrategy.force 'com.google.protobuf:protobuf-javalite:3.27.0'
+        resolutionStrategy.force 'com.google.protobuf:protobuf-javalite:3.26.1'
     }
 }
 
