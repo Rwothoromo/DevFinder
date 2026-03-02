@@ -46,6 +46,17 @@ tasks.register('jacocoTestReport', JacocoReport) {
                                "jacoco/testDebugUnitTest.exec",
                                "outputs/code-coverage/connected/*coverage.ec"
                     ]))
+
+    // Skip task execution if no execution data files exist
+    onlyIf {
+        def execDataFiles = fileTree(
+                dir: "$buildDir",
+                includes: ['**/*.exec', '**/*.ec',
+                           "jacoco/testDebugUnitTest.exec",
+                           "outputs/code-coverage/connected/*coverage.ec"
+                ])
+        return !execDataFiles.isEmpty()
+    }
 }
 
 tasks.register('unifiedCoverageReport') {
