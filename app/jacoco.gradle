@@ -6,7 +6,6 @@ def coverageSourceDirs = [
 ]
 
 tasks.register('jacocoTestReport', JacocoReport) {
-    check.dependsOn 'clean', 'test'
     description = 'Generate JaCoCo coverage report'
     group = 'Reporting'
 
@@ -27,17 +26,18 @@ tasks.register('jacocoTestReport', JacocoReport) {
             'android/**/*.*',
             '**/*Fragment.*',
             '**/*Activity.*',
+            '**/*ViewModel.*',
             '**/*$*$*.*',  // Exclude Kotlin lambdas and synthetic classes
             '**/Hilt_*.*'   // Exclude Hilt generated classes
     ]
 
-    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
-//    def javaMainSrc = "${project.projectDir}/src/main/java"
+    // Use the non-instrumented classes from the correct directory
+    def debugTree = fileTree(dir: "${buildDir}/intermediates/javac/debug/classes", excludes: fileFilter)
     def kotlinMainSrc = "${project.projectDir}/src/main/kotlin"
-    def kotlinDebugTree = fileTree(dir: "${buildDir}/tmp/kotlin-classes/prodDebug", excludes: fileFilter)
 
-    classDirectories.setFrom(files([debugTree], [kotlinDebugTree]))
+    classDirectories.setFrom(files([debugTree]))
     sourceDirectories.setFrom(files([coverageSourceDirs], [kotlinMainSrc]))
+
     // Specify execution data files that JaCoCo will use to generate coverage report
     executionData.setFrom(
             fileTree(
