@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   android: circleci/android@3.1.0
-#  gcp-cli: circleci/gcp-cli@3.3.1
 
 # Reusable commands / repeat tasks
 commands:
@@ -18,17 +17,9 @@ commands:
           name: Decode Google Services JSON key
           command: |
             sudo chmod 600 /root/.
-            sudo mkdir -m 0755 -p app/src/mock/
-            sudo mkdir -m 0755 -p app/src/prod/
             sudo touch -m 0755 app/google-services.json
-            sudo touch -m 0755 app/src/mock/google-services.json
-            sudo touch -m 0755 app/src/prod/google-services.json
             sudo chmod 777 app/google-services.json
-            sudo chmod 777 app/src/mock/google-services.json
-            sudo chmod 777 app/src/prod/google-services.json
-            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/google-services.json
-            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/mock/google-services.json
-            sudo echo $GOOGLE_SERVICES_JSON | base64 --decode > app/src/prod/google-services.json
+            echo $GOOGLE_SERVICES_JSON | base64 --decode > app/google-services.json
       - run: ls -l app/google-services.json
 
   export_keystore_key:
@@ -53,7 +44,7 @@ commands:
       - android/start_emulator_and_run_tests:
           system_image: system-images;android-35;google_apis;x86_64
           # The command to be run, while waiting for emulator startup, can be overridden
-          post_emulator_launch_assemble_command: ./gradlew assembleProdDebugAndroidTest
+          post_emulator_launch_assemble_command: ./gradlew assembleDebugAndroidTest
           # The test command can be overridden
           test_command: |
             # Disable animations
@@ -66,150 +57,44 @@ commands:
             adb shell input keyevent 82
             
             # Run Android Instrumented Tests
-            ./gradlew connectedProdDebugAndroidTest -PdisablePreDex --stacktrace --warning-mode all
+            ./gradlew connectedDebugAndroidTest -PdisablePreDex --stacktrace
       - run:
           name: Android Instrumentation Test Locations
           command: |
-            ls -l app/build/outputs/androidTest-results/connected/debug/flavors/prod/
-            ls -l app/build/reports/androidTests/connected/debug/flavors/prod/
+            ls -l app/build/outputs/androidTest-results/connected/
+            ls -l app/build/reports/androidTests/connected/
       - store_test_results:
-          path: app/build/reports/androidTests/connected/debug/flavors/prod/
-      - store_test_results:
-          path: app/build/outputs/androidTest-results/connected/debug/flavors/prod/
+          path: app/build/outputs/androidTest-results/connected/
       - store_artifacts:
-          path: app/build/reports/androidTests/connected/debug/flavors/prod/
-      - store_artifacts:
-          path: app/build/outputs/androidTest-results/connected/debug/flavors/prod/
+          path: app/build/reports/androidTests/connected/
 
   run_unit_tests:
     steps:
       - android/run_tests:
-          test_command: ./gradlew :app:testProdDebugUnitTest --warning-mode all | circleci tests glob "app/src/test/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
-      - run:
-          name: Unit Test Locations
-          command: |
-            ls -l app/build/test-results/testProdDebugUnitTest/
-            ls -l app/build/reports/tests/testProdDebugUnitTest/
+          test_command: ./gradlew :app:testDebugUnitTest | circleci tests glob "app/src/test/**/*Test.kt" | circleci tests run --command="echo" --verbose --split-by=timings --timings-type=classname
       - store_test_results:
-          path: app/build/reports/tests/testProdDebugUnitTest/
-      - store_test_results:
-          path: app/build/test-results/testProdDebugUnitTest/
+          path: app/build/test-results/testDebugUnitTest/
       - store_artifacts:
-          path: app/build/reports/tests/testProdDebugUnitTest/
-      - store_artifacts:
-          path: app/build/test-results/testProdDebugUnitTest/
+          path: app/build/reports/tests/testDebugUnitTest/
 
   jacoco_and_code_climate:
     steps:
       - run:
           name: Generate JaCoCo report
-          command: |
-            ./gradlew unifiedCoverageReport --stacktrace --warning-mode all
+          command: ./gradlew unifiedCoverageReport
       - run:
-          name: JaCoCo and Code Coverage File Locations
-          command: |
-            ls -l app/build/reports/jacocoTestReport/
-            ls -l app/build/jacocoHtml/
-            ls -l app/build/outputs/code_coverage/prodDebugAndroidTest/connected/
-            ls -l app/build/outputs/unit_test_code_coverage/prodDebugUnitTest/
-      - run:
-          name: Code Climate Setup
+          name: Code Climate Upload
           command: |
             curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
             chmod +x ./cc-test-reporter
-      - run:
-          name: Upload coverage to code climate
-          command: |
             export JACOCO_SOURCE_PATH=app/src/main/java
-            # ./cc-test-reporter format-coverage app/build/outputs/code_coverage/prodDebugAndroidTest/connected/'test(AVD) - 15'/coverage.ec --input-type jacoco
-            # ./cc-test-reporter format-coverage app/build/outputs/unit_test_code_coverage/prodDebugUnitTest/testProdDebugUnitTest.exec --input-type jacoco
             ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
-            # ./cc-test-reporter sum-coverage
             ./cc-test-reporter upload-coverage
-      - store_artifacts:
-          path: app/build/reports/jacocoTestReport/
 
   release_build:
     steps:
       - run:
           name: Assemble release build
-          command: |
-            ./gradlew assembleRelease --stacktrace --warning-mode all
-      - run: ls -l app/
+          command: ./gradlew assembleRelease
       - store_artifacts:
-          path: app/build/outputs/apk/prod/release/app-prod-release.apk
-
-
-jobs:
-  #  use-gcp:
-  #    executor: gcp-cli/default
-  #    steps:
-  #      - gcp-cli/setup:
-  #          version: 404.0.0
-
-  build:
-    executor:
-      name: android/android_machine
-      tag: default
-    parallelism: 4
-    environment:
-      TERM: "dumb"
-      ADB_INSTALL_TIMEOUT: "10"
-      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
-      ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 120
-    steps:
-      - checkout
-      - attach_workspace:
-          at: ~/
-      - run: ls -l
-      - run: pwd
-      - export_google_services_key
-      - decode_google_services_key
-      - decode_keystore_key
-      - export_keystore_key
-
-      # Checkstyle, pmd and lint
-      - run: ./gradlew clean --refresh-dependencies --status --warning-mode all
-      - run:
-          name: Step 1 - Checkstyle, pmd and lint
-          command: ./gradlew checkstyle pmd lint --warning-mode all
-      - run: ls -l /home/circleci/project/app/build/reports/lint/
-      - store_artifacts:
-          path: /home/circleci/project/app/build/reports/lint/
-
-      # Android Instrumentation tests
-      - run:
-          name: Step 2 - Android Instrumentation Tests Locations
-          command: |
-            sudo find . -print | grep -i 'app/src/androidTest/.*Test[.]kt'
-      - run_android_tests
-
-      # Unit Tests
-      - run:
-          name: Step 3 - Unit Tests Locations
-          command: |
-            sudo find . -print | grep -i 'app/src/test/.*Test[.]kt'
-      - run_unit_tests
-
-      # Code Climate and JaCoCo
-      - run:
-          name: Step 4 - Code Climate and JaCoCo
-          command: ls -l app/build/reports/jacocoTestReport/
-      - jacoco_and_code_climate
-
-      # Release Build
-      - run:
-          name: Step 5 - Release builds (dir /apk/)
-          command: ls -l app/build/outputs/
-      - release_build
-
-
-workflows:
-  build_test_deploy:
-    jobs:
-      - build
-
-#  install_and_configure_cli:
-#    jobs:
-#      - use-gcp:
-#          context: myContext
+          path: app/build/outputs/apk/release/
