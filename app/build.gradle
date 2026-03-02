@@ -41,15 +41,14 @@ tasks.withType(Test).configureEach {
 
 android {
     namespace = "com.rwothoromo.devfinder"
-    compileSdk = 35
-    flavorDimensions "default"
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.rwothoromo.devfinder"
         minSdk = 21
-        targetSdk = 35
-        versionCode = 2
-        versionName = "1.0.1"
+        targetSdk = 36
+        versionCode = 3
+        versionName = "1.0.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // The app's state will be completely cleared between tests.
         testInstrumentationRunnerArguments clearPackageData: 'true'
@@ -97,18 +96,6 @@ android {
             // Set coverage to true for debug builds (which is standard)
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
-        }
-    }
-
-    productFlavors {
-        mock {
-            dimension = "default"
-            applicationIdSuffix ".mock"
-            versionNameSuffix "-mock"
-            signingConfig = signingConfigs.debug
-        }
-        prod {
-            dimension = "default"
         }
     }
 
