@@ -41,6 +41,7 @@ Beyond the GitHub API, explore these free public APIs for developer profiles:
 - [ ] **Dark Mode Support:** Ensure full compatibility with Material 3 Dark Theme.
 - [ ] **Accessibility (a11y):** Optimize for screen readers and ensure high contrast ratios.
 - [ ] **Localization:** Support multiple languages to reach a global audience.
+- [ ] **AI Profile Summaries:** Implement AI-powered summarization of developer profile descriptions to provide quick insights and improve discoverability.
 
 ---
 
