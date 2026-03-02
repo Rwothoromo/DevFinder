@@ -88,15 +88,8 @@ commands:
       - run:
           name: Generate JaCoCo report
           command: ./gradlew unifiedCoverageReport
-      - run:
-          name: Code Climate Upload
-          command: |
-            # Download cc-test-reporter from GitHub releases (more reliable than codeclimate.com)
-            curl -L https://github.com/codeclimate/test-reporter/releases/download/latest/cc-test-reporter-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
-            export JACOCO_SOURCE_PATH=app/src/main/java
-            ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
-            ./cc-test-reporter upload-coverage
+      - store_artifacts:
+          path: app/build/reports/jacocoTestReport/
 
   release_build:
     steps:
