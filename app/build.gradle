@@ -185,9 +185,10 @@ dependencies {
 
     // 5. Firebase
     implementation(platform("com.google.firebase:firebase-bom:$firebaseBom"))
-    implementation(libs.firebase.perf) {
-        exclude group: 'com.google.protobuf', module: 'protobuf-javalite'
-    }
+
+    // Firebase Perf only for release builds (avoids protobuf conflicts in tests)
+    releaseImplementation(libs.firebase.perf)
+
     implementation(libs.firebase.analytics) {
         exclude group: 'com.google.protobuf', module: 'protobuf-javalite'
     }
