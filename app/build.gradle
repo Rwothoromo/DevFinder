@@ -146,6 +146,9 @@ android {
             excludes.add("docs/*.md")
             excludes.add("docs/*.html")
             excludes.add("app/src/test/*.kt")
+
+            // Merge protobuf conflicts - prefer the version we explicitly provide
+            merges += 'com/google/protobuf/'
         }
     }
 
@@ -182,12 +185,16 @@ dependencies {
 
     // 5. Firebase
     implementation(platform("com.google.firebase:firebase-bom:$firebaseBom"))
-    implementation(libs.firebase.perf)
-    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.perf) {
+        exclude group: 'com.google.protobuf', module: 'protobuf-javalite'
+    }
+    implementation(libs.firebase.analytics) {
+        exclude group: 'com.google.protobuf', module: 'protobuf-javalite'
+    }
     implementation libs.androidx.espresso.idling.resource
-    
-    // Explicitly specify protobuf version to resolve conflict in Firebase Perf
-    implementation(libs.protobuf.javalite)
+
+    // Add protobuf-javalite that works with all dependencies
+    implementation 'com.google.protobuf:protobuf-javalite:3.25.5'
 
     // 6. Testing - Local Unit Tests
     testImplementation(libs.junit)
@@ -214,5 +221,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.intents)
     androidTestImplementation(libs.androidx.idling.concurrent) // For concurrent idling resources
     androidTestImplementation(libs.androidx.espresso.idling.resource) // For generic idling resources
-    androidTestImplementation(libs.protobuf.javalite) // Ensure protobuf consistency in test APK
+    androidTestImplementation 'com.google.protobuf:protobuf-javalite:3.25.5' // Ensure test APK has same protobuf version
 }

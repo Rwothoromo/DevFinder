@@ -30,11 +30,6 @@ allprojects {
         maven { url = 'https://maven.google.com/' }
         google()
     }
-
-    // Enforce protobuf version consistency
-    configurations.all {
-        resolutionStrategy.force 'com.google.protobuf:protobuf-javalite:3.26.1'
-    }
 }
 
 tasks.register('clean', Delete) {
