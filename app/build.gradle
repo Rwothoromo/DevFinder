@@ -60,18 +60,23 @@ android {
             try {
                 // keystorePropertiesFile - Useful on local machine
                 def keystorePropertiesFile = rootProject.file("keystores/keystore.properties")
-                def keystoreProperties = new Properties()
-                keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+                if (keystorePropertiesFile.exists()) {
+                    def keystoreProperties = new Properties()
+                    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
-                // System.getenv - Useful on Circle CI
-                storeFile = file(keystoreProperties['storeFile'])
-                storePassword = keystoreProperties['storePassword']
-                keyAlias = keystoreProperties['keyAlias']
-                keyPassword = keystoreProperties['keyPassword']
+                    storeFile = file(keystoreProperties['storeFile'])
+                    storePassword = keystoreProperties['storePassword']
+                    keyAlias = keystoreProperties['keyAlias']
+                    keyPassword = keystoreProperties['keyPassword']
+                } else {
+                    // File doesn't exist, use environment variables (CI)
+                    storeFile = file(System.getenv("KEYSTORE") ?: "../keystores/keystore.jks")
+                    storePassword = System.getenv("KEYSTORE_PASSWORD")
+                    keyAlias = System.getenv("KEY_ALIAS")
+                    keyPassword = System.getenv("KEY_PASSWORD")
+                }
             } catch (Exception e) {
-                println("keystorePropertiesFile Error: $e")
-
-                // System.getenv - Useful on Circle CI
+                // Fallback to environment variables on any error
                 storeFile = file(System.getenv("KEYSTORE") ?: "../keystores/keystore.jks")
                 storePassword = System.getenv("KEYSTORE_PASSWORD")
                 keyAlias = System.getenv("KEY_ALIAS")
