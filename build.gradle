@@ -70,8 +70,6 @@ ext {
     gsonVersion = "2.13.2"
     ktxCoroutinesCore = "1.8.1"
     ktxCoroutinesTest = "1.7.3"
-    retrofitVersion = "2.11.0"
-
     // Mocking/Network
     mockWebServer = "5.2.1"
     okhttp3LoggingInterceptor = "5.2.1"
