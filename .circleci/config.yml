@@ -111,14 +111,10 @@ jobs:
       GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
       ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 120
     steps:
-      # Clear corrupt Gradle cache to prevent StackOverflowError
+      # Clear Gradle cache to prevent StackOverflowError from corrupt cache files
       - run:
-          name: Clear Gradle cache if corrupt
-          command: |
-            if [ -f ~/.gradle/caches/modules-2/metadata-2.*/module-metadata.bin ]; then
-              echo "Clearing corrupt Gradle cache..."
-              rm -rf ~/.gradle/caches/
-            fi
+          name: Clear Gradle cache
+          command: rm -rf ~/.gradle/caches/ || true
       - checkout
       - attach_workspace:
           at: ~/
