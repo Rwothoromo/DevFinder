@@ -185,6 +185,9 @@ dependencies {
     implementation(libs.firebase.perf)
     implementation(libs.firebase.analytics)
     implementation libs.androidx.espresso.idling.resource
+    
+    // Explicitly specify protobuf version to resolve conflict in Firebase Perf
+    implementation(libs.protobuf.javalite)
 
     // 6. Testing - Local Unit Tests
     testImplementation(libs.junit)
