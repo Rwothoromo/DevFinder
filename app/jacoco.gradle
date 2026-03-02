@@ -26,7 +26,9 @@ tasks.register('jacocoTestReport', JacocoReport) {
             '**/*Test*.*',
             'android/**/*.*',
             '**/*Fragment.*',
-            '**/*Activity.*'
+            '**/*Activity.*',
+            '**/*$*$*.*',  // Exclude Kotlin lambdas and synthetic classes
+            '**/Hilt_*.*'   // Exclude Hilt generated classes
     ]
 
     def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
