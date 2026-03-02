@@ -91,7 +91,8 @@ commands:
       - run:
           name: Code Climate Upload
           command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            # Download cc-test-reporter from GitHub releases (more reliable than codeclimate.com)
+            curl -L https://github.com/codeclimate/test-reporter/releases/download/latest/cc-test-reporter-linux-amd64 > ./cc-test-reporter
             chmod +x ./cc-test-reporter
             export JACOCO_SOURCE_PATH=app/src/main/java
             ./cc-test-reporter format-coverage app/build/reports/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
