@@ -214,4 +214,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.intents)
     androidTestImplementation(libs.androidx.idling.concurrent) // For concurrent idling resources
     androidTestImplementation(libs.androidx.espresso.idling.resource) // For generic idling resources
+    androidTestImplementation(libs.protobuf.javalite) // Ensure protobuf consistency in test APK
 }

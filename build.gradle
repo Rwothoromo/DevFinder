@@ -57,7 +57,7 @@ ext {
     // Core Versions
     composeVersion = "1.7.8"
     constraintLayout = "2.2.1"
-    firebaseBom = "34.10.0"
+    firebaseBom = "35.1.0"
     gradleVersion = "8.13.0"
     kotlinVersion = "2.2.20"
     lifecycleViewmodel = "2.9.4"
