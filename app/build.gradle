@@ -46,9 +46,9 @@ android {
     defaultConfig {
         applicationId = "com.rwothoromo.devfinder"
         minSdk = 23
-        targetSdk = 35
-        versionCode = 3
-        versionName = "1.0.3"
+        targetSdk = 36
+        versionCode = 4
+        versionName = "1.0.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // The app's state will be completely cleared between tests.
         testInstrumentationRunnerArguments clearPackageData: 'true'
