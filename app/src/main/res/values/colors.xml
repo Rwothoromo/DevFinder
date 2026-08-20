@@ -5,4 +5,5 @@
     <color name="colorPrimaryLight">#ff60ff</color>
     <color name="colorPrimaryText">#f4eef3</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorLauncher">#30A593</color>
 </resources>

@@ -1,4 +1,3 @@
-
 buildscript {
     repositories {
         mavenCentral()
@@ -8,6 +7,7 @@ buildscript {
     }
 
     dependencies {
+        // Add dependency for the Android Gradle Plugin (AGP) version here if needed
     }
 }
 
@@ -17,17 +17,9 @@ plugins {
     id("kotlin-parcelize")
     id("jacoco")
     id("com.google.gms.google-services")
-    alias(libs.plugins.compose.compiler)
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
-repositories {
-    mavenCentral()
-    maven { url = "https://plugins.gradle.org/m2/" }
-    maven { url = 'https://maven.google.com/' }
-    google()
-}
-
-apply plugin: 'jacoco'
 apply from: rootProject.file('quality/quality.gradle')
 apply from: rootProject.file('app/jacoco.gradle')
 
@@ -49,15 +41,14 @@ tasks.withType(Test).configureEach {
 
 android {
     namespace = "com.rwothoromo.devfinder"
-    compileSdk = 35
-    flavorDimensions "default"
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.rwothoromo.devfinder"
-        minSdk = 21
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = 23
+        targetSdk = 36
+        versionCode = 4
+        versionName = "1.0.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // The app's state will be completely cleared between tests.
         testInstrumentationRunnerArguments clearPackageData: 'true'
@@ -69,18 +60,23 @@ android {
             try {
                 // keystorePropertiesFile - Useful on local machine
                 def keystorePropertiesFile = rootProject.file("keystores/keystore.properties")
-                def keystoreProperties = new Properties()
-                keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+                if (keystorePropertiesFile.exists()) {
+                    def keystoreProperties = new Properties()
+                    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
-                // System.getenv - Useful on Circle CI
-                storeFile = file(keystoreProperties['storeFile'])
-                storePassword = keystoreProperties['storePassword']
-                keyAlias = keystoreProperties['keyAlias']
-                keyPassword = keystoreProperties['keyPassword']
+                    storeFile = rootProject.file(keystoreProperties['storeFile'])
+                    storePassword = keystoreProperties['storePassword']
+                    keyAlias = keystoreProperties['keyAlias']
+                    keyPassword = keystoreProperties['keyPassword']
+                } else {
+                    // File doesn't exist, use environment variables (CI)
+                    storeFile = file(System.getenv("KEYSTORE") ?: "../keystores/keystore.jks")
+                    storePassword = System.getenv("KEYSTORE_PASSWORD")
+                    keyAlias = System.getenv("KEY_ALIAS")
+                    keyPassword = System.getenv("KEY_PASSWORD")
+                }
             } catch (Exception e) {
-                println("keystorePropertiesFile Error: $e")
-
-                // System.getenv - Useful on Circle CI
+                // Fallback to environment variables on any error
                 storeFile = file(System.getenv("KEYSTORE") ?: "../keystores/keystore.jks")
                 storePassword = System.getenv("KEYSTORE_PASSWORD")
                 keyAlias = System.getenv("KEY_ALIAS")
@@ -91,33 +87,20 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled = false
+            minifyEnabled = true
             signingConfig = signingConfigs.release
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            enableUnitTestCoverage = true
-            enableAndroidTestCoverage = true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // Ensure coverage is only collected during debug builds for typical use
+            enableUnitTestCoverage = false
+            enableAndroidTestCoverage = false
         }
         debug {
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+            // Setting `minifyEnabled = false` is the default for debug
+            // Set coverage to true for debug builds (which is standard)
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
-        }
-    }
-
-    productFlavors {
-        mock {
-            dimension = "default"
-        }
-        prod {
-
-        }
-    }
-
-    sourceSets {
-        mock {
-            java.srcDirs('src/mock/java')
-        }
-        prod {
-            java.srcDirs('src/prod/java')
         }
     }
 
@@ -147,11 +130,31 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.2"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
 
     lint {
         abortOnError = false
+    }
+
+    packaging {
+        resources {
+            // Exclude *.file_extension pattern
+            excludes.add("*.md")
+            excludes.add("*.html")
+            excludes.add("*Test.kt")
+
+            // Exclude all files within a specific folder
+            excludes.add("docs/**")
+
+            // Exclude files matching a pattern within a folder
+            excludes.add("docs/*.md")
+            excludes.add("docs/*.html")
+            excludes.add("app/src/test/*.kt")
+
+            // Merge protobuf conflicts - prefer the version we explicitly provide
+            merges += 'com/google/protobuf/'
+        }
     }
 
 }
@@ -164,52 +167,65 @@ java {
 }
 
 dependencies {
+    // 1. Local Files
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "com.android.support.constraint:constraint-layout:${rootProject.constraintLayout}"
-    implementation "com.android.support:design:${rootProject.supportVersion}"
-    implementation "com.squareup.retrofit2:retrofit:${rootProject.retrofitVersion}"
-    implementation "com.google.code.gson:gson:${rootProject.gsonVersion}"
-    implementation "com.squareup.retrofit2:converter-gson:${rootProject.retrofitVersion}"
-    implementation "com.github.bumptech.glide:glide:${rootProject.glideVersion}"
-    implementation "com.android.support.test.espresso.idling:idling-concurrent:${rootProject.espressoVersion}"
-    implementation "com.squareup.okhttp3:mockwebserver:${rootProject.mockWebServer}"
-    implementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
-    implementation(platform("com.google.firebase:firebase-bom:$firebaseBom"))
-    implementation("com.google.firebase:firebase-perf")
-    implementation("com.google.firebase:firebase-analytics")
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+
+    // 2. Kotlin
+    implementation(libs.kotlin.stdlib.jdk7)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${rootProject.ktxCoroutinesCore}")
+
+    // 3. AndroidX and UI Libraries
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.material)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.swiperefreshlayout)
     implementation("androidx.compose.runtime:runtime:$composeVersion")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${rootProject.lifecycleViewmodel}")
-    implementation("com.squareup.okhttp3:logging-interceptor:${rootProject.okhttp3LoggingInterceptor}")
 
-    // Testing
-    testImplementation "junit:junit:${rootProject.jUnit}"
-    testImplementation "androidx.test:core:${rootProject.androidXTestVersion}"
-    testImplementation "io.mockk:mockk:${rootProject.mockkVersion}" // Mocking lib for Kotlin
-    testImplementation "org.mockito:mockito-core:${rootProject.mockitoVersion}"
-    testImplementation "org.mockito:mockito-inline:${rootProject.mockitoInlineVersion}"
-    testImplementation "org.mockito.kotlin:mockito-kotlin:${rootProject.mockitoKotlinVersion}"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:${rootProject.ktxCoroutinesTest}"
-    testImplementation("com.squareup.okhttp3:mockwebserver:${rootProject.okhttp3Mockwebserver}")
+    // 4. Networking, Serialization, and Images
+    implementation(libs.retrofit)
+    implementation(libs.gson)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
+    implementation(libs.glide)
 
-    androidTestImplementation "androidx.test:core:${rootProject.androidXTestVersion}"
-    androidTestImplementation "androidx.test:core-ktx:${rootProject.androidXTestVersion}"
-    androidTestImplementation "androidx.test.espresso:espresso-core:${rootProject.espressoVersion}"
-    androidTestImplementation("androidx.test.ext:junit:${rootProject.jUnitExt}") { // JUnit Ext APIs
-        // AndroidX Test Orchestrator dependency
+    // 5. Firebase
+    implementation(platform("com.google.firebase:firebase-bom:$firebaseBom"))
+
+    // Firebase Perf only for release builds (avoids protobuf conflicts in tests)
+    releaseImplementation(libs.firebase.perf)
+
+    implementation(libs.firebase.analytics) {
+        exclude group: 'com.google.protobuf', module: 'protobuf-javalite'
+    }
+    implementation libs.androidx.espresso.idling.resource
+
+    // Add protobuf-javalite that works with all dependencies
+    implementation 'com.google.protobuf:protobuf-javalite:3.25.5'
+
+    // 6. Testing - Local Unit Tests
+    testImplementation(libs.junit)
+    testImplementation(libs.androidx.core)
+    testImplementation("io.mockk:mockk:${rootProject.mockkVersion}")
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${rootProject.ktxCoroutinesTest}")
+    testImplementation(libs.mockwebserver) // Used for mocking network requests
+
+    // 7. Testing - Instrumentation Tests (Android Tests)
+    androidTestImplementation(libs.androidx.core)
+    androidTestImplementation(libs.androidx.core.ktx)
+    androidTestImplementation(libs.androidx.runner)
+    androidTestImplementation(libs.androidx.rules)
+    androidTestImplementation(libs.androidx.junit) {
         exclude group: 'androidx.test', module: 'orchestrator'
     }
-    androidTestImplementation "androidx.test.ext:junit-ktx:${rootProject.jUnitExt}"
-    androidTestImplementation "androidx.test.ext:truth:${rootProject.truthVersion}"// Truth Ext APIs
-    androidTestImplementation "androidx.test:runner:${rootProject.testRunner}"
-    androidTestImplementation "androidx.test:rules:${rootProject.testRules}"
-
-    androidTestImplementation "com.android.support.test:runner:${rootProject.testRunner}"
-    androidTestImplementation "com.android.support.test:rules:${rootProject.testRunner}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:${rootProject.espressoVersion}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-contrib:${rootProject.espressoVersion}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-intents:${rootProject.espressoVersion}"
-    androidTestImplementation "com.android.support.test.espresso:espresso-idling-resource:${rootProject.espressoVersion}"
+    androidTestImplementation(libs.androidx.junit.ktx)
+    androidTestImplementation(libs.androidx.truth)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.espresso.contrib)
+    androidTestImplementation(libs.androidx.espresso.intents)
+    androidTestImplementation(libs.androidx.idling.concurrent) // For concurrent idling resources
+    androidTestImplementation(libs.androidx.espresso.idling.resource) // For generic idling resources
+    androidTestImplementation 'com.google.protobuf:protobuf-javalite:3.25.5' // Ensure test APK has same protobuf version
 }
-
-apply plugin: 'com.google.gms.google-services'

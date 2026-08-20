@@ -1,7 +1,56 @@
 [versions]
-kotlin = "2.1.10"
+constraintlayout = "2.2.1"
+core = "1.7.0"
+glide = "5.0.5"
+gson = "2.13.2"
+junit = "4.13.2"
+junitVersion = "1.3.0"
+kotlin = "2.2.20"
+espressoIdlingResource = "3.7.0"
+kotlinStdlibJdk7 = "2.2.20"
+lifecycleViewmodelKtx = "2.9.4"
+loggingInterceptor = "5.2.1"
+material = "1.13.0"
+mockitoCore = "5.20.0"
+mockitoInline = "5.2.0"
+mockitoKotlin = "6.1.0"
+mockwebserver = "5.2.1"
+retrofit = "3.0.0"
+swiperefreshlayout = "1.2.0-beta01"
+protobuf = "3.25.5"
+
+
+[libraries]
+androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+androidx-core = { module = "androidx.test:core", version.ref = "core" }
+androidx-core-ktx = { module = "androidx.test:core-ktx", version.ref = "core" }
+androidx-espresso-contrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "espressoIdlingResource" }
+androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoIdlingResource" }
+androidx-espresso-idling-resource = { group = "androidx.test.espresso", name = "espresso-idling-resource", version.ref = "espressoIdlingResource" }
+androidx-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espressoIdlingResource" }
+androidx-idling-concurrent = { module = "androidx.test.espresso.idling:idling-concurrent", version.ref = "espressoIdlingResource" }
+androidx-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
+androidx-junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "junitVersion" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+androidx-rules = { module = "androidx.test:rules", version.ref = "core" }
+androidx-runner = { module = "androidx.test:runner", version.ref = "core" }
+androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
+androidx-truth = { module = "androidx.test.ext:truth", version.ref = "core" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics", version = "22.1.2" }
+firebase-perf = { module = "com.google.firebase:firebase-perf", version = "21.0.1" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+junit = { module = "junit:junit", version.ref = "junit" }
+kotlin-stdlib-jdk7 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlinStdlibJdk7" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
+mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockitoInline" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
+mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "mockwebserver" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobuf" }
 
 [plugins]
-#org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
